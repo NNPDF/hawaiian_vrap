@@ -124,23 +124,23 @@ template <class TargetType> bool ValueSettingOption<TargetType>::process(std::is
 template <class TargetType> multipleValueOption<TargetType>::multipleValueOption(const std::string& name, TargetType& valueToSet,
 		const std::string& name1, const TargetType& value1,
 		const std::string& helpString): NamedOption(name,helpString), d_valueToSet(valueToSet) {
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name1,value1));
+	d_nameMap.emplace(name1,value1);
 }
 template <class TargetType> multipleValueOption<TargetType>::multipleValueOption(const std::string& name, TargetType& valueToSet,
 		const std::string& name1, const TargetType& value1,
 		const std::string& name2, const TargetType& value2,
 		const std::string& helpString): NamedOption(name,helpString), d_valueToSet(valueToSet) {
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name1,value1));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name2,value2));
+	d_nameMap.emplace(name1,value1);
+	d_nameMap.emplace(name2,value2);
 }
 template <class TargetType> multipleValueOption<TargetType>::multipleValueOption(const std::string& name, TargetType& valueToSet,
 		const std::string& name1, const TargetType& value1,
 		const std::string& name2, const TargetType& value2,
 		const std::string& name3, const TargetType& value3,
 		const std::string& helpString): NamedOption(name,helpString), d_valueToSet(valueToSet) {
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name1,value1));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name2,value2));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name3,value3));
+	d_nameMap.emplace(name1,value1);
+	d_nameMap.emplace(name2,value2);
+	d_nameMap.emplace(name3,value3);
 }
 template <class TargetType> multipleValueOption<TargetType>::multipleValueOption(const std::string& name, TargetType& valueToSet,
 		const std::string& name1, const TargetType& value1,
@@ -148,10 +148,10 @@ template <class TargetType> multipleValueOption<TargetType>::multipleValueOption
 		const std::string& name3, const TargetType& value3,
 		const std::string& name4, const TargetType& value4,
 		const std::string& helpString): NamedOption(name,helpString), d_valueToSet(valueToSet) {
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name1,value1));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name2,value2));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name3,value3));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name4,value4));
+	d_nameMap.emplace(name1,value1);
+	d_nameMap.emplace(name2,value2);
+	d_nameMap.emplace(name3,value3);
+	d_nameMap.emplace(name4,value4);
 }
 template <class TargetType> multipleValueOption<TargetType>::multipleValueOption(const std::string& name, TargetType& valueToSet,
 		const std::string& name1, const TargetType& value1,
@@ -160,11 +160,11 @@ template <class TargetType> multipleValueOption<TargetType>::multipleValueOption
 		const std::string& name4, const TargetType& value4,
 		const std::string& name5, const TargetType& value5,
 		const std::string& helpString): NamedOption(name,helpString), d_valueToSet(valueToSet) {
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name1,value1));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name2,value2));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name3,value3));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name4,value4));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name5,value5));
+	d_nameMap.emplace(name1,value1);
+	d_nameMap.emplace(name2,value2);
+	d_nameMap.emplace(name3,value3);
+	d_nameMap.emplace(name4,value4);
+	d_nameMap.emplace(name5,value5);
 }
 template <class TargetType> multipleValueOption<TargetType>::multipleValueOption(const std::string& name, TargetType& valueToSet,
 		const std::string& name1, const TargetType& value1,
@@ -174,12 +174,12 @@ template <class TargetType> multipleValueOption<TargetType>::multipleValueOption
 		const std::string& name5, const TargetType& value5,
 		const std::string& name6, const TargetType& value6,
 		const std::string& helpString): NamedOption(name,helpString), d_valueToSet(valueToSet) {
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name1,value1));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name2,value2));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name3,value3));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name4,value4));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name5,value5));
-	d_nameMap.insert(std::make_pair<std::string,TargetType>(name6,value6));
+	d_nameMap.emplace(name1,value1);
+	d_nameMap.emplace(name2,value2);
+	d_nameMap.emplace(name3,value3);
+	d_nameMap.emplace(name4,value4);
+	d_nameMap.emplace(name5,value5);
+	d_nameMap.emplace(name6,value6);
 }
 
 

@@ -1,13 +1,5 @@
 #include "dilog.h"
 
-// routines only valid for real values of the argument; 
-// imaginary parts not presently given.
-
-double abs(double x){
-  if (x < 0.0){ return -x; }
-  else return x;
-}
-
 // this version uses 't Hooft and Veltman's change of variable
 // good to ~ 10^(-16)
 
@@ -17,7 +9,7 @@ double li2(double x){
  double x_2 = 0.51;
  if (x == 1.) return PISQ6;
  if (x <= x_0){ 
-   double temp = log(abs(1.0-x));
+   double temp = log(std::fabs(1.0-x));
    return -li2(-x/(1.0-x)) - temp*temp/2 ; }
  else if (x < x_1){
    double z = - log(1.0-x);
@@ -29,7 +21,7 @@ double li2(double x){
    return temp; }
    else if (x < x_2) return - li2(-x) + li2(x*x)/2.0 ;
    else { return PISQ6 - li2(1.0-x) 
-                  - log(abs(x))*log(abs(1.0-x)) ; }
+                  - log(std::fabs(x))*log(std::fabs(1.0-x)) ; }
 }
 
 // COMPLEX version using 't Hooft and Veltman's change of variable
@@ -40,7 +32,7 @@ complex CLi2(complex x){
  double x_2 = 0.51;
  if (x == 1) return PISQ6;
  if (real(x) >= x_2) { return PISQ6 - CLi2(1.-x) - log(x)*log(1.-x) ; }
- if ((abs(imag(x)) > 1.) || (real(x)*real(x) + imag(x)*imag(x) > 1.2))
+ if ((std::fabs(imag(x)) > 1.) || (real(x)*real(x) + imag(x)*imag(x) > 1.2))
    return - CLi2(1/x) - 0.5 * log(-x) * log(-x) - PISQ6 ;
  if (real(x) <= x_0){ 
    complex zz = log(1.-x);
@@ -180,7 +172,7 @@ double myli2(double x){
  double x_2 = 0.51;
  if (x == 1) return PISQ6;
  if (x <= x_0){ 
-   double temp = log(abs(1.0-x));
+   double temp = log(std::fabs(1.0-x));
    return -myli2(-x/(1.0-x)) - temp*temp/2 ; }
  else if (x < x_1){
    double temp = 0.0;
@@ -191,7 +183,7 @@ double myli2(double x){
    return temp; }
    else if (x < x_2) return - myli2(-x) + myli2(x*x)/2.0 ;
    else { return PISQ6 - myli2(1.0-x) 
-                  - log(abs(x))*log(abs(1.0-x)) ; }
+                  - log(std::fabs(x))*log(std::fabs(1.0-x)) ; }
 }
 
 // maple's definition
@@ -215,8 +207,8 @@ double i3_3m(double s1, double s2, double s3){
   if (s1<0 && s2<0 && s3<0) {
     if (mylamsq > 0) { 
       double temp = 2.0 * ( li2(-rho*x) + li2(-rho*y) ) 
-	            + log(abs(rho*x))*log(abs(rho*y)) 
-	            + log(y/x)*log(abs((1.0+rho*y)/(1.0+rho*x)))
+	            + log(std::fabs(rho*x))*log(std::fabs(rho*y)) 
+	            + log(y/x)*log(std::fabs((1.0+rho*y)/(1.0+rho*x)))
 	            + PI_DEF*PI_DEF/3.0 ; 
       if (rho<0) temp = temp - PI_DEF*PI_DEF; 
       return  -temp/s3/lambda;
@@ -246,7 +238,7 @@ double fastCl(double x){
   if (x < x_lower) return fastCl(x+2.0*PI_DEF);
 // dividing line for the two expansions is x_switch: 
   if (x < x_switch){          // expansion around 0:
-     return  -x*log(abs(x)) + x * ( 1.0 + x*x/72.0 * ( 1.0 + x*x/200.0 
+     return  -x*log(std::fabs(x)) + x * ( 1.0 + x*x/72.0 * ( 1.0 + x*x/200.0 
            * ( 1.0 + x*x*5.0/441.0 * ( 1.0 + x*x*7.0/480.0
 	   * ( 1.0 + x*x*2.0/121.0 ) ) ) ) ); }
   else {

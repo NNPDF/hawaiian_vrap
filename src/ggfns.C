@@ -16,9 +16,9 @@ double gg_full_1(double y, double z){
  up12 = (1.+u)*(1.+u);   up13 = up12*(1.+u);
  up14 = up12*up12;    up15 = up13*up12;  
  ln2 = log(2.);  lnz = log(z);  lnr = log(r);  lnu = log(u); 
- lnopu = log(1.+u);  lnhfopu = log((1.+u)/2.);  lnumo = log(abs(u-1.));
+ lnopu = log(1.+u);  lnhfopu = log((1.+u)/2.);  lnumo = log(std::fabs(u-1.));
  lnrpt = log(r+t);  lnrmt = log(r-t);
- lnoptr = log(1.+t*r);  lnomtr = log(1.-t*r);  lnrmo = log(abs(r-1.));  
+ lnoptr = log(1.+t*r);  lnomtr = log(1.-t*r);  lnrmo = log(std::fabs(r-1.));  
  temp = 
 // q^2:
 // J's:
@@ -244,9 +244,9 @@ return
 
 double gg_full(double y, double z){
  // z = 1 patch:
- if (abs(1.-z) < 0.01){ return gg_z1(y,z); }
+ if (std::fabs(1.-z) < 0.01){ return gg_z1(y,z); }
   // u = 1 patch:
- if (abs(y-0.5) < 0.0001/sqrt(1.-z)){ return gg_u1(z); }
+ if (std::fabs(y-0.5) < 0.0001/sqrt(1.-z)){ return gg_u1(z); }
  // u = z patch:
  if (y < 0.00000001/(1.-z)){ return gg_uz(y,z); }
  // u = 1-z patch:

@@ -281,19 +281,19 @@ double int_NNLO(double y, double ys, double z){
     ;
   real_ans = real_ans/z;
   // TEMPORARY DIAGNOSTICS:
-  if (abs(boost_ans + real_ans) >= 0) { }
-  else { cout << setw(15) << setprecision(15)
+  if (std::fabs(boost_ans + real_ans) >= 0.0) { }
+  else { std::cout << std::setw(15) << std::setprecision(15)
                 << "  y =  " << y
                 << "  ;  ys  " << ys 
-                << "  ;  z =  " << z << endl; 
-           cout << " boost_ans =  " << boost_ans
-                << " ;   real_ans =  " << real_ans << endl;
-           cout << " qq_CD_ax_real_hard(ys,z) =  " 
+                << "  ;  z =  " << z << std::endl; 
+           std::cout << " boost_ans =  " << boost_ans
+                << " ;   real_ans =  " << real_ans << std::endl;
+           std::cout << " qq_CD_ax_real_hard(ys,z) =  " 
                 << qq_CD_ax_real_hard(ys,z) 
-                << " ; qq_12_ax_lumi_ys = "  << qq_12_ax_lumi_ys << endl;
-           cout << " qq_AB_ax_real_hard(ys,z) =  " 
+                << " ; qq_12_ax_lumi_ys = "  << qq_12_ax_lumi_ys << std::endl;
+           std::cout << " qq_AB_ax_real_hard(ys,z) =  " 
                 << qq_AB_ax_real_hard(ys,z) 
-                << " ; qbarq_ax_lumi_ys = " << qbarq_ax_lumi_ys << endl;
+                << " ; qbarq_ax_lumi_ys = " << qbarq_ax_lumi_ys << std::endl;
   }
   return boost_ans + real_ans;
 }
@@ -395,18 +395,18 @@ DVector sqint(int n_f, int n_dim, int n_call, int n_adapt, int n_run,
   surf Sfc(0);
   V.reset(n_call);
   Sfc.n = n_f;
-  if (f_quiet==0){ cout << "adapting grid"<<endl; }
+  if (f_quiet==0){ std::cout << "adapting grid"<<std::endl; }
   integral = Sfc.vegas(V,n_adapt,sd,chi2);
   if (f_quiet==0){
-  cout << setw(8) << setprecision(8) << integral 
-       << "  pm  " << sd << "  chi2 = " << chi2 << endl;
-  cout << "evaluating integral" <<endl;
+  std::cout << std::setw(8) << std::setprecision(8) << integral 
+       << "  pm  " << sd << "  chi2 = " << chi2 << std::endl;
+  std::cout << "evaluating integral" <<std::endl;
   }  
   integral = Sfc.vegasint(V,n_run,sd,chi2);
   if (f_quiet==0){  
-  cout << setw(8) << setprecision(8) << integral 
-       << "  pm  " << sd << "  chi2 = " << chi2 << endl;
-  cout << endl;
+  std::cout << std::setw(8) << std::setprecision(8) << integral 
+       << "  pm  " << sd << "  chi2 = " << chi2 << std::endl;
+  std::cout << std::endl;
   }
   temp_out.fill(3,integral,sd,chi2);
   return temp_out;
@@ -424,95 +424,95 @@ DVector int_y(double xil, double xiu){
   double total_int, total_int_error;
   double prefactor = DY_prefactor(Q,alphat);
   double asR = alpha_s(muR)/PI;
-  cout  << endl << "Now computing integral over rapidity" << endl << endl;
+  std::cout  << std::endl << "Now computing integral over rapidity" << std::endl << std::endl;
 // LO case
   if (order_flag == 0) {
-    if (abs(Born_integrand(0.2)) < 1.0e-16){
-      cout << "   Setting Born terms to 0, since f_qqbar = 0  " << endl;
+    if (std::fabs(Born_integrand(0.2)) < 1.0e-16){
+      std::cout << "   Setting Born terms to 0, since f_qqbar = 0  " << std::endl;
       result.fill(2,0.,0.); 
     }
     else {
-      cout << "   Now integrating Born terms " << endl;
+      std::cout << "   Now integrating Born terms " << std::endl;
       Born_int = sqint(3,1,1000,10,20,ranseed);
       total_int = prefactor * Born_int[0];
       total_int_error = prefactor * Born_int[1];
-      cout << " LO integral =  " << setw(8) << setprecision(8)
+      std::cout << " LO integral =  " << std::setw(8) << std::setprecision(8)
            << prefactor*Born_int[0] << "  pm  " << prefactor*Born_int[1]
-           <<  ";    chi^2 =  " << Born_int[2] << endl << endl;
+           <<  ";    chi^2 =  " << Born_int[2] << std::endl << std::endl;
     }
   }
 // NLO case
   if (order_flag == 1) {
-    if (abs(Born_integrand(0.2)) < 1.0e-16){
-      cout << "   Setting Born terms to 0, since f_qqbar = 0  " << endl;
+    if (std::fabs(Born_integrand(0.2)) < 1.0e-16){
+      std::cout << "   Setting Born terms to 0, since f_qqbar = 0  " << std::endl;
       Born_int.fill(3,0.,0.,0.);
     }
     else {
-     cout << "   Now integrating Born terms " << endl;
+     std::cout << "   Now integrating Born terms " << std::endl;
      Born_int = sqint(3,1,1000,10,20,ranseed);
-     cout << " Born-type integral =  " << setw(8) << setprecision(8)
+     std::cout << " Born-type integral =  " << std::setw(8) << std::setprecision(8)
           << prefactor*Born_int[0] << "  pm  " << prefactor*Born_int[1]
-          <<  ";    chi^2 =  " << Born_int[2] << endl << endl;
+          <<  ";    chi^2 =  " << Born_int[2] << std::endl << std::endl;
     }
-    if (abs(int_NLO(.03,.43,.93)) < 1.0e-16) {
-      cout << "Setting non-Born NLO terms to 0, since integrand ~ 0 " << endl;
+    if (std::fabs(int_NLO(.03,.43,.93)) < 1.0e-16) {
+      std::cout << "Setting non-Born NLO terms to 0, since integrand ~ 0 " << std::endl;
       i_NLO.fill(3,0.,0.,0.);
     }
     else {
-      cout << " Now integrating NLO terms " << endl;
+      std::cout << " Now integrating NLO terms " << std::endl;
       i_NLO = sqint(4,3,10000,10,20,ranseed);
-      cout << " NLO non-Born integral =  " << setw(8) << setprecision(8)
+      std::cout << " NLO non-Born integral =  " << std::setw(8) << std::setprecision(8)
           << prefactor * asR * i_NLO[0] 
           << "  pm  " << prefactor * asR * i_NLO[1]
-          <<  ";    chi^2 =  " << i_NLO[2] << endl << endl;
+          <<  ";    chi^2 =  " << i_NLO[2] << std::endl << std::endl;
     }
     total_int = prefactor * ( Born_int[0] + asR * i_NLO[0] );
     total_int_error = prefactor * sqrt( Born_int[1]*Born_int[1] 
                                       + asR*asR * i_NLO[1]*i_NLO[1] ) ;
-    cout << " NLO integral =  " << setw(8) << setprecision(8)
-         << total_int << "  pm  " << total_int_error << endl << endl;
+    std::cout << " NLO integral =  " << std::setw(8) << std::setprecision(8)
+         << total_int << "  pm  " << total_int_error << std::endl << std::endl;
   }
 // NNLO case
   if (order_flag == 2) {
-    if (abs(Born_integrand(0.2)) < 1.0e-16){
-      cout << "   Setting Born terms to 0, since f_qqbar = 0  " << endl;
+    if (std::fabs(Born_integrand(0.2)) < 1.0e-16){
+      std::cout << "   Setting Born terms to 0, since f_qqbar = 0  " << std::endl;
       Born_int.fill(3,0.,0.,0.);
     }
     else {
-    cout << " Now integrating Born terms " << endl;
+    std::cout << " Now integrating Born terms " << std::endl;
     Born_int = sqint(3,1,1000,10,20,ranseed);
-    cout << " Born-type integral =  " << setw(8) << setprecision(8)
+    std::cout << " Born-type integral =  " << std::setw(8) << std::setprecision(8)
          << prefactor*Born_int[0] << "  pm  " << prefactor*Born_int[1]
-         <<  ";    chi^2 =  " << Born_int[2] << endl << endl;
+         <<  ";    chi^2 =  " << Born_int[2] << std::endl << std::endl;
     }
     if (f_NNLO_only == 1){
-      if (abs(int_NLO(.03,.43,.93)) < 1.0e-16) {
-        cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << endl;
+      if (std::fabs(int_NLO(.03,.43,.93)) < 1.0e-16) {
+        std::cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << std::endl;
         i_NLO.fill(3,0.,0.,0.);
       }
       else {
-      cout << " Now integrating NLO terms " << endl;
+      std::cout << " Now integrating NLO terms " << std::endl;
       i_NLO = sqint(4,3,5000,10,20,ranseed);
-      cout << " NLO non-Born integral =  " << setw(8) << setprecision(8)
+      std::cout << " NLO non-Born integral =  " << std::setw(8) << std::setprecision(8)
            << prefactor * asR * i_NLO[0] 
            << "  pm  " << prefactor * asR * i_NLO[1]
-           <<  ";    chi^2 =  " << i_NLO[2] << endl << endl;
+           <<  ";    chi^2 =  " << i_NLO[2] << std::endl << std::endl;
       }
     }
-    cout << "   Now integrating NNLO terms " << endl;
+    std::cout << "   Now integrating NNLO terms " << std::endl;
     i_NNLO = sqint(5,3,5000,10,30,ranseed);
-    cout << " NNLO non-Born integral =  " << setw(8) << setprecision(8)
+    std::cout << " NNLO non-Born integral =  " << std::setw(8) << std::setprecision(8)
          << prefactor * asR*asR * i_NNLO[0] 
          << "  pm  " << prefactor * asR*asR * i_NNLO[1]
-         <<  ";    chi^2 =  " << i_NNLO[2] << endl 
-         << endl;
+         <<  ";    chi^2 =  " << i_NNLO[2] << std::endl 
+         << std::endl;
     if (f_NNLO_only == 0) {
       total_int = prefactor * ( Born_int[0] + asR*asR * i_NNLO[0] );
       total_int_error = prefactor * sqrt( Born_int[1]*Born_int[1] 
                                    + asR*asR*asR*asR * i_NNLO[1]*i_NNLO[1] ) ;
-      cout << " NNLO (ONLY) integral =  " << setw(8) << setprecision(8)
+      std::cout << " NNLO (ONLY) integral =  " << std::setw(8) << std::setprecision(8)
          << total_int << "  pm  " << total_int_error  
-         << endl << endl;
+         << std::endl << std::endl;
     }
     else {
     total_int = prefactor * ( Born_int[0] 
@@ -520,9 +520,9 @@ DVector int_y(double xil, double xiu){
     total_int_error = prefactor * sqrt( Born_int[1]*Born_int[1] 
                             + asR*asR * i_NLO[1]*i_NLO[1]
                    + asR*asR*asR*asR * i_NNLO[1]*i_NNLO[1] ) ;
-    cout << " NNLO integral =  " << setw(8) << setprecision(8)
+    std::cout << " NNLO integral =  " << std::setw(8) << std::setprecision(8)
        << total_int << "  pm  " << total_int_error  
-       << endl << endl;
+       << std::endl << std::endl;
     }
   }
  result.fill(2,total_int,total_int_error);  
@@ -537,7 +537,7 @@ DVector rap_y(){
   double asR = alpha_s(muR)/PI;
   DVector result(0,1);   DVector i_NLO(0,2);  DVector i_NNLO(0,2);
   if (f_quiet==0) {
-    cout << setw(9) << setprecision(9) << " working on    y =  " << y << endl; 
+    std::cout << std::setw(9) << std::setprecision(9) << " working on    y =  " << y << std::endl; 
   }
 // LO case
   if (order_flag == 0) { 
@@ -546,9 +546,9 @@ DVector rap_y(){
 // NLO case
   else if (order_flag == 1) {
     double Born_ans = Born_integrand(y);
-    if (abs(int_NLO(.03,.43,.93)) < 1.0e-16) {
+    if (std::fabs(int_NLO(.03,.43,.93)) < 1.0e-16) {
        if (f_quiet==0) {
-       cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << endl;
+       std::cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << std::endl;
        }
        i_NLO.fill(3,0.,0.,0.);
     }
@@ -561,18 +561,18 @@ DVector rap_y(){
     double Born_ans = Born_integrand(y);
     if (f_NNLO_only == 1) {
     if (f_quiet==0) {
-    cout << " computing NLO integral for y = " << y << endl; 
+    std::cout << " computing NLO integral for y = " << y << std::endl; 
     }
-    if (abs(int_NLO(.03,.43,.93)) < 1.0e-16) {
+    if (std::fabs(int_NLO(.03,.43,.93)) < 1.0e-16) {
        if (f_quiet==0) {
-       cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << endl;
+       std::cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << std::endl;
        }
        i_NLO.fill(3,0.,0.,0.);
     }
     else { i_NLO = sqint(1,2,5000,10,20,ranseed); }
     }
     if (f_quiet==0) {
-    cout << " computing NNLO integral for y = " << y << endl; 
+    std::cout << " computing NNLO integral for y = " << y << std::endl; 
     }
     i_NNLO = sqint(2,2,20000,3,10,ranseed);
     if (f_NNLO_only == 0) {
@@ -586,9 +586,9 @@ DVector rap_y(){
     }
   }
   if (f_quiet==0) {
-  cout << setw(8) << setprecision(8) <<  " y = " << y 
+  std::cout << std::setw(8) << std::setprecision(8) <<  " y = " << y 
        << ";   d^2sigma/dM/dy =  " << total
-       << "   pm  " << total_error << endl;
+       << "   pm  " << total_error << std::endl;
   }
   result.fill(2,total,total_error);
   return result;
@@ -606,29 +606,29 @@ void makeKtable(double y_max, int y_steps,
                 double M_min, double M_max, int M_steps){
   double yMAX;   // the physical limit for y
   f_quiet = 1;  // shut off output
-  cout << endl
-       << "--------------------------------------------------------" << endl; 
-  cout << setw(8) << setprecision(8) << "Performing mass/rapidity scan:  " 
+  std::cout << std::endl
+       << "--------------------------------------------------------" << std::endl; 
+  std::cout << std::setw(8) << std::setprecision(8) << "Performing mass/rapidity scan:  " 
        << M_min << "  < M < " << M_max << "  ;   0 < y < " << y_max 
-       << endl; 
- cout << "--------------------------------------------------------" << endl; 
- cout << "number of mass steps =  " << M_steps 
-      << "; number of rapidity steps =  " << y_steps << endl << endl; 
+       << std::endl; 
+ std::cout << "--------------------------------------------------------" << std::endl; 
+ std::cout << "number of mass steps =  " << M_steps 
+      << "; number of rapidity steps =  " << y_steps << std::endl << std::endl; 
   double y_step_size = y_max/y_steps;
   double M_step_size = (M_max-M_min)/M_steps;
 // print header
-  cout << " y =         " ;
+  std::cout << " y =         " ;
   for (int j = 0; j <= y_steps; j++) {
     y = 0. + y_step_size * j;
-    cout << y << "           " ;
+    std::cout << y << "           " ;
   }
-  cout << endl;
-  cout << "---------------------------------------------" 
-       << "---------------------------------------------" << endl;
+  std::cout << std::endl;
+  std::cout << "---------------------------------------------" 
+       << "---------------------------------------------" << std::endl;
 //
   for (int i = 0; i <= M_steps; i++) {
     Q = M_min + M_step_size * i;
-    cout << " M =  " << Q << " :    " ;
+    std::cout << " M =  " << Q << " :    " ;
     yMAX = log(E_CM/Q);
     muF = Q;   muR = muF;  // ren. & fact. scales equal to Q here
     for (int j = 0; j <= y_steps; j++) {
@@ -643,13 +643,13 @@ void makeKtable(double y_max, int y_steps,
 	LHApdfInit(mrst,2);  
 
        DVector NLO_rap_y = rap_y();
-       cout << NLO_rap_y[0]/LO_rap_y[0] << "   " ;
+       std::cout << NLO_rap_y[0]/LO_rap_y[0] << "   " ;
       }
-      else { cout <<  0.0 << "   " ; }
+      else { std::cout <<  0.0 << "   " ; }
     }
-  cout << endl;
+  std::cout << std::endl;
   }
-  cout << "------------------------------------------------------- " << endl;
+  std::cout << "------------------------------------------------------- " << std::endl;
 }
 
 /* Make table of "C" factors for fixed-target Drell-Yan, M vs. y.
@@ -665,23 +665,23 @@ void makeCtable(double y_max, int y_steps,
                 double M_min, double M_max, int M_steps){
   double yMAX;   // the physical limit for y
   f_quiet = 1;  // shut off output
-  cout << endl
+  std::cout << std::endl
        << "--------------------------------------------------------"
-       << endl << "Running `makeCtable'   " << endl;
-  cout << setw(8) << setprecision(8) << "Performing mass/rapidity scan:  "
+       << std::endl << "Running `makeCtable'   " << std::endl;
+  std::cout << std::setw(8) << std::setprecision(8) << "Performing mass/rapidity scan:  "
        << M_min << "  < M < " << M_max << "  ;   0 < y < " << y_max
-       << endl;
-  cout << "--------------------------------------------------------" <<
-                endl;
-  cout << "number of mass steps =  " << M_steps
-       << "; number of rapidity steps =  " << y_steps << endl << endl;
+       << std::endl;
+  std::cout << "--------------------------------------------------------" <<
+                std::endl;
+  std::cout << "number of mass steps =  " << M_steps
+       << "; number of rapidity steps =  " << y_steps << std::endl << std::endl;
   double y_step_size = y_max/y_steps;
   double M_step_size = (M_max-M_min)/M_steps;
-  cout <<endl<< "=========   Table of C(M,y) values  ===========" <<endl<<endl;
+  std::cout <<std::endl<< "=========   Table of C(M,y) values  ===========" <<std::endl<<std::endl;
   for (int i = 0; i <= M_steps; i++) {
     Q = M_min + M_step_size * i;
-    cout << " M = " << Q << " :" << endl 
-         << "y    |        C       (   error in C    "  << endl ;
+    std::cout << " M = " << Q << " :" << std::endl 
+         << "y    |        C       (   error in C    "  << std::endl ;
     yMAX = log(E_CM/Q);
     muF = Q;   muR = muF;  // ren. & fact. scales equal to Q here
     for (int j = 0; j <= y_steps; j++) {
@@ -714,13 +714,13 @@ void makeCtable(double y_max, int y_steps,
                               * LO_rap_y[1]*LO_rap_y[1]
 	       	  + 1./LO_rap_y[0]/LO_rap_y[0] * NLO_rap_y[1]*NLO_rap_y[1] )
                          / (alpha_s(Q)/PI) ;
-        cout << y << "  |    " << Cvalue  << "   (   " << Cerror << endl ;
+        std::cout << y << "  |    " << Cvalue  << "   (   " << Cerror << std::endl ;
       }
-      else { cout << y << "  |    " << 0.0  << "             (   " << 0.0 << endl ; }
+      else { std::cout << y << "  |    " << 0.0  << "             (   " << 0.0 << std::endl ; }
     }
-    cout << endl<< endl ;
+    std::cout << std::endl<< std::endl ;
   }
-  cout << "------------------------------------------------------- " << endl;
+  std::cout << "------------------------------------------------------- " << std::endl;
 }
   
 /* Make table of "D" and "E" factors for fixed-target Drell-Yan, M vs. y.
@@ -738,23 +738,23 @@ void makeDEtable(double y_max, int y_steps,
   double yMAX;   // the physical limit for y
   f_quiet = 1;  // shut off output
   compute_all();
-  cout << endl
+  std::cout << std::endl
        << "--------------------------------------------------------" 
-       << endl << "Running `makeDEtable'   " << endl;
-  cout << setw(8) << setprecision(8) << "Performing mass/rapidity scan:  "
+       << std::endl << "Running `makeDEtable'   " << std::endl;
+  std::cout << std::setw(8) << std::setprecision(8) << "Performing mass/rapidity scan:  "
        << M_min << "  < M < " << M_max << "  ;   0 < y < " << y_max
-       << endl;
-  cout << "--------------------------------------------------------" <<
-                endl;
-  cout << "number of mass steps =  " << M_steps
-       << "; number of rapidity steps =  " << y_steps << endl << endl;
+       << std::endl;
+  std::cout << "--------------------------------------------------------" <<
+                std::endl;
+  std::cout << "number of mass steps =  " << M_steps
+       << "; number of rapidity steps =  " << y_steps << std::endl << std::endl;
   double y_step_size = y_max/y_steps;
   double M_step_size = (M_max-M_min)/M_steps;
-  cout <<endl<< "=========   Table of D(M,y) values  ===========" <<endl<<endl;
+  std::cout <<std::endl<< "=========   Table of D(M,y) values  ===========" <<std::endl<<std::endl;
   for (int i = 0; i <= M_steps; i++) {
     Q = M_min + M_step_size * i;
-    cout << " M = " << Q << " :" << endl 
-         << "y    |        D       (   error in D    "  << endl ;
+    std::cout << " M = " << Q << " :" << std::endl 
+         << "y    |        D       (   error in D    "  << std::endl ;
     yMAX = log(E_CM/Q);
     muF = Q;   muR = muF;  // ren. & fact. scales equal to Q here
     for (int j = 0; j <= y_steps; j++) {
@@ -782,18 +782,18 @@ void makeDEtable(double y_max, int y_steps,
                               * LO_rap_y[1]*LO_rap_y[1]
 	       	  + 1./LO_rap_y[0]/LO_rap_y[0] * NLO_rap_y[1]*NLO_rap_y[1] )
                          / (alpha_s(Q)/PI) ;
-        cout << y << "  |    " << Dvalue  << "   (   " << Derror << endl ;
+        std::cout << y << "  |    " << Dvalue  << "   (   " << Derror << std::endl ;
       }
-      else { cout << y << "  |    " << 0.0  << "             (   " << 0.0 << endl ; }
+      else { std::cout << y << "  |    " << 0.0  << "             (   " << 0.0 << std::endl ; }
     }
-    cout << endl<< endl ;
+    std::cout << std::endl<< std::endl ;
   }
 // print E table header
-  cout <<endl<< "=========   Table of E(M,y) values  ===========" <<endl<<endl;
+  std::cout <<std::endl<< "=========   Table of E(M,y) values  ===========" <<std::endl<<std::endl;
   for (int i = 0; i <= M_steps; i++) {
     Q = M_min + M_step_size * i;
-    cout << " M = " << Q << " :" << endl 
-         << "y    |        E       (   error in E    "  << endl ;
+    std::cout << " M = " << Q << " :" << std::endl 
+         << "y    |        E       (   error in E    "  << std::endl ;
     yMAX = log(E_CM/Q);
     muF = Q;   muR = muF;  // ren. & fact. scales equal to Q here
     for (int j = 0; j <= y_steps; j++) {
@@ -818,12 +818,12 @@ void makeDEtable(double y_max, int y_steps,
                               * LO_rap_y[1]*LO_rap_y[1]
 	       	  + 1./LO_rap_y[0]/LO_rap_y[0] * NNLO_rap_y[1]*NNLO_rap_y[1] )
                          /(alpha_s(Q)/PI)/(alpha_s(Q)/PI) ;
-        cout << y << "  |    " << Evalue  << "   (   " << Eerror << endl ;
+        std::cout << y << "  |    " << Evalue  << "   (   " << Eerror << std::endl ;
       }
-      else { cout << y << "  |    " << 0.0  << "             (   " << 0.0 << endl ; }
+      else { std::cout << y << "  |    " << 0.0  << "             (   " << 0.0 << std::endl ; }
     }
   }
-  cout << "----------------------------------------------------- " << endl;
+  std::cout << "----------------------------------------------------- " << std::endl;
 }
   
 // Routine uses "rap_y" to compute un-normalized d sigma/dM/dy, plus errors,
@@ -838,12 +838,12 @@ void makeDEtable(double y_max, int y_steps,
 
 DMatrix sym_scan_rap_y(int n_points, int forwrev, int output_format){
   double ymax = log(E_CM/Q) * n_points/(n_points+1.);  
- cout << endl
-      << "--------------------------------------------------------" << endl; 
- cout << "Performing rapidity scan - symmetric case (0 < y < ymax)" << endl; 
- cout << "--------------------------------------------------------" << endl; 
- cout << " ymax =  " << ymax
-      << ";    number of rapidity steps =  " << n_points << endl << endl; 
+ std::cout << std::endl
+      << "--------------------------------------------------------" << std::endl; 
+ std::cout << "Performing rapidity scan - symmetric case (0 < y < ymax)" << std::endl; 
+ std::cout << "--------------------------------------------------------" << std::endl; 
+ std::cout << " ymax =  " << ymax
+      << ";    number of rapidity steps =  " << n_points << std::endl << std::endl; 
   double step_size = ymax/n_points;
   DMatrix resultMatrix(0,n_points,0,2);  // matrix to store unnorm. results
   for (int j = 0; j <= n_points; j++) {
@@ -855,26 +855,26 @@ DMatrix sym_scan_rap_y(int n_points, int forwrev, int output_format){
    }
    if (output_format==0) {
 // print results for topdraw:
-    cout << endl
-         << "   y               |    d^2sigma/dM/dy   |   (  error   " << endl;
-    cout << "------------------------------------------------------- " << endl;
+    std::cout << std::endl
+         << "   y               |    d^2sigma/dM/dy   |   (  error   " << std::endl;
+    std::cout << "------------------------------------------------------- " << std::endl;
     for (int j = n_points; j > 0; j--) {
-      cout << setw(8) << setprecision(8) <<  " " << -forwrev*resultMatrix[j][0]
+      std::cout << std::setw(8) << std::setprecision(8) <<  " " << -forwrev*resultMatrix[j][0]
            << "       " << resultMatrix[j][1] << " "
-           << "   (   " << resultMatrix[j][2] << endl;
+           << "   (   " << resultMatrix[j][2] << std::endl;
     }
     for (int j = 0; j <= n_points; j++) {
-      cout << setw(8) << setprecision(8) <<  " " << forwrev*resultMatrix[j][0]
+      std::cout << std::setw(8) << std::setprecision(8) <<  " " << forwrev*resultMatrix[j][0]
            << "       " << resultMatrix[j][1] << " "
-           << "   (   " << resultMatrix[j][2] << endl;
+           << "   (   " << resultMatrix[j][2] << std::endl;
     }
-    cout << endl ; }
+    std::cout << std::endl ; }
    if (output_format==1) {
-     cout << endl;
+     std::cout << std::endl;
     for (int j = 0; j <= n_points; j++) {
-      cout << setw(8) << setprecision(8) << resultMatrix[j][1] << "," ;
+      std::cout << std::setw(8) << std::setprecision(8) << resultMatrix[j][1] << "," ;
 	}
-    cout << endl << endl; }
+    std::cout << std::endl << std::endl; }
 //
  return resultMatrix;
 }
@@ -885,13 +885,13 @@ DMatrix sym_scan_rap_y(int n_points, int forwrev, int output_format){
 
 DMatrix asym_scan_rap_y(int n_points, int forwrev, int output_format){
   double ymax = log(E_CM/Q) * n_points/(n_points+2.);  
- cout << endl
+ std::cout << std::endl
       << "-------------------------------------------------------------" 
-      << endl; 
- cout << "Performing rapidity scan - asymmetric case (-ymax < y < ymax)" 
-      << endl; 
- cout << "-------------------------------------------------------------"
-      << endl; 
+      << std::endl; 
+ std::cout << "Performing rapidity scan - asymmetric case (-ymax < y < ymax)" 
+      << std::endl; 
+ std::cout << "-------------------------------------------------------------"
+      << std::endl; 
   double step_size = 2.*ymax/n_points;
   DMatrix resultMatrix(0,n_points,0,2);  // matrix to store unnorm. results
   for (int j = 0; j <= n_points; j++) {
@@ -902,29 +902,29 @@ DMatrix asym_scan_rap_y(int n_points, int forwrev, int output_format){
   }
    if (output_format==0) {
 // print results for topdraw:
-   cout << endl
-        << "   y               |    d^2sigma/dM/dy   |   (  error   " << endl;
-   cout << "------------------------------------------------------- " << endl;
+   std::cout << std::endl
+        << "   y               |    d^2sigma/dM/dy   |   (  error   " << std::endl;
+   std::cout << "------------------------------------------------------- " << std::endl;
    if (forwrev==1) {
      for (int j = 0; j <= n_points; j++) {
-       cout << setw(8) << setprecision(8) <<  " " << resultMatrix[j][0]
+       std::cout << std::setw(8) << std::setprecision(8) <<  " " << resultMatrix[j][0]
             << "       " << resultMatrix[j][1] << " "
-            << "   (   " << resultMatrix[j][2] << endl;
+            << "   (   " << resultMatrix[j][2] << std::endl;
      }
    }
    if (forwrev==-1) {
      for (int j = n_points; j >=0; j--) {
-       cout << setw(8) << setprecision(8) <<  " " << resultMatrix[j][0]
+       std::cout << std::setw(8) << std::setprecision(8) <<  " " << resultMatrix[j][0]
             << "       " << resultMatrix[j][1] << " "
-            << "   (   " << resultMatrix[j][2] << endl;
+            << "   (   " << resultMatrix[j][2] << std::endl;
      }
    }
-   cout << endl ; }
+   std::cout << std::endl ; }
    if (output_format==1) {
      for (int j = 0; j <= n_points; j++) {
-       cout << setw(8) << setprecision(8) << resultMatrix[j][1] << "," ;
+       std::cout << std::setw(8) << std::setprecision(8) << resultMatrix[j][1] << "," ;
 	}
-    cout << endl << endl; }
+    std::cout << std::endl << std::endl; }
 //
  return resultMatrix;
 }
@@ -938,16 +938,16 @@ DMatrix asym_scan_rap_y(int n_points, int forwrev, int output_format){
 
 void sym_scan_all(pdf_type pdftype, int n_points, double mu1, double mu2){
  double ymax = log(E_CM/Q) * n_points/(n_points+1.);  
- cout << endl
-      << "-----------------------------------------------------------" << endl;
- cout << "LO, NLO, NNLO rapidity scan - symmetric case (0 < y < ymax)" << endl;
- cout << "-----------------------------------------------------------" << endl;
- cout << " ymax =  " << ymax
-      << ";    number of rapidity steps =  " << n_points << endl << endl; 
- cout << " muF_lower = muR_lower = " << mu1 << " * Q " << endl;
- cout << " muF_upper = muR_upper = " << mu2 << " * Q " << endl << endl;
- cout << " pdf type = " << pdftype << " (2 = mrst, 3 = alekhin) " 
-      << endl << endl;
+ std::cout << std::endl
+      << "-----------------------------------------------------------" << std::endl;
+ std::cout << "LO, NLO, NNLO rapidity scan - symmetric case (0 < y < ymax)" << std::endl;
+ std::cout << "-----------------------------------------------------------" << std::endl;
+ std::cout << " ymax =  " << ymax
+      << ";    number of rapidity steps =  " << n_points << std::endl << std::endl; 
+ std::cout << " muF_lower = muR_lower = " << mu1 << " * Q " << std::endl;
+ std::cout << " muF_upper = muR_upper = " << mu2 << " * Q " << std::endl << std::endl;
+ std::cout << " pdf type = " << pdftype << " (2 = mrst, 3 = alekhin) " 
+      << std::endl << std::endl;
   double step_size = ymax/n_points; 
   f_NNLO_only = 1;   compute_all();
 //
@@ -1020,83 +1020,83 @@ void sym_scan_all(pdf_type pdftype, int n_points, double mu1, double mu2){
 //
 // print results: 
 // print LO:
-  cout << endl << "set color blue" << endl << endl;
-   cout << "title 0.05 10.5 data 'LO' SIZE 2.5" << endl << endl;
-   cout << "( mu/Q = " << mu2 << endl;
+  std::cout << std::endl << "set color blue" << std::endl << std::endl;
+   std::cout << "title 0.05 10.5 data 'LO' SIZE 2.5" << std::endl << std::endl;
+   std::cout << "( mu/Q = " << mu2 << std::endl;
    for (int j = n_points; j > 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << -LO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << -LO2Matrix[j][0]
             << "       " << LO2Matrix[j][1] << " "
-            << "   (   " << LO2Matrix[j][2] << endl;
+            << "   (   " << LO2Matrix[j][2] << std::endl;
    }
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << LO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << LO2Matrix[j][0]
             << "       " << LO2Matrix[j][1] << " "
-            << "   (   " << LO2Matrix[j][2] << endl;
+            << "   (   " << LO2Matrix[j][2] << std::endl;
    }
-   cout << "( mu/Q = " << mu1 << endl;
+   std::cout << "( mu/Q = " << mu1 << std::endl;
    for (int j = n_points; j > 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << LO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << LO1Matrix[j][0]
             << "       " << LO1Matrix[j][1] << " "
-            << "   (   " << LO1Matrix[j][2] << endl;
+            << "   (   " << LO1Matrix[j][2] << std::endl;
    }
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << -LO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << -LO1Matrix[j][0]
             << "       " << LO1Matrix[j][1] << " "
-            << "   (   " << LO1Matrix[j][2] << endl;
+            << "   (   " << LO1Matrix[j][2] << std::endl;
    }
-   cout << "join fill" << endl;
+   std::cout << "join fill" << std::endl;
 // print NLO:
-  cout << endl << "set color green" << endl << endl;
-   cout << "title 0.05 20.5 data 'NLO' SIZE 2.5" << endl << endl;
-   cout << "( mu/Q = " << mu2 << endl;
+  std::cout << std::endl << "set color green" << std::endl << std::endl;
+   std::cout << "title 0.05 20.5 data 'NLO' SIZE 2.5" << std::endl << std::endl;
+   std::cout << "( mu/Q = " << mu2 << std::endl;
    for (int j = n_points; j > 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << -NLO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << -NLO2Matrix[j][0]
             << "       " << NLO2Matrix[j][1] << " "
-            << "   (   " << NLO2Matrix[j][2] << endl;
+            << "   (   " << NLO2Matrix[j][2] << std::endl;
    }
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << NLO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NLO2Matrix[j][0]
             << "       " << NLO2Matrix[j][1] << " "
-            << "   (   " << NLO2Matrix[j][2] << endl;
+            << "   (   " << NLO2Matrix[j][2] << std::endl;
    }
-   cout << "( mu/Q = " << mu1 << endl;
+   std::cout << "( mu/Q = " << mu1 << std::endl;
    for (int j = n_points; j > 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << NLO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NLO1Matrix[j][0]
             << "       " << NLO1Matrix[j][1] << " "
-            << "   (   " << NLO1Matrix[j][2] << endl;
+            << "   (   " << NLO1Matrix[j][2] << std::endl;
    }
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << -NLO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << -NLO1Matrix[j][0]
             << "       " << NLO1Matrix[j][1] << " "
-            << "   (   " << NLO1Matrix[j][2] << endl;
+            << "   (   " << NLO1Matrix[j][2] << std::endl;
    }
-   cout << "join fill" << endl;
+   std::cout << "join fill" << std::endl;
 // print NNLO:
-  cout << endl << "set color red" << endl << endl;
-   cout << "title 0.05 25.5 data 'NNLO' SIZE 2.5" << endl << endl;
-   cout << "( mu/Q = " << mu2 << endl;
+  std::cout << std::endl << "set color red" << std::endl << std::endl;
+   std::cout << "title 0.05 25.5 data 'NNLO' SIZE 2.5" << std::endl << std::endl;
+   std::cout << "( mu/Q = " << mu2 << std::endl;
    for (int j = n_points; j > 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << -NNLO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << -NNLO2Matrix[j][0]
             << "       " << NNLO2Matrix[j][1] << " "
-            << "   (   " << NNLO2Matrix[j][2] << endl;
+            << "   (   " << NNLO2Matrix[j][2] << std::endl;
    }
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << NNLO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NNLO2Matrix[j][0]
             << "       " << NNLO2Matrix[j][1] << " "
-            << "   (   " << NNLO2Matrix[j][2] << endl;
+            << "   (   " << NNLO2Matrix[j][2] << std::endl;
    }
-   cout << "( mu/Q = " << mu1 << endl;
+   std::cout << "( mu/Q = " << mu1 << std::endl;
    for (int j = n_points; j > 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << NNLO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NNLO1Matrix[j][0]
             << "       " << NNLO1Matrix[j][1] << " "
-            << "   (   " << NNLO1Matrix[j][2] << endl;
+            << "   (   " << NNLO1Matrix[j][2] << std::endl;
    }
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << -NNLO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << -NNLO1Matrix[j][0]
             << "       " << NNLO1Matrix[j][1] << " "
-            << "   (   " << NNLO1Matrix[j][2] << endl;
+            << "   (   " << NNLO1Matrix[j][2] << std::endl;
    }
-   cout << "join fill" << endl;
+   std::cout << "join fill" << std::endl;
 }
 
 // Same as "sym_scan_all", but does W+/W- ratio,
@@ -1112,16 +1112,16 @@ void Wpm_ratio_scan_all(pdf_type pdftype, int n_points, double mu1, double mu2){
  double temp_ratio, temp_err;
  Q = m_W;  // assumes we are on-shell...
  f_quiet = 1;  // turn off most output
- cout << endl
-      << "-----------------------------------------------------------" << endl;
- cout << "LO, NLO, NNLO W+/W- rap. scan - sym. case (0 < y < ymax)" << endl;
- cout << "-----------------------------------------------------------" << endl;
- cout << " ymax =  " << ymax
-      << ";    number of rapidity steps =  " << n_points << endl << endl; 
- cout << " muF_lower = muR_lower = " << mu1 << " * Q " << endl;
- cout << " muF_upper = muR_upper = " << mu2 << " * Q " << endl << endl;
- cout << " pdf type = " << pdftype << " (2 = mrst, 3 = alekhin) " 
-      << endl << endl;
+ std::cout << std::endl
+      << "-----------------------------------------------------------" << std::endl;
+ std::cout << "LO, NLO, NNLO W+/W- rap. scan - sym. case (0 < y < ymax)" << std::endl;
+ std::cout << "-----------------------------------------------------------" << std::endl;
+ std::cout << " ymax =  " << ymax
+      << ";    number of rapidity steps =  " << n_points << std::endl << std::endl; 
+ std::cout << " muF_lower = muR_lower = " << mu1 << " * Q " << std::endl;
+ std::cout << " muF_upper = muR_upper = " << mu2 << " * Q " << std::endl << std::endl;
+ std::cout << " pdf type = " << pdftype << " (2 = mrst, 3 = alekhin) " 
+      << std::endl << std::endl;
   double step_size = ymax/n_points; 
   f_NNLO_only = 1;   compute_all();
 //
@@ -1164,31 +1164,31 @@ void Wpm_ratio_scan_all(pdf_type pdftype, int n_points, double mu1, double mu2){
      LO2Matrix.fillRow(j,3,y,temp_ratio,temp_err);
    }
 // print LO:
-  cout << endl << "set color blue" << endl << endl;
-   cout << "title 0.05 10.5 data 'LO' SIZE 2.5" << endl << endl;
-   cout << "( mu/Q = " << mu2 << endl;
+  std::cout << std::endl << "set color blue" << std::endl << std::endl;
+   std::cout << "title 0.05 10.5 data 'LO' SIZE 2.5" << std::endl << std::endl;
+   std::cout << "( mu/Q = " << mu2 << std::endl;
    for (int j = n_points; j > 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << -LO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << -LO2Matrix[j][0]
             << "       " << LO2Matrix[j][1] << " "
-            << "   (   " << LO2Matrix[j][2] << endl;
+            << "   (   " << LO2Matrix[j][2] << std::endl;
    }
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << LO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << LO2Matrix[j][0]
             << "       " << LO2Matrix[j][1] << " "
-            << "   (   " << LO2Matrix[j][2] << endl;
+            << "   (   " << LO2Matrix[j][2] << std::endl;
    }
-   cout << "( mu/Q = " << mu1 << endl;
+   std::cout << "( mu/Q = " << mu1 << std::endl;
    for (int j = n_points; j > 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << LO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << LO1Matrix[j][0]
             << "       " << LO1Matrix[j][1] << " "
-            << "   (   " << LO1Matrix[j][2] << endl;
+            << "   (   " << LO1Matrix[j][2] << std::endl;
    }
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << -LO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << -LO1Matrix[j][0]
             << "       " << LO1Matrix[j][1] << " "
-            << "   (   " << LO1Matrix[j][2] << endl;
+            << "   (   " << LO1Matrix[j][2] << std::endl;
    }
-   cout << "join fill" << endl;
+   std::cout << "join fill" << std::endl;
 // Next do both NLO curves:
   order_flag = 1;  
   if (pdftype==mrst) { alpha_s_Z = 0.119; 
@@ -1227,31 +1227,31 @@ void Wpm_ratio_scan_all(pdf_type pdftype, int n_points, double mu1, double mu2){
      NLO2Matrix.fillRow(j,3,y,temp_ratio,temp_err);
    }
 // print NLO:
-  cout << endl << "set color green" << endl << endl;
-   cout << "title 0.05 20.5 data 'NLO' SIZE 2.5" << endl << endl;
-   cout << "( mu/Q = " << mu2 << endl;
+  std::cout << std::endl << "set color green" << std::endl << std::endl;
+   std::cout << "title 0.05 20.5 data 'NLO' SIZE 2.5" << std::endl << std::endl;
+   std::cout << "( mu/Q = " << mu2 << std::endl;
    for (int j = n_points; j > 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << -NLO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << -NLO2Matrix[j][0]
             << "       " << NLO2Matrix[j][1] << " "
-            << "   (   " << NLO2Matrix[j][2] << endl;
+            << "   (   " << NLO2Matrix[j][2] << std::endl;
    }
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << NLO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NLO2Matrix[j][0]
             << "       " << NLO2Matrix[j][1] << " "
-            << "   (   " << NLO2Matrix[j][2] << endl;
+            << "   (   " << NLO2Matrix[j][2] << std::endl;
    }
-   cout << "( mu/Q = " << mu1 << endl;
+   std::cout << "( mu/Q = " << mu1 << std::endl;
    for (int j = n_points; j > 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << NLO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NLO1Matrix[j][0]
             << "       " << NLO1Matrix[j][1] << " "
-            << "   (   " << NLO1Matrix[j][2] << endl;
+            << "   (   " << NLO1Matrix[j][2] << std::endl;
    }
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << -NLO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << -NLO1Matrix[j][0]
             << "       " << NLO1Matrix[j][1] << " "
-            << "   (   " << NLO1Matrix[j][2] << endl;
+            << "   (   " << NLO1Matrix[j][2] << std::endl;
    }
-   cout << "join fill" << endl;
+   std::cout << "join fill" << std::endl;
 // Finally do both NNLO curves:
   order_flag = 2;  
   if (pdftype==mrst) { alpha_s_Z = 0.1155;  
@@ -1291,31 +1291,31 @@ alpha_s_Z = Alekhin_alpha_s(m_Z);
    }
 //
 // print NNLO:
-  cout << endl << "set color red" << endl << endl;
-   cout << "title 0.05 25.5 data 'NNLO' SIZE 2.5" << endl << endl;
-   cout << "( mu/Q = " << mu2 << endl;
+  std::cout << std::endl << "set color red" << std::endl << std::endl;
+   std::cout << "title 0.05 25.5 data 'NNLO' SIZE 2.5" << std::endl << std::endl;
+   std::cout << "( mu/Q = " << mu2 << std::endl;
    for (int j = n_points; j > 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << -NNLO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << -NNLO2Matrix[j][0]
             << "       " << NNLO2Matrix[j][1] << " "
-            << "   (   " << NNLO2Matrix[j][2] << endl;
+            << "   (   " << NNLO2Matrix[j][2] << std::endl;
    }
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << NNLO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NNLO2Matrix[j][0]
             << "       " << NNLO2Matrix[j][1] << " "
-            << "   (   " << NNLO2Matrix[j][2] << endl;
+            << "   (   " << NNLO2Matrix[j][2] << std::endl;
    }
-   cout << "( mu/Q = " << mu1 << endl;
+   std::cout << "( mu/Q = " << mu1 << std::endl;
    for (int j = n_points; j > 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << NNLO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NNLO1Matrix[j][0]
             << "       " << NNLO1Matrix[j][1] << " "
-            << "   (   " << NNLO1Matrix[j][2] << endl;
+            << "   (   " << NNLO1Matrix[j][2] << std::endl;
    }
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << -NNLO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << -NNLO1Matrix[j][0]
             << "       " << NNLO1Matrix[j][1] << " "
-            << "   (   " << NNLO1Matrix[j][2] << endl;
+            << "   (   " << NNLO1Matrix[j][2] << std::endl;
    }
-   cout << "join fill" << endl;
+   std::cout << "join fill" << std::endl;
 }
 
 // Same as "sym_scan_all", but handles case of an asymmetric 
@@ -1324,16 +1324,16 @@ alpha_s_Z = Alekhin_alpha_s(m_Z);
 
 void asym_scan_all(pdf_type pdftype, int n_points, double mu1, double mu2){
  double ymax = log(E_CM/Q) * n_points/(n_points+2.);  
- cout << endl
-      << "-----------------------------------------------------------" << endl;
- cout << "LO, NLO, NNLO rapidity scan - asymmetric case (|y| < ymax)" << endl;
- cout << "-----------------------------------------------------------" << endl;
- cout << " ymax =  " << ymax
-      << ";    number of rapidity steps =  " << n_points << endl << endl; 
- cout << " muF_lower = muR_lower = " << mu1 << " * Q " << endl;
- cout << " muF_upper = muR_upper = " << mu2 << " * Q " << endl << endl;
- cout << " pdf type = " << pdftype << " (2 = mrst, 3 = alekhin) " 
-      << endl << endl;
+ std::cout << std::endl
+      << "-----------------------------------------------------------" << std::endl;
+ std::cout << "LO, NLO, NNLO rapidity scan - asymmetric case (|y| < ymax)" << std::endl;
+ std::cout << "-----------------------------------------------------------" << std::endl;
+ std::cout << " ymax =  " << ymax
+      << ";    number of rapidity steps =  " << n_points << std::endl << std::endl; 
+ std::cout << " muF_lower = muR_lower = " << mu1 << " * Q " << std::endl;
+ std::cout << " muF_upper = muR_upper = " << mu2 << " * Q " << std::endl << std::endl;
+ std::cout << " pdf type = " << pdftype << " (2 = mrst, 3 = alekhin) " 
+      << std::endl << std::endl;
   double step_size = 2.*ymax/n_points; 
   f_NNLO_only = 1;   compute_all();
 //
@@ -1403,53 +1403,53 @@ void asym_scan_all(pdf_type pdftype, int n_points, double mu1, double mu2){
 //
 // print results: 
 // print LO:
-  cout << endl << "set color blue" << endl << endl;
-   cout << "title 0.05 10.5 data 'LO' SIZE 2.5" << endl << endl;
-   cout << "( mu/Q = " << mu2 << endl;
+  std::cout << std::endl << "set color blue" << std::endl << std::endl;
+   std::cout << "title 0.05 10.5 data 'LO' SIZE 2.5" << std::endl << std::endl;
+   std::cout << "( mu/Q = " << mu2 << std::endl;
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << LO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << LO2Matrix[j][0]
             << "       " << LO2Matrix[j][1] << " "
-            << "   (   " << LO2Matrix[j][2] << endl;
+            << "   (   " << LO2Matrix[j][2] << std::endl;
    }
-   cout << "( mu/Q = " << mu1 << endl;
+   std::cout << "( mu/Q = " << mu1 << std::endl;
    for (int j = n_points; j >=0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << LO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << LO1Matrix[j][0]
             << "       " << LO1Matrix[j][1] << " "
-            << "   (   " << LO1Matrix[j][2] << endl;
+            << "   (   " << LO1Matrix[j][2] << std::endl;
    }
-   cout << "join fill" << endl;
+   std::cout << "join fill" << std::endl;
 // print NLO:
-  cout << endl << "set color green" << endl << endl;
-   cout << "title 0.05 20.5 data 'NLO' SIZE 2.5" << endl << endl;
-   cout << "( mu/Q = " << mu2 << endl;
+  std::cout << std::endl << "set color green" << std::endl << std::endl;
+   std::cout << "title 0.05 20.5 data 'NLO' SIZE 2.5" << std::endl << std::endl;
+   std::cout << "( mu/Q = " << mu2 << std::endl;
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << NLO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NLO2Matrix[j][0]
             << "       " << NLO2Matrix[j][1] << " "
-            << "   (   " << NLO2Matrix[j][2] << endl;
+            << "   (   " << NLO2Matrix[j][2] << std::endl;
    }
-   cout << "( mu/Q = " << mu1 << endl;
+   std::cout << "( mu/Q = " << mu1 << std::endl;
    for (int j = n_points; j >= 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << NLO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NLO1Matrix[j][0]
             << "       " << NLO1Matrix[j][1] << " "
-            << "   (   " << NLO1Matrix[j][2] << endl;
+            << "   (   " << NLO1Matrix[j][2] << std::endl;
    }
-   cout << "join fill" << endl;
+   std::cout << "join fill" << std::endl;
 // print NNLO:
-  cout << endl << "set color red" << endl << endl;
-   cout << "title 0.05 25.5 data 'NNLO' SIZE 2.5" << endl << endl;
-   cout << "( mu/Q = " << mu2 << endl;
+  std::cout << std::endl << "set color red" << std::endl << std::endl;
+   std::cout << "title 0.05 25.5 data 'NNLO' SIZE 2.5" << std::endl << std::endl;
+   std::cout << "( mu/Q = " << mu2 << std::endl;
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << NNLO2Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NNLO2Matrix[j][0]
             << "       " << NNLO2Matrix[j][1] << " "
-            << "   (   " << NNLO2Matrix[j][2] << endl;
+            << "   (   " << NNLO2Matrix[j][2] << std::endl;
    }
-   cout << "( mu/Q = " << mu1 << endl;
+   std::cout << "( mu/Q = " << mu1 << std::endl;
    for (int j = n_points; j >= 0; j--) {
-     cout << setw(8) << setprecision(8) <<  " " << NNLO1Matrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NNLO1Matrix[j][0]
             << "       " << NNLO1Matrix[j][1] << " "
-            << "   (   " << NNLO1Matrix[j][2] << endl;
+            << "   (   " << NNLO1Matrix[j][2] << std::endl;
    }
-   cout << "join fill" << endl;
+   std::cout << "join fill" << std::endl;
 }
 
 // =========== SCAN IN REN/FACT. SCALES mu ============================
@@ -1462,14 +1462,14 @@ void asym_scan_all(pdf_type pdftype, int n_points, double mu1, double mu2){
 
 void scan_mu(double yy, double mu_r_lower, double mu_r_upper,
                 int n_points){
- cout << endl
+ std::cout << std::endl
       << "-------------------------------------------------------------" 
-      << endl; 
- cout << "Performing mu scan from " << mu_r_lower << " to " 
+      << std::endl; 
+ std::cout << "Performing mu scan from " << mu_r_lower << " to " 
       << mu_r_upper << " in " << n_points 
-      << " steps;  at rapidity y = " << yy << endl; 
- cout << "-------------------------------------------------------------"
-      << endl; 
+      << " steps;  at rapidity y = " << yy << std::endl; 
+ std::cout << "-------------------------------------------------------------"
+      << std::endl; 
   y = yy;
   double n_points_real = n_points;
   double step_size = log(mu_r_upper/mu_r_lower)/n_points_real;
@@ -1501,33 +1501,33 @@ void scan_mu(double yy, double mu_r_lower, double mu_r_upper,
   }
 // print results: 
 // print LO:
-  cout << endl << "set color blue" << endl << endl;
-   cout << "title 0.05 10.5 data 'LO' SIZE 2.5" << endl << endl;
+  std::cout << std::endl << "set color blue" << std::endl << std::endl;
+   std::cout << "title 0.05 10.5 data 'LO' SIZE 2.5" << std::endl << std::endl;
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << LOMatrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << LOMatrix[j][0]
             << "       " << LOMatrix[j][1] << " "
-            << "   (   " << LOMatrix[j][2] << endl;
+            << "   (   " << LOMatrix[j][2] << std::endl;
    }
-   cout << "join" << endl;
+   std::cout << "join" << std::endl;
 // print NLO:
-  cout << endl << "set color green" << endl << endl;
-   cout << "title 0.05 20.5 data 'NLO' SIZE 2.5" << endl << endl;
+  std::cout << std::endl << "set color green" << std::endl << std::endl;
+   std::cout << "title 0.05 20.5 data 'NLO' SIZE 2.5" << std::endl << std::endl;
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << NLOMatrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NLOMatrix[j][0]
             << "       " << NLOMatrix[j][1] << " "
-            << "   (   " << NLOMatrix[j][2] << endl;
+            << "   (   " << NLOMatrix[j][2] << std::endl;
    }
-   cout << "join" << endl;
+   std::cout << "join" << std::endl;
 // print NNLO:
-  cout << endl << "set color red" << endl << endl;
-   cout << "title 0.05 25.5 data 'NNLO' SIZE 2.5" << endl << endl;
+  std::cout << std::endl << "set color red" << std::endl << std::endl;
+   std::cout << "title 0.05 25.5 data 'NNLO' SIZE 2.5" << std::endl << std::endl;
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << NNLOMatrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NNLOMatrix[j][0]
             << "       " << NNLOMatrix[j][1] << " "
-            << "   (   " << NNLOMatrix[j][2] << endl;
+            << "   (   " << NNLOMatrix[j][2] << std::endl;
    }
-   cout << "join" << endl;
-   cout << endl ;
+   std::cout << "join" << std::endl;
+   std::cout << std::endl ;
 }
 
 // Same as "scan mu", but does the W+/W- ratio.
@@ -1538,14 +1538,14 @@ void Wpm_ratio_scan_mu(double yy, double mu_r_lower, double mu_r_upper,
  double temp_ratio, temp_err;
  Q = m_W;  // assumes we are on-shell...
  f_quiet = 1;  // turn off most output
- cout << endl
+ std::cout << std::endl
       << "-------------------------------------------------------------" 
-      << endl; 
- cout << "Performing W+/W- ratio mu scan from " << mu_r_lower << " to " 
+      << std::endl; 
+ std::cout << "Performing W+/W- ratio mu scan from " << mu_r_lower << " to " 
       << mu_r_upper << " in " << n_points 
-      << " steps;  at rapidity y = " << yy << endl; 
- cout << "-------------------------------------------------------------"
-      << endl; 
+      << " steps;  at rapidity y = " << yy << std::endl; 
+ std::cout << "-------------------------------------------------------------"
+      << std::endl; 
   y = yy;
   double n_points_real = n_points;
   double step_size = log(mu_r_upper/mu_r_lower)/n_points_real;
@@ -1556,7 +1556,7 @@ void Wpm_ratio_scan_mu(double yy, double mu_r_lower, double mu_r_upper,
   DMatrix NNLOMatrix(0,n_points,0,2);  
   f_NNLO_only = 1;   compute_all();
   for (int j = 0; j <= n_points; j++) {
-     cout << "Now working on point " << j << " of " << n_points << endl; 
+     std::cout << "Now working on point " << j << " of " << n_points << std::endl; 
      muR = Q * mu_r_lower * exp(step_size * j);
      muF = Q;
      X = muR/Q;
@@ -1602,33 +1602,33 @@ void Wpm_ratio_scan_mu(double yy, double mu_r_lower, double mu_r_upper,
   }
 // print results: 
 // print LO:
-  cout << endl << "set color blue" << endl << endl;
-   cout << "title 0.5 1.1 data 'LO' SIZE 2.5" << endl << endl;
+  std::cout << std::endl << "set color blue" << std::endl << std::endl;
+   std::cout << "title 0.5 1.1 data 'LO' SIZE 2.5" << std::endl << std::endl;
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << LOMatrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << LOMatrix[j][0]
             << "       " << LOMatrix[j][1] << " "
-            << "   (   " << LOMatrix[j][2] << endl;
+            << "   (   " << LOMatrix[j][2] << std::endl;
    }
-   cout << "join" << endl;
+   std::cout << "join" << std::endl;
 // print NLO:
-  cout << endl << "set color green" << endl << endl;
-   cout << "title 0.5 1.2 data 'NLO' SIZE 2.5" << endl << endl;
+  std::cout << std::endl << "set color green" << std::endl << std::endl;
+   std::cout << "title 0.5 1.2 data 'NLO' SIZE 2.5" << std::endl << std::endl;
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << NLOMatrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NLOMatrix[j][0]
             << "       " << NLOMatrix[j][1] << " "
-            << "   (   " << NLOMatrix[j][2] << endl;
+            << "   (   " << NLOMatrix[j][2] << std::endl;
    }
-   cout << "join" << endl;
+   std::cout << "join" << std::endl;
 // print NNLO:
-  cout << endl << "set color red" << endl << endl;
-   cout << "title 0.5 1.3 data 'NNLO' SIZE 2.5" << endl << endl;
+  std::cout << std::endl << "set color red" << std::endl << std::endl;
+   std::cout << "title 0.5 1.3 data 'NNLO' SIZE 2.5" << std::endl << std::endl;
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << NNLOMatrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << NNLOMatrix[j][0]
             << "       " << NNLOMatrix[j][1] << " "
-            << "   (   " << NNLOMatrix[j][2] << endl;
+            << "   (   " << NNLOMatrix[j][2] << std::endl;
    }
-   cout << "join" << endl;
-   cout << endl ;
+   std::cout << "join" << std::endl;
+   std::cout << std::endl ;
 }
 
 // Like "scan_mu" above, but for the total cross section, computed
@@ -1648,15 +1648,15 @@ DMatrix scan_mu_tot(double mu_r_lower, double mu_r_upper,
    }
 
    // print absolute results again, in form convenient for copying: 
-   cout << "   (muF=muR)/Q    |    dsigma/dM  |   (  error   " << endl;
-   cout << "------------------------------------------------------- " << endl;
+   std::cout << "   (muF=muR)/Q    |    dsigma/dM  |   (  error   " << std::endl;
+   std::cout << "------------------------------------------------------- " << std::endl;
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << resultMatrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << resultMatrix[j][0]
             << "       " << resultMatrix[j][1] << " "
             << "   (   " << resultMatrix[j][2]   // include errors
-            << endl;
+            << std::endl;
    }
-   cout << endl ;
+   std::cout << std::endl ;
 //
  return resultMatrix;
 }
@@ -1679,16 +1679,16 @@ void int_M_sym_scan_y(exchange exch, double M_lower, double M_upper,
  double u_l, u_u, u, temp_prefactor, tempres, temperr;
  double Gamma_Z = 2.4952;
  double ymax = log(E_CM/Q) * n_points/(n_points+1.);  
- cout << endl
-      << "--------------------------------------------------------" << endl; 
- cout << "Performing M-integration rapidity scan - "
-      << "symmetric case (0 < y < ymax)" << endl; 
- cout << "--------------------------------------------------------" << endl; 
- cout << " M_lower =  " << M_lower << ";  M_upper =  " << M_upper 
+ std::cout << std::endl
+      << "--------------------------------------------------------" << std::endl; 
+ std::cout << "Performing M-integration rapidity scan - "
+      << "symmetric case (0 < y < ymax)" << std::endl; 
+ std::cout << "--------------------------------------------------------" << std::endl; 
+ std::cout << " M_lower =  " << M_lower << ";  M_upper =  " << M_upper 
       << ";    number of mass steps (must be even!) =  " 
-      << m_points << endl << endl;
- cout << " ymax =  " << ymax
-      << ";    number of rapidity steps =  " << n_points << endl << endl; 
+      << m_points << std::endl << std::endl;
+ std::cout << " ymax =  " << ymax
+      << ";    number of rapidity steps =  " << n_points << std::endl << std::endl; 
  setV(exch,M_lower,alphat,Nf,0);
  f_quiet = 1;
  double step_size = ymax/n_points;
@@ -1741,16 +1741,16 @@ void int_M_sym_scan_y(exchange exch, double M_lower, double M_upper,
       }
  }
 // print results: 
-   cout << endl
-        << "   y               |    d^2sigma/dM/dy   |   (  error   " << endl;
-   cout << "------------------------------------------------------- " << endl;
+   std::cout << std::endl
+        << "   y               |    d^2sigma/dM/dy   |   (  error   " << std::endl;
+   std::cout << "------------------------------------------------------- " << std::endl;
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << resultMatrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << resultMatrix[j][0]
             << "       " << resultMatrix[j][1] << " "
             << "   (   " << resultMatrix[j][2]   // include errors
-            << endl;
+            << std::endl;
    }
-   cout << endl ;
+   std::cout << std::endl ;
 }
 
 // Routine computes \int_Ml^Mu dM * d sigma/dM/dy, plus errors:
@@ -1762,33 +1762,33 @@ DVector rap_y_M(){
   DVector result(0,1);   
   DVector i_Born(0,2);   DVector i_NLO(0,2);  DVector i_NNLO(0,2);
   if (f_quiet==0) {
-    cout << setw(9) << setprecision(9) << " working on    y =  " << y << endl; 
+    std::cout << std::setw(9) << std::setprecision(9) << " working on    y =  " << y << std::endl; 
   } 
 // LO case
   if (order_flag == 0) { 
-    if (abs(Born_integrand_M(0.2,20.)) < 1.0e-16){
-      cout << "   Setting Born terms to 0, since f_qqbar = 0  " << endl;
+    if (std::fabs(Born_integrand_M(0.2,20.)) < 1.0e-16){
+      std::cout << "   Setting Born terms to 0, since f_qqbar = 0  " << std::endl;
       result.fill(2,0.,0.); 
     }
     else {
-      cout << "   Now integrating Born terms " << endl;
+      std::cout << "   Now integrating Born terms " << std::endl;
       i_Born = sqint(6,2,10000,10,30,ranseed); 
       result.fill(2,i_Born[0],i_Born[1]) ;
     }
   }
 // NLO case
   else if (order_flag == 1) {
-    if (abs(Born_integrand_M(0.2,20.)) < 1.0e-16){
-      cout << "   Setting Born terms to 0, since f_qqbar = 0  " << endl;
+    if (std::fabs(Born_integrand_M(0.2,20.)) < 1.0e-16){
+      std::cout << "   Setting Born terms to 0, since f_qqbar = 0  " << std::endl;
       i_Born.fill(3,0.,0.,0.);
     }
     else {
-      cout << "   Now integrating Born terms " << endl;
+      std::cout << "   Now integrating Born terms " << std::endl;
       i_Born = sqint(6,2,5000,10,20,ranseed); 
     }
-    if (abs(int_NLO_M(.03,.43,.93,20.)) < 1.0e-16) {
+    if (std::fabs(int_NLO_M(.03,.43,.93,20.)) < 1.0e-16) {
        if (f_quiet==0) {
-       cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << endl;
+       std::cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << std::endl;
        }
        i_NLO.fill(3,0.,0.,0.);
     }
@@ -1800,27 +1800,27 @@ DVector rap_y_M(){
 // NNLO case
   else {   //  order_flag = 2:
     if (f_NNLO_only == 1) {
-      if (abs(Born_integrand_M(0.2,20.)) < 1.0e-16){
-        cout << "   Setting Born terms to 0, since f_qqbar = 0  " << endl;
+      if (std::fabs(Born_integrand_M(0.2,20.)) < 1.0e-16){
+        std::cout << "   Setting Born terms to 0, since f_qqbar = 0  " << std::endl;
       i_Born.fill(3,0.,0.,0.);
       }
       else {
-        cout << "   Now integrating Born terms " << endl;
+        std::cout << "   Now integrating Born terms " << std::endl;
         i_Born = sqint(6,2,5000,10,20,ranseed); 
       }
       if (f_quiet==0) {
-        cout << " computing NLO integral for y = " << y << endl; 
+        std::cout << " computing NLO integral for y = " << y << std::endl; 
       }
-      if (abs(int_NLO_M(.03,.43,.93,20.)) < 1.0e-16) {
+      if (std::fabs(int_NLO_M(.03,.43,.93,20.)) < 1.0e-16) {
         if (f_quiet==0) {
-        cout <<"Setting NLO non-Born terms to 0, since integrand ~ 0 "<< endl;
+        std::cout <<"Setting NLO non-Born terms to 0, since integrand ~ 0 "<< std::endl;
         }
         i_NLO.fill(3,0.,0.,0.);
       }
       else { i_NLO = sqint(7,3,5000,10,30,ranseed); }
     }
     if (f_quiet==0) {
-    cout << " computing NNLO integral for y = " << y << endl; 
+    std::cout << " computing NNLO integral for y = " << y << std::endl; 
     }
     i_NNLO = sqint(8,3,20000,5,15,ranseed);
     if (f_NNLO_only == 0) {
@@ -1835,9 +1835,9 @@ DVector rap_y_M(){
     result.fill(2,total,total_error);
   }
   if (f_quiet==0) {
-  cout << setw(8) << setprecision(8) <<  " y = " << y 
+  std::cout << std::setw(8) << std::setprecision(8) <<  " y = " << y 
        << ";  int_ml^Mu dM d^2sigma/dM/dy =  " << result[0]
-       << "   pm  " << result[1] << endl;
+       << "   pm  " << result[1] << std::endl;
   }
   return result;
 }
@@ -1855,14 +1855,14 @@ DMatrix sym_scan_rap_y_M(exchange exch, double M_l, double M_u,
             int n_points, int forwrev){
   Ml = M_l;  Mu = M_u;   exchM = exch;
   double ymax = log(E_CM/Q) * n_points/(n_points+1.);  
- cout << endl
-      << "--------------------------------------------------------" << endl; 
- cout << "Performing rapidity scan - symmetric case (0 < y < ymax)" << endl; 
- cout << "Includes integration over M from " 
-      << Ml << "  to " << Mu << " GeV " << endl; 
- cout << "--------------------------------------------------------" << endl; 
- cout << " ymax =  " << ymax
-      << ";    number of rapidity steps =  " << n_points << endl << endl; 
+ std::cout << std::endl
+      << "--------------------------------------------------------" << std::endl; 
+ std::cout << "Performing rapidity scan - symmetric case (0 < y < ymax)" << std::endl; 
+ std::cout << "Includes integration over M from " 
+      << Ml << "  to " << Mu << " GeV " << std::endl; 
+ std::cout << "--------------------------------------------------------" << std::endl; 
+ std::cout << " ymax =  " << ymax
+      << ";    number of rapidity steps =  " << n_points << std::endl << std::endl; 
   double step_size = ymax/n_points;
   DMatrix resultMatrix(0,n_points,0,2);  // matrix to store unnorm. results
   for (int j = 0; j <= n_points; j++) {
@@ -1873,20 +1873,20 @@ DMatrix sym_scan_rap_y_M(exchange exch, double M_l, double M_u,
      resultMatrix.fillRow(j,3,y,temp_rap_y[0],temp_rap_y[1]);
    }
 // print results for topdraw:
-    cout << endl
-         << "   y       |  int_Ml^Mu dM d^2sigma/dM/dy  |  ( error   " << endl;
-    cout << "------------------------------------------------------- " << endl;
+    std::cout << std::endl
+         << "   y       |  int_Ml^Mu dM d^2sigma/dM/dy  |  ( error   " << std::endl;
+    std::cout << "------------------------------------------------------- " << std::endl;
     for (int j = n_points; j > 0; j--) {
-      cout << setw(8) << setprecision(8) <<  " " << -forwrev*resultMatrix[j][0]
+      std::cout << std::setw(8) << std::setprecision(8) <<  " " << -forwrev*resultMatrix[j][0]
            << "       " << resultMatrix[j][1] << " "
-           << "   (   " << resultMatrix[j][2] << endl;
+           << "   (   " << resultMatrix[j][2] << std::endl;
     }
     for (int j = 0; j <= n_points; j++) {
-      cout << setw(8) << setprecision(8) <<  " " << forwrev*resultMatrix[j][0]
+      std::cout << std::setw(8) << std::setprecision(8) <<  " " << forwrev*resultMatrix[j][0]
            << "       " << resultMatrix[j][1] << " "
-           << "   (   " << resultMatrix[j][2] << endl;
+           << "   (   " << resultMatrix[j][2] << std::endl;
     }
-   cout << endl ;
+   std::cout << std::endl ;
 //
  return resultMatrix;
 }
@@ -1903,14 +1903,14 @@ DMatrix asym_scan_rap_y_M(exchange exch, double M_l, double M_u,
             int n_points, int forwrev){
   Ml = M_l;  Mu = M_u;   exchM = exch;
   double ymax = log(E_CM/Q) * n_points/(n_points+2.);  
- cout << endl
-      << "--------------------------------------------------------" << endl; 
- cout << "Performing rapidity scan - asymmetric case (|y| < ymax)" << endl; 
- cout << "Includes integration over M from " 
-      << Ml << "  to " << Mu << " GeV " << endl; 
- cout << "--------------------------------------------------------" << endl; 
- cout << " ymax =  " << ymax
-      << ";    number of rapidity steps =  " << n_points << endl << endl; 
+ std::cout << std::endl
+      << "--------------------------------------------------------" << std::endl; 
+ std::cout << "Performing rapidity scan - asymmetric case (|y| < ymax)" << std::endl; 
+ std::cout << "Includes integration over M from " 
+      << Ml << "  to " << Mu << " GeV " << std::endl; 
+ std::cout << "--------------------------------------------------------" << std::endl; 
+ std::cout << " ymax =  " << ymax
+      << ";    number of rapidity steps =  " << n_points << std::endl << std::endl; 
   double step_size = 2.*ymax/n_points;
   DMatrix resultMatrix(0,n_points,0,2);  // matrix to store unnorm. results
   for (int j = 0; j <= n_points; j++) {
@@ -1920,22 +1920,22 @@ DMatrix asym_scan_rap_y_M(exchange exch, double M_l, double M_u,
      resultMatrix.fillRow(j,3,y,temp_rap_y[0],temp_rap_y[1]);
    }
 // print results for topdraw:
-    cout << endl
-         << "   y       |  int_Ml^Mu dM d^2sigma/dM/dy  |  ( error   " << endl;
-    cout << "------------------------------------------------------- " << endl;
+    std::cout << std::endl
+         << "   y       |  int_Ml^Mu dM d^2sigma/dM/dy  |  ( error   " << std::endl;
+    std::cout << "------------------------------------------------------- " << std::endl;
     if (forwrev==1) {
     for (int j = 0; j <= n_points; j++) {
-      cout << setw(8) << setprecision(8) <<  " " << resultMatrix[j][0]
+      std::cout << std::setw(8) << std::setprecision(8) <<  " " << resultMatrix[j][0]
            << "       " << resultMatrix[j][1] << " "
-           << "   (   " << resultMatrix[j][2] << endl; }
+           << "   (   " << resultMatrix[j][2] << std::endl; }
     }
     if (forwrev==-1) {
     for (int j = n_points; j >= 0; j--) {
-      cout << setw(8) << setprecision(8) <<  " " << resultMatrix[j][0]
+      std::cout << std::setw(8) << std::setprecision(8) <<  " " << resultMatrix[j][0]
            << "       " << resultMatrix[j][1] << " "
-           << "   (   " << resultMatrix[j][2] << endl; }
+           << "   (   " << resultMatrix[j][2] << std::endl; }
     }
-   cout << endl ;
+   std::cout << std::endl ;
 //
  return resultMatrix;
 }
@@ -1948,40 +1948,40 @@ DMatrix asym_scan_rap_y_M(exchange exch, double M_l, double M_u,
 
 void lumi_test(){
  double x_1, x_2, mu_temp;
- cout << "type x1"  << endl;
+ std::cout << "type x1"  << std::endl;
  cin >> x_1;
- cout << "type x2"  << endl;
+ std::cout << "type x2"  << std::endl;
  cin >> x_2;
- cout << "type mu"  << endl;
+ std::cout << "type mu"  << std::endl;
  cin >> mu_temp;
- cout << " x1 = " << x_1 << "  ;   x2 = " << x_2 
-      << "  ;   mu = " << mu_temp << endl;
- cout << setw(8) << setprecision(8) << " qqbarNS(x1,x2,mu)  =   " 
-      << qqbar_lumi(x_1,x_2,mu_temp,DY,coll) << endl;
- cout << " qqbarB2(x1,x2,mu)  =   " 
-      << qqbar_lumi(x_1,x_2,mu_temp,gluon,coll) << endl;
- cout << " qqbarBC(x1,x2,mu)  = [exactly 2 * NS for (gamma,Z) case] " 
-      << qqbar_BC_lumi(x_1,x_2,mu_temp,coll) << endl;
- cout << " qqbarABv(x1,x2,mu) not required; hard cross section vanishes  " 
-      << endl;
- cout << " qqbarABax(x1,x2,mu)  =   " 
-      << qqbar_ax_lumi(x_1,x_2,mu_temp,coll) << endl;
- cout << " qg_lumi(x1,x2,mu) = " << qg_lumi(x_1,x_2,mu_temp,coll) << endl;
- cout << " gq_lumi(x1,x2,mu) = " << gq_lumi(x_1,x_2,mu_temp,coll) << endl;
- cout << " lumiC2(x1,x2,mu)  =   " 
-      << qq_11_lumi(x_1,x_2,mu_temp,coll) << endl;
- cout << " lumiD2(x1,x2,mu)  =   " 
-      << qq_22_lumi(x_1,x_2,mu_temp,coll) << endl;
- cout << " lumiCD_V(x1,x2,mu)  =   " 
-      << qq_12_lumi(x_1,x_2,mu_temp,coll) << endl;
- cout << " lumiCD_ax(x1,x2,mu)  =   " 
-      << qq_12_ax_lumi(x_1,x_2,mu_temp,coll) << endl;
- cout << " lumiCE1(x1,x2,mu)  =   " 
-      << qq_CE1_lumi(x_1,x_2,mu_temp,coll) << endl;
- cout << " lumiCE2(x1,x2,mu)  =   " 
-      << qq_CE2_lumi(x_1,x_2,mu_temp,coll) << endl;
- cout << " lumiCF(x1,x2,mu)  = [same as CE for (gamma,Z) case] " 
-      << qq_CF_lumi(x_1,x_2,mu_temp,coll) << endl;
- cout << " gg_lumi(x1,x2,mu) = " << gg_lumi(x_1,x_2,mu_temp,coll) << endl;
+ std::cout << " x1 = " << x_1 << "  ;   x2 = " << x_2 
+      << "  ;   mu = " << mu_temp << std::endl;
+ std::cout << std::setw(8) << std::setprecision(8) << " qqbarNS(x1,x2,mu)  =   " 
+      << qqbar_lumi(x_1,x_2,mu_temp,DY,coll) << std::endl;
+ std::cout << " qqbarB2(x1,x2,mu)  =   " 
+      << qqbar_lumi(x_1,x_2,mu_temp,gluon,coll) << std::endl;
+ std::cout << " qqbarBC(x1,x2,mu)  = [exactly 2 * NS for (gamma,Z) case] " 
+      << qqbar_BC_lumi(x_1,x_2,mu_temp,coll) << std::endl;
+ std::cout << " qqbarABv(x1,x2,mu) not required; hard cross section vanishes  " 
+      << std::endl;
+ std::cout << " qqbarABax(x1,x2,mu)  =   " 
+      << qqbar_ax_lumi(x_1,x_2,mu_temp,coll) << std::endl;
+ std::cout << " qg_lumi(x1,x2,mu) = " << qg_lumi(x_1,x_2,mu_temp,coll) << std::endl;
+ std::cout << " gq_lumi(x1,x2,mu) = " << gq_lumi(x_1,x_2,mu_temp,coll) << std::endl;
+ std::cout << " lumiC2(x1,x2,mu)  =   " 
+      << qq_11_lumi(x_1,x_2,mu_temp,coll) << std::endl;
+ std::cout << " lumiD2(x1,x2,mu)  =   " 
+      << qq_22_lumi(x_1,x_2,mu_temp,coll) << std::endl;
+ std::cout << " lumiCD_V(x1,x2,mu)  =   " 
+      << qq_12_lumi(x_1,x_2,mu_temp,coll) << std::endl;
+ std::cout << " lumiCD_ax(x1,x2,mu)  =   " 
+      << qq_12_ax_lumi(x_1,x_2,mu_temp,coll) << std::endl;
+ std::cout << " lumiCE1(x1,x2,mu)  =   " 
+      << qq_CE1_lumi(x_1,x_2,mu_temp,coll) << std::endl;
+ std::cout << " lumiCE2(x1,x2,mu)  =   " 
+      << qq_CE2_lumi(x_1,x_2,mu_temp,coll) << std::endl;
+ std::cout << " lumiCF(x1,x2,mu)  = [same as CE for (gamma,Z) case] " 
+      << qq_CF_lumi(x_1,x_2,mu_temp,coll) << std::endl;
+ std::cout << " gg_lumi(x1,x2,mu) = " << gg_lumi(x_1,x_2,mu_temp,coll) << std::endl;
 }
 #endif

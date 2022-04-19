@@ -171,15 +171,15 @@ DVector sqint(int n_f, int n_dim, int n_call, int n_adapt, int n_run,
   surf Sfc(0);
   V.reset(n_call);
   Sfc.n = n_f;
-  cout << "adapting grid"<<endl;
+  std::cout << "adapting grid"<<std::endl;
   integral = Sfc.vegas(V,n_adapt,sd,chi2);
-  cout << setw(8) << setprecision(8) << integral 
-       << "  pm  " << sd << "  chi2 = " << chi2 << endl;
-  cout << "evaluating integral" <<endl;
+  std::cout << std::setw(8) << std::setprecision(8) << integral 
+       << "  pm  " << sd << "  chi2 = " << chi2 << std::endl;
+  std::cout << "evaluating integral" <<std::endl;
   integral = Sfc.vegasint(V,n_run,sd,chi2);
-  cout << setw(8) << setprecision(8) << integral 
-       << "  pm  " << sd << "  chi2 = " << chi2 << endl;
-  cout << endl;
+  std::cout << std::setw(8) << std::setprecision(8) << integral 
+       << "  pm  " << sd << "  chi2 = " << chi2 << std::endl;
+  std::cout << std::endl;
   temp_out.fill(3,integral,sd,chi2);
   return temp_out;
 }
@@ -192,50 +192,50 @@ DVector int_y(){
   DVector boost_int(0,2);
   double prefactor = DY_prefactor(Q,alphat);
   if (order_flag == 0) {
-    if (abs(Born_integrand(0.2)) < 1.0e-16){
-    cout << "   Setting Born terms to 0, since f_qqbar = 0  " << endl;
+    if (std::fabs(Born_integrand(0.2)) < 1.0e-16){
+    std::cout << "   Setting Born terms to 0, since f_qqbar = 0  " << std::endl;
     Born_int.fill(3,0.,0.,0.);
     }
     else {
-    cout << "   Now integrating Born terms " << endl;
+    std::cout << "   Now integrating Born terms " << std::endl;
     Born_int = sqint(1,1,1000,10,20,ranseed);
-    cout << " LO integral =  " << setw(8) << setprecision(8)
+    std::cout << " LO integral =  " << std::setw(8) << std::setprecision(8)
          << prefactor*Born_int[0] << "  pm  " << prefactor*Born_int[1]
-         <<  ";    chi^2 =  " << Born_int[2] << endl << endl;
+         <<  ";    chi^2 =  " << Born_int[2] << std::endl << std::endl;
     result.fill(2,prefactor*Born_int[0],prefactor*Born_int[1]); 
     } 
   }
   if ((order_flag == 1) || (order_flag == 2)) {
-    if (abs(Born_integrand(0.2)) < 1.0e-16){
-    cout << "   Setting Born terms to 0, since f_qqbar = 0  " << endl;
+    if (std::fabs(Born_integrand(0.2)) < 1.0e-16){
+    std::cout << "   Setting Born terms to 0, since f_qqbar = 0  " << std::endl;
     Born_int.fill(3,0.,0.,0.);
     }
     else {
-    cout << "   Now integrating Born terms " << endl;
+    std::cout << "   Now integrating Born terms " << std::endl;
     Born_int = sqint(1,1,1000,10,20,ranseed);
-    cout << " Born-type integral =  " << setw(8) << setprecision(8)
+    std::cout << " Born-type integral =  " << std::setw(8) << std::setprecision(8)
          << prefactor*Born_int[0] << "  pm  " << prefactor*Born_int[1]
-         <<  ";    chi^2 =  " << Born_int[2] << endl << endl;
+         <<  ";    chi^2 =  " << Born_int[2] << std::endl << std::endl;
     }
-    cout << "   Now integrating boost terms " << endl;
+    std::cout << "   Now integrating boost terms " << std::endl;
     boost_int = sqint(2,2,3000,10,40,ranseed);
-    cout << " boost-type integral =  " << setw(8) << setprecision(8)
+    std::cout << " boost-type integral =  " << std::setw(8) << std::setprecision(8)
          << prefactor*boost_int[0] 
          << "  pm  " << prefactor*boost_int[1]
-         <<  ";    chi^2 =  " << boost_int[2] << endl 
-         << endl;
+         <<  ";    chi^2 =  " << boost_int[2] << std::endl 
+         << std::endl;
     double total_int = prefactor * ( Born_int[0] + boost_int[0] );
     double total_int_error = prefactor * sqrt( Born_int[1]*Born_int[1] 
                             + boost_int[1]*boost_int[1] ) ;
    if (order_flag == 1) {
-     cout << " NLO integral =  " << setw(8) << setprecision(8)
+     std::cout << " NLO integral =  " << std::setw(8) << std::setprecision(8)
         << total_int << "  pm  " << total_int_error  
-        << endl << endl;
+        << std::endl << std::endl;
    }
    else {
-     cout << " NNLO integral =  " << setw(8) << setprecision(8)
+     std::cout << " NNLO integral =  " << std::setw(8) << std::setprecision(8)
         << total_int << "  pm  " << total_int_error  
-        << endl << endl;
+        << std::endl << std::endl;
    }
   result.fill(2,total_int,total_int_error);  
   }
@@ -258,15 +258,15 @@ DMatrix scan_mu(double mu_r_lower, double mu_r_upper, int n_points){
    }
 
    // print absolute results again, in form convenient for copying: 
-   cout << "   (muF=muR)/Q    |    d sigma/dM   |   (  error   " << endl;
-   cout << "------------------------------------------------------- " << endl;
+   std::cout << "   (muF=muR)/Q    |    d sigma/dM   |   (  error   " << std::endl;
+   std::cout << "------------------------------------------------------- " << std::endl;
    for (int j = 0; j <= n_points; j++) {
-     cout << setw(8) << setprecision(8) <<  " " << resultMatrix[j][0]
+     std::cout << std::setw(8) << std::setprecision(8) <<  " " << resultMatrix[j][0]
             << "       " << resultMatrix[j][1] << " "
             << "   (   " << resultMatrix[j][2]   // include errors
-            << endl;
+            << std::endl;
    }
-   cout << endl ;
+   std::cout << std::endl ;
 //
  return resultMatrix;
 }

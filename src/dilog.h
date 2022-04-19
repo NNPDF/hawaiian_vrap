@@ -14,7 +14,6 @@ const double ZETA3  =  1.2020569031595942855;
 const double ZETA4  =  1.082323233711138191516;
 const double ZETA5  =  1.036927755143369926331;
 
-double abs(double x);
 double li2(double x);
 double dilog(double x);
 double ReLi2(complex x);

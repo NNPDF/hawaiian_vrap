@@ -28,9 +28,9 @@ double qq11(double y, double z){
  u2 = u*u;   u3 = u2*u;  u4 = u2*u2;  u5 = u3*u2;  u6 = u3*u3;  u7 = u4*u3;
  up12 = (1.+u)*(1.+u);
  ln2 = log(2.);  lnz = log(z);  lnr = log(r);  lnu = log(u); 
- lnopu = log(1.+u);  lnhfopu = log((1.+u)/2.);  lnumo = log(abs(u-1.));
+ lnopu = log(1.+u);  lnhfopu = log((1.+u)/2.);  lnumo = log(std::fabs(u-1.));
  lnrpt = log(r+t);  lnrmt = log(r-t);   lnhfopz = log((1.+z)/2.); 
- lnoptr = log(1.+t*r);  lnomtr = log(1.-t*r);  lnrmo = log(abs(r-1.));  
+ lnoptr = log(1.+t*r);  lnomtr = log(1.-t*r);  lnrmo = log(std::fabs(r-1.));  
  temp = 
 // q^2 terms (mostly):
 // J's (only J21 here!):
@@ -225,20 +225,20 @@ return a*(-2/3.*lna-1/3.*(-1+y)/y*ln1my+1/3.-1/3.*lny)
 
 double qq11_full(double y, double z){
  // z = 1 patch:
- if (abs(1.-z) < 0.05){ return qq11_z1(y,z); }
+ if (std::fabs(1.-z) < 0.05){ return qq11_z1(y,z); }
   // u = 1 patch:
- if (abs(y-0.5) < 0.0001/sqrt(1.-z)){ return qq11_u1(z); }
+ if (std::fabs(y-0.5) < 0.0001/sqrt(1.-z)){ return qq11_u1(z); }
  // u = z patch:
  if (y < 0.00000001/(1.-z)){ return qq11_uz(y,z); }
  // u = 1-z patch (different from u = z):
  if (1.-y < 0.00000001/(1.-z)){ return qq11_u1mz(1.-y,z); }
  // (z = (2*u/(1+u))^2 patch (average values on either side of strip):
   double eps = 1.0e-07;
-  if (abs(y-y_sing(z)) < eps){ 
+  if (std::fabs(y-y_sing(z)) < eps){ 
     return 0.5 * ( qq11_full(y_sing(z)-2.*eps,z) 
 		 + qq11_full(y_sing(z)+2.*eps,z) );
   }
-  if (abs(y-(1.-y_sing(z))) < eps){ 
+  if (std::fabs(y-(1.-y_sing(z))) < eps){ 
     return 0.5 * ( qq11_full(1.-y_sing(z)-2.*eps,z) 
 		 + qq11_full(1.-y_sing(z)+2.*eps,z) );
   }
@@ -389,9 +389,9 @@ double qq12_full_1(double y, double z){
  z2 = z*z;  u2 = u*u;  u3 = u2*u;  u4 = u2*u2;  u5 = u3*u2;
  up12 = (1.+u)*(1.+u); 
  ln2 = log(2.);  lnz = log(z);  lnr = log(r);  lnu = log(u); 
- lnopu = log(1.+u);  lnhfopu = log((1.+u)/2.);  lnumo = log(abs(u-1.));
+ lnopu = log(1.+u);  lnhfopu = log((1.+u)/2.);  lnumo = log(std::fabs(u-1.));
  lnrpt = log(r+t);  lnrmt = log(r-t);  lnhfopz = log((1.+z)/2.); 
- lnoptr = log(1.+t*r);  lnomtr = log(1.-t*r);  lnrmo = log(abs(r-1.));  
+ lnoptr = log(1.+t*r);  lnomtr = log(1.-t*r);  lnrmo = log(std::fabs(r-1.));  
  temp = 
 // q^2 terms (mostly):
 // J's:
@@ -567,20 +567,20 @@ return 7/12.*a2+a3*(47/108.+47/108.*y2-47/108.*y)
 
 double qq12_full(double y, double z){
  // z = 1 patch:
- if (abs(1.-z) < 0.02){ return qq12_z1(y,z); }
+ if (std::fabs(1.-z) < 0.02){ return qq12_z1(y,z); }
   // u = 1 patch:
- if (abs(y-0.5) < 0.0001/sqrt(1.-z)){ return qq12_u1(z); }
+ if (std::fabs(y-0.5) < 0.0001/sqrt(1.-z)){ return qq12_u1(z); }
  // u = z patch:
  if (y < 0.00000001/(1.-z)){ return qq12_uz(y,z); }
  // u = 1-z patch:
  if (1.-y < 0.00000001/(1.-z)){ return qq12_uz(1.-y,z); }
  // (z = (2*u/(1+u))^2 patch (average values on either side of strip):
   double eps = 1.0e-07;
-  if (abs(y-y_sing(z)) < eps){ 
+  if (std::fabs(y-y_sing(z)) < eps){ 
     return 0.5 * ( qq12_full(y_sing(z)-2.*eps,z) 
 		 + qq12_full(y_sing(z)+2.*eps,z) );
   }
-  if (abs(y-(1.-y_sing(z))) < eps){ 
+  if (std::fabs(y-(1.-y_sing(z))) < eps){ 
     return 0.5 * ( qq12_full(1.-y_sing(z)-2.*eps,z) 
 		 + qq12_full(1.-y_sing(z)+2.*eps,z) );
   }
@@ -607,9 +607,9 @@ double qq_CE(double y, double z){
  z2 = z*z;  u2 = u*u;  u3 = u2*u;  u4 = u2*u2;
  up12 = (1.+u)*(1.+u); 
  ln2 = log(2.);  lnz = log(z);  lnr = log(r);  lnu = log(u); 
- lnopu = log(1.+u);  lnhfopu = log((1.+u)/2.);  lnumo = log(abs(u-1.));
+ lnopu = log(1.+u);  lnhfopu = log((1.+u)/2.);  lnumo = log(std::fabs(u-1.));
  lnrpt = log(r+t);  lnrmt = log(r-t);  lnhfopz = log((1.+z)/2.); 
- lnrmo = log(abs(r-1.));  
+ lnrmo = log(std::fabs(r-1.));  
  temp = 1./9. * z * (1-z) * (
 // q^2:
 + 2./u * ( z - (1-z)*u + u2 ) * ( 2. * (1+u)/u * J2(1.-y,z)
@@ -706,9 +706,9 @@ double qq_CE_z1(double y, double z){
 
 double qq_CE_full(double y, double z){
   // z = 1 patch:
-  if (abs(1.-z) < 0.05){ return qq_CE_z1(y,z); }
+  if (std::fabs(1.-z) < 0.05){ return qq_CE_z1(y,z); }
   // u = 1 patch:
- if (abs(y-0.5) < 0.0001){ return qq_CE_u1(z); }
+ if (std::fabs(y-0.5) < 0.0001){ return qq_CE_u1(z); }
   // u = z patch:
  if (y < 0.0000001){ return qq_CE_uz(y,z); }
  else { return qq_CE(y,z); }
@@ -807,9 +807,9 @@ double qq_CF_full_1(double y, double z){
  z2 = z*z;  u2 = u*u;  u3 = u2*u;  u4 = u2*u2;  u5 = u3*u2;
  up12 = (1.+u)*(1.+u); 
  ln2 = log(2.);  lnz = log(z);  lnr = log(r);  lnu = log(u); 
- lnopu = log(1.+u);  lnhfopu = log((1.+u)/2.);  lnumo = log(abs(u-1.));
+ lnopu = log(1.+u);  lnhfopu = log((1.+u)/2.);  lnumo = log(std::fabs(u-1.));
  lnrpt = log(r+t);  lnrmt = log(r-t);  lnhfopz = log((1.+z)/2.); 
- lnoptr = log(1.+t*r);  lnrmo = log(abs(r-1.));  
+ lnoptr = log(1.+t*r);  lnrmo = log(std::fabs(r-1.));  
  temp = 1./9. * z * (1-z) * (
 // q^2:
 + 2 * (1+u)/(1-u)/u2 * ( z2 - z*(2+z)*u + (1+z2)*u2 )
@@ -877,9 +877,9 @@ double qq_CF_z1(double y, double z){
 
 double qq_CF_full(double y, double z){
   // z = 1 patch:
-  if (abs(1.-z) < 0.05){ return qq_CF_z1(y,z); }
+  if (std::fabs(1.-z) < 0.05){ return qq_CF_z1(y,z); }
   // u = 1 patch:
- if (abs(y-0.5) < 0.0001){ return qq_CF_u1(z); }
+ if (std::fabs(y-0.5) < 0.0001){ return qq_CF_u1(z); }
  else { return qq_CF_full_1(y,z) + qq_CF_full_1(1.-y,z); }
 }
 
@@ -970,18 +970,18 @@ double qq_AB_ax_z0(double y, double z){
 
 double qq_AB_ax_full(double y, double z){
  // z = 1 patch:
- if (abs(1.-z) < 0.05){ return qq_AB_ax_z1(y,z); }
+ if (std::fabs(1.-z) < 0.05){ return qq_AB_ax_z1(y,z); }
  // u = 1 patch:
- if (abs(y-0.5) < 0.0001/sqrt(1.-z)){ return qq_AB_ax_u1(z); }
+ if (std::fabs(y-0.5) < 0.0001/sqrt(1.-z)){ return qq_AB_ax_u1(z); }
  // z = 0 patch:
- if (abs(z) < 0.000000001){ return qq_AB_ax_z0(y,z); }
+ if (std::fabs(z) < 0.000000001){ return qq_AB_ax_z0(y,z); }
  // (z = (2*u/(1+u))^2 patch (average values on either side of strip):
   double eps = 1.0e-05;
-  if ((abs(y-y_sing(z)) < eps) && (y_sing(z) > 2.*eps)){ 
+  if ((std::fabs(y-y_sing(z)) < eps) && (y_sing(z) > 2.*eps)){ 
     return 0.5 * ( qq_AB_ax_full(y_sing(z)-2.*eps,z) 
 		 + qq_AB_ax_full(y_sing(z)+2.*eps,z) );
   }
-  if ((abs(y-(1.-y_sing(z))) < eps) && (y_sing(z) > 2.*eps)){ 
+  if ((std::fabs(y-(1.-y_sing(z))) < eps) && (y_sing(z) > 2.*eps)){ 
     return 0.5 * ( qq_AB_ax_full(1.-y_sing(z)-2.*eps,z) 
 		 + qq_AB_ax_full(1.-y_sing(z)+2.*eps,z) );
   }
@@ -1007,7 +1007,7 @@ double qq_CD_ax_full_1(double y, double z){
  z2 = z*z;  u2 = u*u;  u3 = u2*u;  u4 = u2*u2;  u5 = u3*u2;
  up12 = (1.+u)*(1.+u); 
  ln2 = log(2.);  lnz = log(z);  lnr = log(r);  lnu = log(u); 
- lnopu = log(1.+u);  lnumo = log(abs(u-1.));
+ lnopu = log(1.+u);  lnumo = log(std::fabs(u-1.));
  lnrpt = log(r+t);  lnrmt = log(r-t);
  temp =  4./3. * z * ( 
 // q^2 
@@ -1061,7 +1061,7 @@ double qq_CD_ax_full_1(double y, double z){
     * ln2 * lnu
 //
 + 1./2. * (1+u)/u/(1-u) * ( 2*z - (2+z)*u )
-   * ( log(1.+t) * log((r+t)/r/(1.+t*r)) + lnr * log(abs(r-1.)/r) )
+   * ( log(1.+t) * log((r+t)/r/(1.+t*r)) + lnr * log(std::fabs(r-1.)/r) )
 - 1./4. * 1/u/(1+u)/(1-u) * ( 3*z - (10-z)*u - (8-3*z)*u2 - 3*(2-z)*u3
    + 2*z*u4 )
    * lnrpt*lnrpt
@@ -1137,16 +1137,16 @@ return 7/12.*a2+a3*(-97/108.-47/108.*y+47/108.*y2)
 
 double qq_CD_ax_full(double y, double z){
  // z = 1 patch:
- if (abs(1.-z) < 0.05){ return qq_CD_ax_z1(y,z); }
+ if (std::fabs(1.-z) < 0.05){ return qq_CD_ax_z1(y,z); }
   // u = 1 patch:
- if (abs(y-0.5) < 0.0001){ return qq_CD_ax_u1(z); }
+ if (std::fabs(y-0.5) < 0.0001){ return qq_CD_ax_u1(z); }
  // (z = (2*u/(1+u))^2 patch (average values on either side of strip):
   double eps = 1.0e-07;
-  if (abs(y-y_sing(z)) < eps){ 
+  if (std::fabs(y-y_sing(z)) < eps){ 
     return 0.5 * ( qq_CD_ax_full(y_sing(z)-2.*eps,z) 
 		 + qq_CD_ax_full(y_sing(z)+2.*eps,z) );
   }
-  if (abs(y-(1.-y_sing(z))) < eps){ 
+  if (std::fabs(y-(1.-y_sing(z))) < eps){ 
     return 0.5 * ( qq_CD_ax_full(1.-y_sing(z)-2.*eps,z) 
 		 + qq_CD_ax_full(1.-y_sing(z)+2.*eps,z) );
   }

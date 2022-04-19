@@ -116,7 +116,7 @@ void a02(double xb, double q2, double pdfs[10], double dpdfs[15][10],
 // put in your local address of the PDFs files in LOCDIR
 // or set environment variable ALEKHIN_DIR [WL]
 //
-   char *locdir = "/afs/slac.stanford.edu/u/th/lance/c/pdf/alekhin/";
+   const char *locdir = "/afs/slac.stanford.edu/u/th/lance/c/pdf/alekhin/";
 
    const char *pdford[3]   = { "1", "2", "3" };
    const char *pdfschem[2] = { "ffn", "vfn" };

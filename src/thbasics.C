@@ -16,7 +16,7 @@ int SIGN(int a, int b){return (b < 0 ? -ABS(a): ABS(a));}
 
 int INT(double a){return (int) a;}
 
-void therror(char error_text[]) {
+void therror(const char error_text[]) {
 /*        standard error handler  */
    cerr << "TH classes run-time error..." << endl ;
    cerr << "     " << error_text << endl;

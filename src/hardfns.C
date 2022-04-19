@@ -27,7 +27,7 @@ double J3(double y, double z){
  u = (z+y*(1.-z))/(1.-y*(1.-z));    t = sqrt(z);  r = sqrt(u);
  d1 = sqrt(u+4.*z*(1.+u));
  temp = 1./(1.+u) * ( - 0.25 * log(u/z)*log(u/z)
-     - 0.25 * ( - 2. * log(abs(d1-r-2*t*(1+u))/(d1-r))
+     - 0.25 * ( - 2. * log(std::fabs(d1-r-2*t*(1+u))/(d1-r))
                - 2. * log((d1+r+2*t*(1+u))/(d1+r))
                + 2. * log(1+t*r) + log(z/u) ) * log(1+u)
 // Im part comes from left 2 polylogs; just set Im part to zero:
@@ -40,12 +40,12 @@ double J3(double y, double z){
 
 double M1(double x, double xp, double xm){
  double l1,l2,l3,l4,temp;
- l1 = log(abs((x+xp)/(x-xp)));  l2 = log(abs((x+xm)/(x-xm)));
- l3 = log(abs((x+xp)/2/xp));    l4 = log(abs((x+xm)/2/xm));
+ l1 = log(std::fabs((x+xp)/(x-xp)));  l2 = log(std::fabs((x+xm)/(x-xm)));
+ l3 = log(std::fabs((x+xp)/2/xp));    l4 = log(std::fabs((x+xm)/2/xm));
  temp =  - li2((x+xp)/2./xp) + li2((x+xm)/2./xm)
          - li2(-(x-xp)/(xp-xm)) + li2((x+xp)/(xp-xm))
          + 0.25 * (l1*l1-l2*l2) - 0.5 * (l3*l3-l4*l4)
-         + 0.5 * l1 * log(abs((x+xm)*(x-xm)/(xp-xm)/(xp-xm))) ;
+         + 0.5 * l1 * log(std::fabs((x+xm)*(x-xm)/(xp-xm)/(xp-xm))) ;
  return temp;
 }
 
@@ -58,11 +58,11 @@ double I_analytic(double y, double z){
  term1 = 0.5/u * (M1(xmax,xp,xm)-M1(xmin,xp,xm));
 //
  p1 = - (2.+u) + u*r2;    p2 = r*d1;
- l1 = log(abs(-(2.+u+u*r2)/p1));
+ l1 = log(std::fabs(-(2.+u+u*r2)/p1));
  l2 = log((2.+u+p2)/(2.+u-p2));
  term2 = 0.75/u * ( 
-     l1 * log(abs(u*(u+2.)*(r2-1.)/p1/(1.+u)))
-   - log(abs(p1*(r+d1)/r/(1.+r2)/(2.+u-p2))) * log(1.+u)
+     l1 * log(std::fabs(u*(u+2.)*(r2-1.)/p1/(1.+u)))
+   - log(std::fabs(p1*(r+d1)/r/(1.+r2)/(2.+u-p2))) * log(1.+u)
    - l2 * log(r*(u+2.)*(d1-r)/(2.+u-p2)/(1.+u))
    - 1./6. * ( l1*l1 - l2*l2 )
    + li2(u*(u+2.)*(1.+r2)/p1) - li2(-r*(u+2.)*(r+d1)/(2.+u-p2))
@@ -79,10 +79,10 @@ double J27(double y, double z){
  u = (z+y*(1.-z))/(1.-y*(1.-z));   t = sqrt(z);   r = sqrt(u);
  r1 = sqrt(1.+u);   r2 = sqrt(5.+4.*u);  d1 = sqrt(u+4.*z*(1.+u));
  return - 0.5/r/d1 * ( 
-	   log(abs((r2-r1 + r1*r2-3.-2.*u)/(r2-r1 - r1*r2+3.+2.*u)))
-         + log(abs((d1-2.*t*r1+r1*r - r1*d1+2.*t+2.*t*u+r)
+	   log(std::fabs((r2-r1 + r1*r2-3.-2.*u)/(r2-r1 - r1*r2+3.+2.*u)))
+         + log(std::fabs((d1-2.*t*r1+r1*r - r1*d1+2.*t+2.*t*u+r)
 	          /(d1-2.*t*r1+r1*r + r1*d1-2.*t-2.*t*u-r)))        
-         + 3. * log(abs((r - d1+2.*t*r1)*(1. + r2-2.*r1)
+         + 3. * log(std::fabs((r - d1+2.*t*r1)*(1. + r2-2.*r1)
                        /(r + d1-2.*t*r1)/(1. - r2+2.*r1))) );
 }
 
@@ -92,7 +92,7 @@ double J2(double y, double z){
  double u,r,d1,term0,term1, term2;
  u = (z+y*(1.-z))/(1.-y*(1.-z));   r = sqrt(u);    d1 = sqrt(u+4.*z*(1.+u));
  term0 = - J3(y,z);
- term1 = - d1/r * log(abs((2.+u+r*d1)/(2.+u-r*d1))) * J27(y,z);
+ term1 = - d1/r * log(std::fabs((2.+u+r*d1)/(2.+u-r*d1))) * J27(y,z);
  term2 = I_analytic(y,z);
  return term0 + u/(1.+u) * (term1 + term2) ;
 }
@@ -158,10 +158,10 @@ double J2_u1(double z){
    + 0.5 * li2(-cp/2./tmrt8)
    - 0.75 * li2(3.*(x1+1)/(x1-3.)) 
    - 0.75 * li2(-(3.+x1)/2./(x1-3.))
-   + 0.5 * ln2 * log(abs(dm/cp)) + 0.5 * log(cp/cm) * log(tmrt8*2.*rt8)
-   - 0.5 * log(tmrt8) * log(cp) - 0.25 * log(cp/cm) * log(abs(dp*dm))
-   + 0.25 * log(abs(cp/dm)) * log(abs(cp*dm)) 
-   + 0.125 * log(abs(dm/dp*cm/cp))*log(abs(dm/dp*cp/cm))
+   + 0.5 * ln2 * log(std::fabs(dm/cp)) + 0.5 * log(cp/cm) * log(tmrt8*2.*rt8)
+   - 0.5 * log(tmrt8) * log(cp) - 0.25 * log(cp/cm) * log(std::fabs(dp*dm))
+   + 0.25 * log(std::fabs(cp/dm)) * log(std::fabs(cp*dm)) 
+   + 0.125 * log(std::fabs(dm/dp*cm/cp))*log(std::fabs(dm/dp*cp/cm))
    + 0.125 * log((3.+x1)/(3.-x1)) * log((3.+x1)/(3.-x1)) 
    - 0.75 * ln2 * log(4./3.*(x1+1.)/(3.-x1))
    - 0.75 * log((3.+x1)/(3.-x1)) * log(3./2.*(x1-1.)/(3.-x1))

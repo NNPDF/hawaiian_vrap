@@ -13,14 +13,13 @@
 #include <algorithm>
 #include "pdf.h"   // for collider
 #include "Vlumifns.h"   // for exchange
-using namespace std;
 
 
 singleValueOption::singleValueOption(const std::string& name,const std::string& value,const std::string& helpString): NamedOption(name,helpString), d_value(value) {};
 
 bool singleValueOption::process(std::istream& is,std::string& message) const {
 	Parser<std::string> parser;
-	string answer=parser.parse(is);
+	std::string answer=parser.parse(is);
 	if ( answer == d_value  ){
 		message = "" ;
 		return true;
@@ -37,7 +36,7 @@ std::ostream& singleValueOption::printHelp(std::ostream& os) const {
 
 
 bool yesOrNoOption::process(std::istream& is,std::string& message) const {
-	string answer;
+	std::string answer;
 	is >> answer;
 	if ( answer == "Yes" || answer == "On" || answer == "yes" || answer == "on" || answer == "YES" || answer == "ON"  ){
 		d_valueToSet=true;
@@ -60,8 +59,8 @@ yesOrNoOption::yesOrNoOption(const std::string& name,bool& valueToSet,const std:
 
 
 
-void OptionsHandler::printHelp(ostream& os) const {
-	map<string,option*>::const_iterator it = d_optionMap.begin();
+void OptionsHandler::printHelp(std::ostream& os) const {
+    std::map<std::string,option*>::const_iterator it = d_optionMap.begin();
 
 	while (it != d_optionMap.end() ){
 		os << (*it).first << ": \t";
@@ -74,10 +73,10 @@ void OptionsHandler::printHelp(ostream& os) const {
 
 bool OptionsHandler::process(const std::string& line,std::string& message) const {
 		if ( d_debug ){
-			cout << "treating option line \'" << line << "\'" << endl;
+            std::cout << "treating option line \'" << line << "\'" << std::endl;
 		}
-		stringstream ss(line);
-		string optionName ;
+		std::stringstream ss(line);
+		std::string optionName ;
 		
 		if (line.size() == 0 ){
 			// this is an empty line
@@ -87,7 +86,7 @@ bool OptionsHandler::process(const std::string& line,std::string& message) const
 		} else {
 			Parser<std::string> parser;
 			optionName = parser.parse(ss);
-			const map<string,option*>::const_iterator it = d_optionMap.find(optionName);
+			const std::map<std::string,option*>::const_iterator it = d_optionMap.find(optionName);
 
 			if (it != d_optionMap.end() ){
 				bool result=(*it).second->process(ss,message);
@@ -109,7 +108,7 @@ bool OptionsHandler::process(const std::string& line,std::string& message) const
 
 
 
-bool OptionsHandler::process_file(ifstream& file,string& message) const {
+bool OptionsHandler::process_file(std::ifstream& file,std::string& message) const {
 	char buffer[256];
 	while (file.getline(buffer,256)){
 		;
@@ -123,8 +122,8 @@ bool OptionsHandler::process_file(ifstream& file,string& message) const {
 			case '#' : {
 			} break;
 			default: {
-	//			cout << "setting: " << buffer << endl;
-				string setting(buffer);
+	//			std::cout << "setting: " << buffer << std::endl;
+				std::string setting(buffer);
 				if (setting.size() != 0 ){
 					bool success=process(setting,message);
 					if ( !success ){
@@ -148,9 +147,9 @@ template class multipleValueOption<int>;
 template class multipleValueOption<double>;
 template class multipleValueOption<exchange>;
 template class multipleValueOption<collider>;
-template class multipleValueOption<string>;
+template class multipleValueOption<std::string>;
 
-template class ValueSettingOption<string>;
+template class ValueSettingOption<std::string>;
 template class ValueSettingOption<double>;
 template class ValueSettingOption<int>;
 

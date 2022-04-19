@@ -23,9 +23,6 @@
 #include "LHApdf.h"
 #include "mode.h"
 
-using namespace std;
-
-
 double E_CM;         // hadron-hadron center-of-mass energy
 double Q, muR, muF;  // DY-mass; renormalization & factorization scales
 double muRrel, muFrel;  // global muR/Q, muF/Q (needed to do M (Q) integral)
@@ -109,58 +106,58 @@ NNLO_only=false;
 	useOtherPDF=false;
 	pdfSet=-1;
 	parton_flag=1;
-	nbrYPnts=19;
+	nbrYPnts=10;
 	direction=1;
 	}
 
 
 void printBanner(){
- cout << "======================================================== " << endl;
- cout << "=                       Vrap-0.9                       = " << endl;
- cout << "=                                                      = " << endl;
- cout << "=       Computes rapidity distributions for            = " << endl;
- cout << "=   production of electroweak vector bosons in         = " << endl;
- cout << "=     hadronic collisions through NNLO in QCD          = " << endl;
- cout << "=                                                      = " << endl;
- cout << "=                 Based on the article                 = " << endl;
- cout << "=    `High precision QCD at hadron colliders:          = " << endl;
- cout << "=  Electroweak gauge boson rapidity distributions      = " << endl;
- cout << "=  at NNLO', by Charalampos Anastasiou, Lance Dixon,   = " << endl;
- cout << "=  Kirill Melnikov and Frank Petriello,                = " << endl;
- cout << "=  Phys. Rev. D69, 094008 (2004) [hep-ph/0312266]      = " << endl;
- cout << "=                                                      = " << endl;
- cout << "= This version includes an interface to parton         = " << endl; 
- cout << "= distribution functions via the Les Houches Accord    = " << endl;
- cout << "= (LHAPDF). This interface, and several other program  = " << endl;
- cout << "= improvements, provided by Daniel Maitre              = " << endl;
- cout << "=                                                      = " << endl;
- cout << "=  Questions?  lance at slac dot stanford dot edu      = " << endl;
- cout << "======================================================== " << endl; 
- cout << endl;
+ std::cout << "======================================================== " << std::endl;
+ std::cout << "=                       Vrap-0.9                       = " << std::endl;
+ std::cout << "=                                                      = " << std::endl;
+ std::cout << "=       Computes rapidity distributions for            = " << std::endl;
+ std::cout << "=   production of electroweak vector bosons in         = " << std::endl;
+ std::cout << "=     hadronic collisions through NNLO in QCD          = " << std::endl;
+ std::cout << "=                                                      = " << std::endl;
+ std::cout << "=                 Based on the article                 = " << std::endl;
+ std::cout << "=    `High precision QCD at hadron colliders:          = " << std::endl;
+ std::cout << "=  Electroweak gauge boson rapidity distributions      = " << std::endl;
+ std::cout << "=  at NNLO', by Charalampos Anastasiou, Lance Dixon,   = " << std::endl;
+ std::cout << "=  Kirill Melnikov and Frank Petriello,                = " << std::endl;
+ std::cout << "=  Phys. Rev. D69, 094008 (2004) [hep-ph/0312266]      = " << std::endl;
+ std::cout << "=                                                      = " << std::endl;
+ std::cout << "= This version includes an interface to parton         = " << std::endl; 
+ std::cout << "= distribution functions via the Les Houches Accord    = " << std::endl;
+ std::cout << "= (LHAPDF). This interface, and several other program  = " << std::endl;
+ std::cout << "= improvements, provided by Daniel Maitre              = " << std::endl;
+ std::cout << "=                                                      = " << std::endl;
+ std::cout << "=  Questions?  lance at slac dot stanford dot edu      = " << std::endl;
+ std::cout << "======================================================== " << std::endl; 
+ std::cout << std::endl;
 
 	}
 	
 void printParamInfo(){	
- cout << "-------------------------------------------------------- " << endl; 
- cout << " ranseed =  " << ranseed << endl; 
- cout << " order_flag =  " << order_flag << endl; 
- cout << " E_CM =  " << E_CM 
-      << " GeV;   collider = " << coll << "  (1 = pp;  2 = ppbar)"  << endl; 
- cout << " alpha_s(M_Z) =  " << alpha_s_Z << endl; 
- cout << " Q =  " << Q << "   muR/Q = " << muRrel 
-                       << "   muF/Q = " << muFrel << endl; 
- cout << " alpha_QED used =  " << alphat << endl; 
- cout << " Nf =  " << Nf << "     NFf = " << NFf(int(Nf)) << endl;
- cout << " alpha_s(muR)/Pi =  " << alpha_s(muR)/PI << endl;
- cout << " DY prefactor = " << DY_prefactor(Q,alphat) << endl;
+ std::cout << "-------------------------------------------------------- " << std::endl; 
+ std::cout << " ranseed =  " << ranseed << std::endl; 
+ std::cout << " order_flag =  " << order_flag << std::endl; 
+ std::cout << " E_CM =  " << E_CM 
+      << " GeV;   collider = " << coll << "  (1 = pp;  2 = ppbar)"  << std::endl; 
+ std::cout << " alpha_s(M_Z) =  " << alpha_s_Z << std::endl; 
+ std::cout << " Q =  " << Q << "   muR/Q = " << muRrel 
+                       << "   muF/Q = " << muFrel << std::endl; 
+ std::cout << " alpha_QED used =  " << alphat << std::endl; 
+ std::cout << " Nf =  " << Nf << "     NFf = " << NFf(int(Nf)) << std::endl;
+ std::cout << " alpha_s(muR)/Pi =  " << alpha_s(muR)/PI << std::endl;
+ std::cout << " DY prefactor = " << DY_prefactor(Q,alphat) << std::endl;
  if (useOtherPDF){
-	cout << " PDF file = " << pdfFile << endl;
-	cout << " PDF set = " << pdfSet << endl;
+	std::cout << " PDF file = " << pdfFile << std::endl;
+	std::cout << " PDF set = " << pdfSet << std::endl;
 } else {
-	cout << " PDF mode = " << pdfMode << endl;
+	std::cout << " PDF mode = " << pdfMode << std::endl;
 }
 
-cout << "-------------------------------------------------------- " << endl; 
+std::cout << "-------------------------------------------------------- " << std::endl; 
 };
 
 //===========  MAIN PROGRAM  ==========================================
@@ -172,31 +169,31 @@ int main(int argc,char* argv[]){
 	defaultSettings();
 	
 	VrapOptionsHandler VOH;
-	string filename;
+    std::string filename;
 	if (argc ==2 ){
-		filename = string(argv[1]);
+		filename = std::string(argv[1]);
 		if (filename == "help" || filename[0]=='-'){
-			cout << "Here is the list of options that can be set in the input file\n " <<endl;
-			VOH.printHelp(cout);
+			std::cout << "Here is the list of options that can be set in the input file\n " <<std::endl;
+			VOH.printHelp(std::cout);
 			return 0;
 		}
-		cout << "Reading input from: " << filename << endl;
+		std::cout << "Reading input from: " << filename << std::endl;
 	} else {
-		cerr << "Usage: Vrap InputFile\n" << endl;
+        std::cerr << "Usage: Vrap InputFile\n" << std::endl;
 		return 1;
 	}
 	
-	ifstream inputfile(filename.c_str());
+    std::ifstream inputfile(filename.c_str());
 
 	if (!inputfile){
-		cerr << "Could not open " << filename <<"." << endl;
+        std::cerr << "Could not open " << filename <<"." << std::endl;
 		return 2;
 	}
 
-	string message;
+    std::string message;
 	bool success = VOH.process_file(inputfile,message);
 	if (!success){
-		cerr << "Parsing of input file " << filename << " failed: " << message << endl;
+        std::cerr << "Parsing of input file " << filename << " failed: " << message << std::endl;
 		return 3;
 	}
 
@@ -245,7 +242,7 @@ printParamInfo();
 //double alpha_s_Z_PDF;
 // LHAPDF::initPDFSetByName("abkm09_5_nlo.LHgrid");
 // alpha_s_Z_PDF = alphasPDF(m_Z); 
-// cout << " alpha_s(M_Z) =  " << alpha_s_Z_PDF << endl; 
+// std::cout << " alpha_s(M_Z) =  " << alpha_s_Z_PDF << std::endl; 
 
 
 // To do the total cross section integral, for normalization/checks:

@@ -8,8 +8,6 @@
 #include "Vlumifns.h"
 #include "EWparams.h"
 
-using namespace std;
-
 // Fudge parameters to weight qqbar, qg and gg contributions
 // (all terms, LO, NLO, NNLO!):
 int f_qqbar, f_qg, f_gg, f_qq;
@@ -22,34 +20,34 @@ int f_qqbar, f_qg, f_gg, f_qq;
 
 void compute_all(){ 
  f_qqbar = 1; f_qg = 1; f_gg = 1;  f_qq = 1;
-   cout << " Computing all initial-state channels " << endl << endl;
+   std::cout << " Computing all initial-state channels " << std::endl << std::endl;
  }
 
 void compute_qqbar(){ 
  f_qqbar = 1; f_qg = 0; f_gg = 0;  f_qq = 0; 
- cout << " Computing only q-qbar channel " << endl << endl;
+ std::cout << " Computing only q-qbar channel " << std::endl << std::endl;
  }
 
 void compute_qg(){ 
  f_qqbar = 0; f_qg = 1; f_gg = 0;  f_qq = 0; 
- cout << " Computing only q-g (qbar-g) channels " << endl << endl;
+ std::cout << " Computing only q-g (qbar-g) channels " << std::endl << std::endl;
  }
 
 void compute_gg(){ 
  f_qqbar = 0; f_qg = 0; f_gg = 1;  f_qq = 0;  
- cout << " Computing only g-g channel " << endl << endl;
+ std::cout << " Computing only g-g channel " << std::endl << std::endl;
  }
 
 void compute_qq(){ 
  f_qqbar = 0; f_qg = 0; f_gg = 0;  f_qq = 1;  
- cout << " Computing only q_i q_j (qbar_j) and identical-q channels " 
-      << endl << endl;
+ std::cout << " Computing only q_i q_j (qbar_j) and identical-q channels " 
+      << std::endl << std::endl;
  }
 
 void compute_qqbar_plus_qq(){ 
  f_qqbar = 1; f_qg = 0; f_gg = 0;  f_qq = 1;  
- cout << " Computing q-qbar, plus q_i q_j (qbar_j), and identical-q channels " 
-      << endl << endl;
+ std::cout << " Computing q-qbar, plus q_i q_j (qbar_j), and identical-q channels " 
+      << std::endl << std::endl;
  }
 
 // Parameters to weight gamma^* vs. Z vs. W exchange
@@ -72,20 +70,20 @@ void setV(exchange E, double Q, double alpha, double Nf, int f_quiet){
     F_gamma = 1.;   F_Zgamma = 0.;   F_Z = 0.;   F_W = 0.;
     fWp = 0;   fWm = 0;
     if (f_quiet==0) {
-    cout << " Computing only gamma^* exchange " << endl << endl;
+    std::cout << " Computing only gamma^* exchange " << std::endl << std::endl;
     }
   }
   else if (E == Zgamma_interf){
     F_gamma = 0.;   F_Zgamma = N_Zgamma(Q,alpha);   F_Z = 0.;   F_W = 0.;
     if (f_quiet==0) {
-    cout << " Computing only Z-gamma^* interference " << endl << endl;
+    std::cout << " Computing only Z-gamma^* interference " << std::endl << std::endl;
     }
   }
   else if (E == Z_only){
     F_gamma = 0.;   F_Zgamma = 0.;   F_Z = N_Z(Q,alpha);   F_W = 0.;
     fWp = 0;   fWm = 0;
     if (f_quiet==0) {
-    cout << " Computing only Z exchange " << endl << endl;
+    std::cout << " Computing only Z exchange " << std::endl << std::endl;
     }
   }
   else if (E == Zgamma){
@@ -93,24 +91,24 @@ void setV(exchange E, double Q, double alpha, double Nf, int f_quiet){
     F_W = 0.;  
     fWp = 0;   fWm = 0;
     if (f_quiet==0) {
-    cout << " Computing all terms: gamma + Z + interference " << endl << endl;
+    std::cout << " Computing all terms: gamma + Z + interference " << std::endl << std::endl;
     }
   }
   else if (E == Wplus){
     F_gamma = 0.;   F_Zgamma = 0.;   F_Z = 0.;   F_W = N_W(Q,alpha);
     fWp = 1;   fWm = 0;
     if (f_quiet==0) {
-    cout << " Computing W^+ production " << endl << endl;
+    std::cout << " Computing W^+ production " << std::endl << std::endl;
     }
   }
   else if (E == Wminus){
     F_gamma = 0.;   F_Zgamma = 0.;   F_Z = 0.;   F_W = N_W(Q,alpha);
     fWp = 0;  fWm = 1;
     if (f_quiet==0) {
-    cout << " Computing W^- production " << endl << endl;
+    std::cout << " Computing W^- production " << std::endl << std::endl;
     }
   }
-  else{ cout << " Invalid choice for exchange argument to setV " << endl; }
+  else{ std::cout << " Invalid choice for exchange argument to setV " << std::endl; }
 // compute all the couplings required for luminosity functions:
   vsqasq_u = VsqAsq_u();  vsqasq_d = VsqAsq_d();  
   NF_f = NFf(int(Nf));  sum_W_f = Sum_W_f(int(Nf));

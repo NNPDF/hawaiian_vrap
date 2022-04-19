@@ -216,7 +216,7 @@ z2+2*z2-10*u*z2+13*u2*z+7*u3*z+7*u*z-6*u2)/(u-z)/u/(1-u*z)
   +5*u*z2-2*z3*u+2*z3)/u2
    * ( li2((1-u)/(1+u)) - li2((1-u)/2) 
      + li2(-(1-u)/(1+u)) - li2(-(1-u)/2/u)
-     - (2*log(abs(1-u)) - log(u)) * (2*log((1+u)/2) - log(u)) )
+     - (2*log(std::fabs(1-u)) - log(u)) * (2*log((1+u)/2) - log(u)) )
 // asym^2
 - 1./36.*(-1+z)/u2*(12*u3+168*u4+12*u5-12*u2*z+105*u2*z2-6*z4
 -21*z3*u+74*u3*z2-111*u3*z3-24*u2*z3-6*u8*z4-254*u5*z
@@ -341,7 +341,7 @@ z2+2*z2-10*u*z2+13*u2*z+7*u3*z+7*u*z-6*u2)/(u-z)/u/(1-u*z)
 // asym^2
 + 1./6. * (1-z)*(1-u)*(2*u4*z3+5*u3*z2+2*u3*z3+8*u2*z2-12*u2-10*u2*z
 +2*u2*z3+5*u*z2+2*z3*u+2*z3)/(1+u)/u2 
-   * (log(abs(r-1))-1./2.*log(r)) * log(u)
+   * (log(std::fabs(r-1))-1./2.*log(r)) * log(u)
 // sym^2
 - 1./9. * (-48*u+12*u*z-204*u2-312*u3-204*u4-48*u5+26*u2*z+10*u*z2+15*
 u2*z2-5*z3-14*z3*u+22*u3*z2-20*u3*z3-25*u2*z3+12*u5*z+10*u5*z2+5*
@@ -617,20 +617,20 @@ double qbarq_no_NF_z1(double y, double z){
 
 double qbarq_no_NF(double y, double z){
   // z = 1 patch:
-  if (abs(1.-z) < 0.1){ return qbarq_no_NF_z1(y,z); }
+  if (std::fabs(1.-z) < 0.1){ return qbarq_no_NF_z1(y,z); }
   // u = 1 patch:
-  if (abs(y-0.5) < 0.002/sqrt(1.-z)){ return qbarq_no_NF_u1(z); }
+  if (std::fabs(y-0.5) < 0.002/sqrt(1.-z)){ return qbarq_no_NF_u1(z); }
   // u = z patch:
   if (y < 0.00001/sqrt(1.-z)){ return qbarq_no_NF_uz(y,z); }
   // u = 1-z patch (will require separate patch function for asym q g case):
   if (1.-y < 0.00001/sqrt(1.-z)){ return qbarq_no_NF_uz(1.-y,z); }
   // z = (2*u/(1+u))^2 patch (average values on either side of strip):
   double eps = 1.0e-07;
-  if (abs(y-y_sing(z)) < eps){ 
+  if (std::fabs(y-y_sing(z)) < eps){ 
     return 0.5 * ( qbarq_no_NF(y_sing(z)-2.*eps,z) 
 		 + qbarq_no_NF(y_sing(z)+2.*eps,z) );
   }
-  if (abs(y-(1.-y_sing(z))) < eps){ 
+  if (std::fabs(y-(1.-y_sing(z))) < eps){ 
     return 0.5 * ( qbarq_no_NF(1.-y_sing(z)-2.*eps,z) 
 		 + qbarq_no_NF(1.-y_sing(z)+2.*eps,z) );
   }
@@ -681,7 +681,7 @@ double qbarq_NF_z1(double y, double z){
 
 double qbarq_NF(double y, double z){
   // z = 1 patch:
-  if (abs(1.-z) < 0.01){ return qbarq_NF_z1(y,z); }
+  if (std::fabs(1.-z) < 0.01){ return qbarq_NF_z1(y,z); }
   else { return qbarq_NF_1(y,z) + qbarq_NF_1(1.-y,z); }
 }
 
@@ -1147,8 +1147,8 @@ double qbarq_BC_1(double y, double z){
    * ( 2 * li2((1.-u)/2.) + li2((1.-u)/(1.+u)) - li2(-u)
      + li2(t*r) - li2((1.-t*r)/2.) 
      - lnz*lnz - 1/2. * lnz * log((1.+u)/u/(1.-z*u))
-     + log(abs(1.-u)) * log(u*(1.+u)/2.) 
-     + log(abs(1.+u)) * log((1.+u)/2./u/u)
+     + log(std::fabs(1.-u)) * log(u*(1.+u)/2.) 
+     + log(std::fabs(1.+u)) * log((1.+u)/2./u/u)
      + 1/2. * lnu*lnu + 1/2. * ln2*ln2   
      - log(1.-t*r) * log(r*(1.+u)/2.)
      - log(1.+t*r) * ( log(1.+u) - 3./2. * lnu - 1./2. * log(1.+t*r) )
@@ -1236,17 +1236,17 @@ double qbarq_BC_z1(double y, double z){
 
 double qbarq_BC(double y, double z){
   // z = 1 patch:
-  if (abs(1.-z) < 0.05){ return qbarq_BC_z1(y,z); }
+  if (std::fabs(1.-z) < 0.05){ return qbarq_BC_z1(y,z); }
   // u = 1 patch:
-  if (abs(y-0.5) < 0.0005/sqrt(1.-z)){ return qbarq_BC_u1(z); }
+  if (std::fabs(y-0.5) < 0.0005/sqrt(1.-z)){ return qbarq_BC_u1(z); }
   // u = z, 1-z patches not needed.
   // z = (2*u/(1+u))^2 patch (average values on either side of strip):
   double eps = 1.0e-07;
-  if (abs(y-y_sing(z)) < eps){ 
+  if (std::fabs(y-y_sing(z)) < eps){ 
     return 0.5 * ( qbarq_BC(y_sing(z)-2.*eps,z) 
 		 + qbarq_BC(y_sing(z)+2.*eps,z) );
   }
-  if (abs(y-(1.-y_sing(z))) < eps){ 
+  if (std::fabs(y-(1.-y_sing(z))) < eps){ 
     return 0.5 * ( qbarq_BC(1.-y_sing(z)-2.*eps,z) 
 		 + qbarq_BC(1.-y_sing(z)+2.*eps,z) );
   }

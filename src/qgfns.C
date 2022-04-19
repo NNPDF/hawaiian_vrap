@@ -24,12 +24,12 @@ double qg(double y, double z){
  omz2 = (1.-z)*(1.-z);   omu3 = (1.-u)*(1.-u)*(1.-u);  omu4 = omu3*(1.-u);
  ln2 = log(2.);  lnz = log(z);   lnomz = log(1.-z);  
  lnopz = log(1.+z);  lnhfopz = log((1.+z)/2.);
- lnu = log(u);   lnumo = log(abs(u-1.));
+ lnu = log(u);   lnumo = log(std::fabs(u-1.));
  lnopu = log(1.+u);  lnhfopu = log((1.+u)/2.);
  lnrpt = log(r+t);  lnrmt = log(r-t);
  lnoptr = log(1.+t*r);  lnomtr = log(1.-t*r);
  lnopt = log(1.+t);  lnomt = log(1.-t);  
- lnopr = log(1.+r);  lnrmo = log(abs(r-1.));  
+ lnopr = log(1.+r);  lnrmo = log(std::fabs(r-1.));  
  lnomuz = log(1.-u*z);  lnumz = log(u-z);
  temp =
 // q^2 terms (mostly): 
@@ -796,20 +796,20 @@ return 17/12.*ln1my2/y+17/6.*lny/y*ln1my+17/3./y*lna*ln1my-1/2.*ln1my/y
 
 double qg_full(double y, double z){
   // z = 1 patch:
-  if (abs(1.-z) < 0.03){ return qg_z1(y,z); }
+  if (std::fabs(1.-z) < 0.03){ return qg_z1(y,z); }
   // u = 1 patch:
-  if (abs(y-0.5) < 0.00005/sqrt(1.-z)){ return qg_u1(z); }
+  if (std::fabs(y-0.5) < 0.00005/sqrt(1.-z)){ return qg_u1(z); }
   // u = z patch:
   if (y < 0.00001/sqrt(1.-z)){ return qg_uz(y,z); }
   // u = 1-z patch (different from u = z):
   if (1.-y < 0.00001/sqrt(1.-z)){ return qg_u1mz(y,z); }
   // z = (2*u/(1+u))^2 patch (average values on either side of strip):
   double eps = 1.0e-07;
-  if (abs(y-y_sing(z)) < eps){ 
+  if (std::fabs(y-y_sing(z)) < eps){ 
     return 0.5 * ( qg(y_sing(z)-2.*eps,z) 
 		 + qg(y_sing(z)+2.*eps,z) );
   }
-  if (abs(y-(1.-y_sing(z))) < eps){ 
+  if (std::fabs(y-(1.-y_sing(z))) < eps){ 
     return 0.5 * ( qg(1.-y_sing(z)-2.*eps,z) 
 		 + qg(1.-y_sing(z)+2.*eps,z) );
   }

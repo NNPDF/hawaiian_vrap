@@ -33,35 +33,35 @@ double alpha_QED(double mu){
   double m_u_fake = 0.066;
   double m_s_fake = 0.150;
   double alpha_inv;
-  if (abs(mu) < 2.*m_e) { alpha_inv = 1/alpha0; }
-  else if (abs(mu) < m_u_fake) { // e only in vac. pol.:
+  if (std::fabs(mu) < 2.*m_e) { alpha_inv = 1/alpha0; }
+  else if (std::fabs(mu) < m_u_fake) { // e only in vac. pol.:
     alpha_inv = 1/alpha0 - 1./3./PI * ( 2. * log(mu/m_e) - 5./3. ); }
-  else if (abs(mu) < 2.*m_mu) { // add u and d quarks together here:
+  else if (std::fabs(mu) < 2.*m_mu) { // add u and d quarks together here:
     alpha_inv = 1/alpha0 - 1./3./PI * ( 2. * log(mu/m_e) - 5./3.
                  + 5./3. * ( 2. * log(mu/m_u_fake) - 5./3. )  ); }
-  else if (abs(mu) < 2.*m_s) { // add mu:
+  else if (std::fabs(mu) < 2.*m_s) { // add mu:
     alpha_inv = 1/alpha0 - 1./3./PI * ( 2. * log(mu/m_e) - 5./3.
                  + 5./3. * ( 2. * log(mu/m_u_fake) - 5./3. ) 
                  + 2. * log(mu/m_mu) - 5./3. ); }
-  else if (abs(mu) < 2.*m_c) { // add s quark:
+  else if (std::fabs(mu) < 2.*m_c) { // add s quark:
     alpha_inv = 1/alpha0 - 1./3./PI * ( 2. * log(mu/m_e) - 5./3.
                  + 5./3. * ( 2. * log(mu/m_u_fake) - 5./3. ) 
                  + 2. * log(mu/m_mu) - 5./3.
                  + 1./3. * ( 2. * log(mu/m_s_fake) - 5./3. ) ); }
-  else if (abs(mu) < 2.*m_tau) { // add c quark:
+  else if (std::fabs(mu) < 2.*m_tau) { // add c quark:
     alpha_inv = 1/alpha0 - 1./3./PI * ( 2. * log(mu/m_e) - 5./3.
                  + 5./3. * ( 2. * log(mu/m_u_fake) - 5./3. ) 
                  + 2. * log(mu/m_mu) - 5./3.
                  + 1./3. * ( 2. * log(mu/m_s_fake) - 5./3. ) 
                  + 4./3. * ( 2. * log(mu/m_c) - 5./3. ) ); }
-  else if (abs(mu) < 2.*m_b) { // add tau:
+  else if (std::fabs(mu) < 2.*m_b) { // add tau:
     alpha_inv = 1/alpha0 - 1./3./PI * ( 2. * log(mu/m_e) - 5./3.
                  + 5./3. * ( 2. * log(mu/m_u_fake) - 5./3. ) 
                  + 2. * log(mu/m_mu) - 5./3.
                  + 1./3. * ( 2. * log(mu/m_s_fake) - 5./3. ) 
                  + 4./3. * ( 2. * log(mu/m_c) - 5./3. )
                  + 2. * log(mu/m_tau) - 5./3. ); }
-  else if (abs(mu) < 2.*m_W) { // add b:
+  else if (std::fabs(mu) < 2.*m_W) { // add b:
     alpha_inv = 1/alpha0 - 1./3./PI * ( 2. * log(mu/m_e) - 5./3.
                  + 5./3. * ( 2. * log(mu/m_u_fake) - 5./3. ) 
                  + 2. * log(mu/m_mu) - 5./3.
@@ -69,7 +69,7 @@ double alpha_QED(double mu){
                  + 4./3. * ( 2. * log(mu/m_c) - 5./3. )
                  + 2. * log(mu/m_tau) - 5./3. 
                  + 1./3. * ( 2. * log(mu/m_b) - 5./3. ) ); }
-  else if (abs(mu) < 2.*m_t) { // add W:
+  else if (std::fabs(mu) < 2.*m_t) { // add W:
     alpha_inv = 1/alpha0 - 1./3./PI * ( 2. * log(mu/m_e) - 5./3.
                  + 5./3. * ( 2. * log(mu/m_u_fake) - 5./3. ) 
                  + 2. * log(mu/m_mu) - 5./3.
@@ -159,28 +159,28 @@ double as3(double mu){
           + b1*b1/b0/b0/b0/b0/lnx/lnx 
          * ( (log(lnx) - 0.5)*(log(lnx) - 0.5) + b2*b0/b1/b1 - 1.25 ) );
   }
-  else
-   // run with 4 flavors below mu = m_b; match at m_b with formula
-   // alpha_{N_f-1}(M) = alpha_{N_f}(M) + 11/72/Pi^2 * [alpha_{N_f}(M)]^3
-   alpha_s_5_mb = PI*as3(m_b);
-   alpha_s_4_mb = alpha_s_5_mb 
-                    * ( 1. + 11./72./PI/PI * alpha_s_5_mb * alpha_s_5_mb );
-   // now calculate Lambda_4 from alpha_s_4_mb.
-   // l0 is first approximation to ln(m_b^2/Lambda_4^2), l4 is 4th:
-   N_f = 4.;
-   b0 = 0.5 * (11./3.*C_A-2./3.*N_f) ;
-   b1 = 0.5 * (17./3.*C_A*C_A-(5./3.*C_A+C_F)*N_f) ;
-   b2 = 0.0625 * ( 2857./27.*C_A*C_A*C_A 
-      + (-1415./27.*C_A*C_A-205./9.*C_A*C_F+2.*C_F*C_F)*N_f 
-               	+ (79./27.*C_A+22./9.*C_F)*N_f*N_f ) ;
-   l0 = 2.*PI/b0/alpha_s_4_mb ;
-   l4 = iterlnx3(iterlnx3(iterlnx3(iterlnx3(l0,alpha_s_4_mb,4),
-                alpha_s_4_mb,4),alpha_s_4_mb,4),alpha_s_4_mb,4);
-   Lambda_4 = m_b * exp(-l4/2.) ;
-   lnx = 2. * log(mu/Lambda_4);
-   return 2./b0/lnx * ( 1. - b1/b0/b0 * log(lnx)/lnx
-          + b1*b1/b0/b0/b0/b0/lnx/lnx 
-         * ( (log(lnx) - 0.5)*(log(lnx) - 0.5) + b2*b0/b1/b1 - 1.25 ) );
+
+  // run with 4 flavors below mu = m_b; match at m_b with formula
+  // alpha_{N_f-1}(M) = alpha_{N_f}(M) + 11/72/Pi^2 * [alpha_{N_f}(M)]^3
+  alpha_s_5_mb = PI*as3(m_b);
+  alpha_s_4_mb = alpha_s_5_mb 
+                   * ( 1. + 11./72./PI/PI * alpha_s_5_mb * alpha_s_5_mb );
+  // now calculate Lambda_4 from alpha_s_4_mb.
+  // l0 is first approximation to ln(m_b^2/Lambda_4^2), l4 is 4th:
+  N_f = 4.;
+  b0 = 0.5 * (11./3.*C_A-2./3.*N_f) ;
+  b1 = 0.5 * (17./3.*C_A*C_A-(5./3.*C_A+C_F)*N_f) ;
+  b2 = 0.0625 * ( 2857./27.*C_A*C_A*C_A 
+     + (-1415./27.*C_A*C_A-205./9.*C_A*C_F+2.*C_F*C_F)*N_f 
+              	+ (79./27.*C_A+22./9.*C_F)*N_f*N_f ) ;
+  l0 = 2.*PI/b0/alpha_s_4_mb ;
+  l4 = iterlnx3(iterlnx3(iterlnx3(iterlnx3(l0,alpha_s_4_mb,4),
+               alpha_s_4_mb,4),alpha_s_4_mb,4),alpha_s_4_mb,4);
+  Lambda_4 = m_b * exp(-l4/2.) ;
+  lnx = 2. * log(mu/Lambda_4);
+  return 2./b0/lnx * ( 1. - b1/b0/b0 * log(lnx)/lnx
+         + b1*b1/b0/b0/b0/b0/lnx/lnx 
+        * ( (log(lnx) - 0.5)*(log(lnx) - 0.5) + b2*b0/b1/b1 - 1.25 ) );
 }
 
 // Iterate the 3rd order solution to solve for lnx = ln(m^2/Lambda^2) 

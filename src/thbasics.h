@@ -41,7 +41,7 @@ int SIGN(int a, int b);
 
 int INT(double a);
 
-void therror(char error_text[]);
+void therror(const char error_text[]);
 /*        standard error handler  */
 
 
