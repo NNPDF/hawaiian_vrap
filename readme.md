@@ -1,3 +1,11 @@
+# How to install
+
+```bash
+mkdir -p build && cd build
+../src/configure --prefix=$PWD
+make -j4
+```
+
 
 ---
 
