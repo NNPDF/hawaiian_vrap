@@ -1,0 +1,29 @@
+INSTALLATION
+
+--- Prerequisits ---
+
+To install Vrap you need a working installation of the LHAPDF 
+package. It can be downloaded from:
+ 
+  http://projects.hepforge.org/lhapdf/
+  
+Please make sure that the path to its executables ( in particular
+lhapdf-config) is in the system $PATH.
+
+--- Installation ---
+
+Vrap is an automake package using the usual configure,make,make install
+procedure. We describe here only the basic installation steps.
+
+1) unzip and untar the package (you made it so far, you would not 
+   read this otherwise)
+2) run the configuration script
+	./configure --prefix=/YOUR/INSTALLATION/PATH
+3) run make and make install
+	make
+	make install
+	
+You are done. The executable Vrap and Vtot can be found in  
+
+/YOUR/INSTALLATION/PATH/bin
+
