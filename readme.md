@@ -25,11 +25,10 @@ Once we've run NNLO and NLO we can create the cfactor with the `runCfactors` scr
 
 There's a small python script that compares side by side the NNPDF and vrap cfactors:
 
+
 ```bash
-python -i compare_cfactor.py ./cfactors_nnpdf40/output/E605_Cfactors.dat ~/Academic_Workspace/NNPDF/nnvortex/share/NNPDF/data/theory_200/cfactor/CF_QCD_DYE605.dat
+python -i compare_cfactor.py cfactors_nnpdf40/output/E605_Cfactors.dat cfactors_nnpdf40/nnpdf40_theory200/CF_QCD_DYE605.dat
 ```
-
-
 
 TODO: a script that compiles and runs and checks that the results are compatible with the NNPDF40 cfactors (i.e., regression tests)
 
