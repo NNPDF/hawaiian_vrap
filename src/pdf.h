@@ -18,7 +18,7 @@
 #ifndef PDF_H
 #define PDF_H
 enum pdf_type { cteq = 1, mrst = 2, alekhin = 3 } ;
-enum collider { pp = 1, ppbar = 2 } ;
+enum collider { pp = 1, ppbar = 2, piso = 3 } ;
 // Controls number of factors of e_q^2 weighting the q-\bar{q} luminosity
 // function:
 enum process { gluon = 0, DY = 1, gamgam = 2 } ;

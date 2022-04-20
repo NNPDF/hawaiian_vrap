@@ -12,6 +12,8 @@ extern double alpha_s_Z;
 
 void set_mode(const string& mode){
 //
+        LHAPDF::setVerbosity(0);
+
 	if ( mode == "MRST_2001_LO"){
 		order_flag = 0;  alpha_s_Z = 0.130;  
 		LHAPDF::initPDFSetByName("MRST2001lo.LHgrid");	
@@ -103,6 +105,7 @@ void set_mode(const string& mode){
 }
 
 void set_mode(const string& filename,int iset){
+                LHAPDF::setVerbosity(0);
 		LHAPDF::initPDFSetByName(filename);	
 		LHAPDF::initPDF(iset);		
 		return;

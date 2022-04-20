@@ -69,7 +69,8 @@ VrapOptionsHandler::VrapOptionsHandler(){
 	add(new ValueSettingOption<double>("Nf",Nf,"Sets the number of quark flavors."));
 	add(new ValueSettingOption<double>("Alphat",alphat,"Sets the value of alpha."));
 	add(new ValueSettingOption<int>("RandomSeed",ranseed,"Sets the random seed, must be a positive integer."));
-	add(new multipleValueOption<collider>("Collider",coll,"pp",pp,"ppbar",ppbar,"Sets the type of collider. ") );
+	//add(new multipleValueOption<collider>("Collider",coll,"pp",pp,"ppbar",ppbar,"Sets the type of collider. ") );
+	add(new multipleValueOption<collider>("Collider",coll,"pp",pp,"ppbar",ppbar,"piso",piso,"Sets the type of collider. ") );
 	add(new yesOrNoOption("NNLO_only",NNLO_only,"Sets whether to compute NNLO terms only."));
 	add(new yesOrNoOption("UseMyAlphaQEDRunning",useMyAlphaRunning,"Sets whether to use my running QED coupling, better for low-mass"));
 	add(new ValueSettingOption<std::string>("PDF_mode",pdfMode,"Sets the PDF mode."));
@@ -106,7 +107,7 @@ NNLO_only=false;
 	useOtherPDF=false;
 	pdfSet=-1;
 	parton_flag=1;
-	nbrYPnts=10;
+	nbrYPnts=19;
 	direction=1;
 	}
 
@@ -170,7 +171,7 @@ int main(int argc,char* argv[]){
 	
 	VrapOptionsHandler VOH;
     std::string filename;
-	if (argc ==2 ){
+	if (argc >=2 ){
 		filename = std::string(argv[1]);
 		if (filename == "help" || filename[0]=='-'){
 			std::cout << "Here is the list of options that can be set in the input file\n " <<std::endl;
@@ -195,6 +196,18 @@ int main(int argc,char* argv[]){
 	if (!success){
         std::cerr << "Parsing of input file " << filename << " failed: " << message << std::endl;
 		return 3;
+	}
+
+	if(argc>2) {
+	  Q = strtod(argv[2], NULL);
+	}
+	double rapY = 0;
+	if(argc>3) {
+	  rapY = strtod(argv[3], NULL);
+	}
+
+	if(argc>4) {
+		pdfSet = strtod(argv[4], NULL);
 	}
 
 
@@ -263,7 +276,7 @@ printParamInfo();
 // o_f = output_format = 0  -> print for topdraw: y, d sigma/dy  ( error
 // o_f = output_format = 1  -> just list d sigma/dy values.
 //
-DMatrix resultMatrix = sym_scan_rap_y(nbrYPnts,direction,o_f); // "normally" 19
+//DMatrix resultMatrix = sym_scan_rap_y(nbrYPnts,direction,o_f); // "normally" 19   /// <- this was uncommented MB
 // Case of an asymmetric distribution, scans from -ymax to +ymax:
 // DMatrix resultMatrix = asym_scan_rap_y(nbrYPnts,direction,o_f); // "normally" 38
 
@@ -275,8 +288,9 @@ DMatrix resultMatrix = sym_scan_rap_y(nbrYPnts,direction,o_f); // "normally" 19
 // Wpm_ratio_scan_all(alekhin,nbrYPnts,0.5,2.0);
 
 // Just one (two?) rapidity point, y:
-// y = -2.8334924 ;   DVector temp_ans = rap_y();
-
+// order_flag = 2;
+ y = rapY;   DVector temp_ans = rap_y();
+ std::cout << temp_ans[0] << std::endl;
 // At fixed rapidity y, scan d^2sigma/dM/dY through
 //     Q*mu_r_lower < (muR=muF) < Q*mu_r_upper     with n_points steps:
 // arguments are: (y, mu_r_lower,mu_r_upper,n_points).

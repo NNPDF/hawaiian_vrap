@@ -65,9 +65,9 @@ void run(string expname) {
 
 int main(int argc, char *argv[]) {
 
-  run("E866P");
-
-  run("E866R");
+//  run("E866P");
+//
+//  run("E866R");
 
   run("E605");
 

@@ -534,6 +534,7 @@ DVector int_y(double xil, double xiu){
 DVector rap_y(){
   double total, total_error;
   double prefactor = DY_prefactor(Q,alphat);
+  std::cout << "Prefactor = " << prefactor << std::endl;
   double asR = alpha_s(muR)/PI;
   DVector result(0,1);   DVector i_NLO(0,2);  DVector i_NNLO(0,2);
   if (f_quiet==0) {
@@ -542,10 +543,13 @@ DVector rap_y(){
 // LO case
   if (order_flag == 0) { 
     total = prefactor * Born_integrand(y);
-    total_error = 0.; }
+    total_error = 0.;
+    std::cout << "LO   = " << total << std::endl;
+  }
 // NLO case
   else if (order_flag == 1) {
     double Born_ans = Born_integrand(y);
+    std::cout << "LO   = " << prefactor * Born_ans << std::endl;
     if (std::fabs(int_NLO(.03,.43,.93)) < 1.0e-16) {
        if (f_quiet==0) {
        std::cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << std::endl;
@@ -555,10 +559,12 @@ DVector rap_y(){
     else { i_NLO = sqint(1,2,5000,10,20,ranseed); }
     total = prefactor * ( Born_ans + asR * i_NLO[0] );
     total_error = prefactor * asR * i_NLO[1] ;
+    std::cout << "NLO  = " << prefactor * (Born_ans + asR * i_NLO[0]) << std::endl;
   }
 // NNLO case
   else {   //  order_flag = 2:
     double Born_ans = Born_integrand(y);
+    std::cout << "LO   = " << prefactor * Born_ans << std::endl;
     if (f_NNLO_only == 1) {
     if (f_quiet==0) {
     std::cout << " computing NLO integral for y = " << y << std::endl; 
@@ -571,6 +577,7 @@ DVector rap_y(){
     }
     else { i_NLO = sqint(1,2,5000,10,20,ranseed); }
     }
+    std::cout << "NLO  = " << prefactor * (Born_ans + asR * i_NLO[0]) << std::endl;
     if (f_quiet==0) {
     std::cout << " computing NNLO integral for y = " << y << std::endl; 
     }
@@ -583,6 +590,7 @@ DVector rap_y(){
       total = prefactor * ( Born_ans + asR * i_NLO[0] + asR*asR * i_NNLO[0] );
       total_error = prefactor * asR * sqrt( i_NLO[1]*i_NLO[1]
                                           + asR*asR * i_NNLO[1]*i_NNLO[1] );
+      std::cout << "NNLO = " << total << std::endl;
     }
   }
   if (f_quiet==0) {

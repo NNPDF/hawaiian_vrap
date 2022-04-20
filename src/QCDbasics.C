@@ -158,29 +158,29 @@ double as3(double mu){
     return 2./b0/lnx * ( 1. - b1/b0/b0 * log(lnx)/lnx
           + b1*b1/b0/b0/b0/b0/lnx/lnx 
          * ( (log(lnx) - 0.5)*(log(lnx) - 0.5) + b2*b0/b1/b1 - 1.25 ) );
-  }
-
-  // run with 4 flavors below mu = m_b; match at m_b with formula
-  // alpha_{N_f-1}(M) = alpha_{N_f}(M) + 11/72/Pi^2 * [alpha_{N_f}(M)]^3
-  alpha_s_5_mb = PI*as3(m_b);
-  alpha_s_4_mb = alpha_s_5_mb 
-                   * ( 1. + 11./72./PI/PI * alpha_s_5_mb * alpha_s_5_mb );
-  // now calculate Lambda_4 from alpha_s_4_mb.
-  // l0 is first approximation to ln(m_b^2/Lambda_4^2), l4 is 4th:
-  N_f = 4.;
-  b0 = 0.5 * (11./3.*C_A-2./3.*N_f) ;
-  b1 = 0.5 * (17./3.*C_A*C_A-(5./3.*C_A+C_F)*N_f) ;
-  b2 = 0.0625 * ( 2857./27.*C_A*C_A*C_A 
-     + (-1415./27.*C_A*C_A-205./9.*C_A*C_F+2.*C_F*C_F)*N_f 
-              	+ (79./27.*C_A+22./9.*C_F)*N_f*N_f ) ;
-  l0 = 2.*PI/b0/alpha_s_4_mb ;
-  l4 = iterlnx3(iterlnx3(iterlnx3(iterlnx3(l0,alpha_s_4_mb,4),
-               alpha_s_4_mb,4),alpha_s_4_mb,4),alpha_s_4_mb,4);
-  Lambda_4 = m_b * exp(-l4/2.) ;
-  lnx = 2. * log(mu/Lambda_4);
-  return 2./b0/lnx * ( 1. - b1/b0/b0 * log(lnx)/lnx
-         + b1*b1/b0/b0/b0/b0/lnx/lnx 
-        * ( (log(lnx) - 0.5)*(log(lnx) - 0.5) + b2*b0/b1/b1 - 1.25 ) );
+  } else {
+	  // run with 4 flavors below mu = m_b; match at m_b with formula
+	  // alpha_{N_f-1}(M) = alpha_{N_f}(M) + 11/72/Pi^2 * [alpha_{N_f}(M)]^3
+	  alpha_s_5_mb = PI*as3(m_b);
+	  alpha_s_4_mb = alpha_s_5_mb 
+		           * ( 1. + 11./72./PI/PI * alpha_s_5_mb * alpha_s_5_mb );
+	  // now calculate Lambda_4 from alpha_s_4_mb.
+	  // l0 is first approximation to ln(m_b^2/Lambda_4^2), l4 is 4th:
+	  N_f = 4.;
+	  b0 = 0.5 * (11./3.*C_A-2./3.*N_f) ;
+	  b1 = 0.5 * (17./3.*C_A*C_A-(5./3.*C_A+C_F)*N_f) ;
+	  b2 = 0.0625 * ( 2857./27.*C_A*C_A*C_A 
+	     + (-1415./27.*C_A*C_A-205./9.*C_A*C_F+2.*C_F*C_F)*N_f 
+		      	+ (79./27.*C_A+22./9.*C_F)*N_f*N_f ) ;
+	  l0 = 2.*PI/b0/alpha_s_4_mb ;
+	  l4 = iterlnx3(iterlnx3(iterlnx3(iterlnx3(l0,alpha_s_4_mb,4),
+		       alpha_s_4_mb,4),alpha_s_4_mb,4),alpha_s_4_mb,4);
+	  Lambda_4 = m_b * exp(-l4/2.) ;
+	  lnx = 2. * log(mu/Lambda_4);
+	  return 2./b0/lnx * ( 1. - b1/b0/b0 * log(lnx)/lnx
+		 + b1*b1/b0/b0/b0/b0/lnx/lnx 
+		* ( (log(lnx) - 0.5)*(log(lnx) - 0.5) + b2*b0/b1/b1 - 1.25 ) );
+	}
 }
 
 // Iterate the 3rd order solution to solve for lnx = ln(m^2/Lambda^2) 

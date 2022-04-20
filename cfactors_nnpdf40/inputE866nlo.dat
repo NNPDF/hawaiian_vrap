@@ -59,7 +59,7 @@ Nf 5
 # If you want to choose pdfs, alpha_s(M_Z) and hard cross section order
 # "a la carte", here is an example:
 UseOtherPDF yes
-PDFfile NNPDF40_nnlo_as_0118.LHgrid
+PDFfile NNPDF31_nnlo_as_0118.LHgrid
 PDFset 0
 AlphasZ 0.118
 Order NLO

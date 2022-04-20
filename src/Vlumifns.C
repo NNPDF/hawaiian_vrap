@@ -354,6 +354,12 @@ double qqbar_lumi(double x1, double x2, double muF, process p, collider c){
    + pref_d * ( d(x1,muF) * d(x2,muF) + dbar(x1,muF) * dbar(x2,muF) 
 	                        + 2. * str(x1,muF) * str(x2,muF) 
                                 + 2. * bot(x1,muF) * bot(x2,muF) ) ; }
+  else if (c==piso) { return 
+      pref_u * ( u(x1,muF) * (ubar(x2,muF)+dbar(x2,muF))/2. + ubar(x1,muF) * (u(x2,muF)+d(x2,muF))/2.
+		 + 2. * chm(x1,muF) * chm(x2,muF) )
+      + pref_d * ( d(x1,muF) * (dbar(x2,muF)+ubar(x2,muF))/2. + dbar(x1,muF) * (d(x2,muF)+u(x2,muF))/2.
+		   + 2. * str(x1,muF) * str(x2,muF) 
+		   + 2. * bot(x1,muF) * bot(x2,muF) ) ; }
   else return 0.;
 }
 

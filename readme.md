@@ -1,4 +1,4 @@
-# How to install
+## How to run
 
 ```bash
 mkdir -p build && cd build
@@ -8,6 +8,32 @@ make -j4
 ```
 
 The older standard we can use with more recent versions of `lhapdf` is `c++11` so some changes have been necessary in order to get `vrap` to compile: https://github.com/NNPDF/external/pull/58
+
+## How to reproduce NNPDF40 c-factors
+
+The scripts to compute the 4.0 c-factors are stored in the `cfactors_nnpdf40` folder.
+These will use system calls to call `Vrap` with various arguments. If you compiled `vrap` as above the following should work (in the `cfactors_nnpdf40` folder):
+
+```bash
+export PATH=$PATH:$PWD/../build:
+./runE605 1 1 # This will run NNLO, to run NLO just d `./runE605
+```
+
+Once we've run NNLO and NLO we can create the cfactor with the `runCfactors` script, commenting out the necessary datasets.
+
+## Compare cfactors from NNPDF and vrap
+
+There's a small python script that compares side by side the NNPDF and vrap cfactors:
+
+```bash
+python -i compare_cfactor.py ./cfactors_nnpdf40/output/E605_Cfactors.dat ~/Academic_Workspace/NNPDF/nnvortex/share/NNPDF/data/theory_200/cfactor/CF_QCD_DYE605.dat
+```
+
+
+
+TODO: a script that compiles and runs and checks that the results are compatible with the NNPDF40 cfactors (i.e., regression tests)
+
+
 
 ---
 
