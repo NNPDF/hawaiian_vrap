@@ -1,0 +1,30 @@
+name: Regression
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup Conda 
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+          python-version: 3.9
+    - name: Install lhapdf and PDFs
+      shell: bash --login {0}
+      run: |
+        conda install -y lhapdf -c conda-forge
+        lhapdf install NNPDF31_nnlo_as_0118 
+    - name: Compile vrap
+      shell: bash --login {0}
+      run: |
+        mkdir -p build && cd build
+        ../src/configure --prefix=$PWD
+        make -j4
+        sudo make install
+        Vrap ../src/input.dat
+
+        
