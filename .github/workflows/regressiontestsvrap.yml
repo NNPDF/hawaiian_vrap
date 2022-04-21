@@ -1,6 +1,6 @@
 name: Regression
 
-on: pull_request # [push]
+on: [push]
 
 jobs:
   build:
@@ -16,15 +16,14 @@ jobs:
     - name: Install lhapdf and PDFs
       shell: bash --login {0}
       run: |
+        conda install gxx_linux-64 pkg-config sysroot_linux-64=2.17
         conda install -y lhapdf -c conda-forge
         lhapdf install NNPDF31_nnlo_as_0118 
     - name: Compile vrap
       shell: bash --login {0}
       run: |
         mkdir -p build && cd build
-        ../src/configure --prefix=$PWD
+        ../src/configure --prefix=/usr
         make -j4
         sudo make install
         Vrap ../src/input.dat
-
-        
