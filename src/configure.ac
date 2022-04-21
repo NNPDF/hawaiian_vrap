@@ -7,6 +7,8 @@ AC_CONFIG_FILES([
 	path.h
 ])
 
+PKG_CHECK_MODULES([LHAPDF], [lhapdf >= 6])
+AM_PROG_AR
 
 AC_PROG_RANLIB
 AC_OUTPUT

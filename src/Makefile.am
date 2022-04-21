@@ -1,9 +1,7 @@
+AM_CPPFLAGS = $(LHAPDF_CFLAGS)
 
-AM_CPPFLAGS = $(shell lhapdf-config --cppflags) 
-AM_LDFLAGS = $(shell lhapdf-config --ldflags) 
-
-lib_LIBRARIES = libVrap.a 
-bin_PROGRAMS = Vrap Vtot 
+noinst_LIBRARIES = libVrap.a
+bin_PROGRAMS = Vrap Vtot
 
 libVrap_a_SOURCES = \
 	a02.C  a02.h   \
@@ -35,7 +33,7 @@ libVrap_a_SOURCES = \
 Vrap_SOURCES = Vrap.C
 Vtot_SOURCES = Vtot.C
 
-Vrap_LDADD = libVrap.a 
-Vtot_LDADD = libVrap.a 
+Vrap_LDADD = libVrap.a $(LHAPDF_LIBS)
+Vtot_LDADD = libVrap.a $(LHAPDF_LIBS)
 
 dist_data = INSTALL
