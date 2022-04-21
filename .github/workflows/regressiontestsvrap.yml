@@ -22,6 +22,7 @@ jobs:
     - name: Compile vrap
       shell: bash --login {0}
       run: |
+        cd src && autoreconf -fiv && cd ..
         mkdir -p build && cd build
         ../src/configure --prefix=/usr
         make -j4

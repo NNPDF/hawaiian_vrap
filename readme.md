@@ -1,6 +1,7 @@
 ## How to run
 
 ```bash
+cd src && autoreconf -fiv && cd ..
 mkdir -p build && cd build
 ../src/configure --prefix=$PWD
 make -j4
