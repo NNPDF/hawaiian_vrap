@@ -36,3 +36,14 @@ build
 
 runE*
 runCfactors
+cfactors_nnpdf40/output
+
+# autoconf
+Makefile.in
+aclocal.m4
+ar-lib
+compile
+configure
+depcomp
+install-sh
+missing

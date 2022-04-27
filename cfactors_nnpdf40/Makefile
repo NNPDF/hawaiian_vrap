@@ -2,7 +2,9 @@ all: rmxeq mkxeq
 .PHONY: all
 
 # main programs to be compiled 
-MAIN = runE866 runE866ratio runE605 runE906ratio runCfactors
+EXEGGUTORS = runE866 runE866ratio runE605 runE906ratio
+CFACGEN = runCfactors
+MAIN = $(EXEGGUTORS) $(CFACGEN)
 
 ############################## do not change #############################
 
@@ -29,6 +31,19 @@ $(MAIN): %: %.o  Makefile
 # produce executables
 mkxeq: $(MAIN)
 
+# run'em all
+run: mkxeq
+	@echo "Running all cfactors, this could take long..."
+	@mkdir -p output
+	@echo "Running NLO..."
+	@$(foreach var,$(EXEGGUTORS),./$(var) 1;)
+	@echo "Running NNLO..."
+	@$(foreach var,$(EXEGGUTORS),./$(var) 1 1;)
+	@echo "Computing cfactors..."
+	@./$(CFACGEN)
+	@echo "... done"
+
+
 # remove old executables
 rmxeq:
 	@ -rm -f $(MAIN); \
@@ -38,6 +53,6 @@ rmxeq:
 
 clean: rmxeq
 	@ -rm -rf *.o *~ $(MAIN)
-.PHONY: clean
+.PHONY: clean run
 
 ############################################################################
