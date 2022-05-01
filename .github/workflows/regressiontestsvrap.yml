@@ -28,3 +28,8 @@ jobs:
         make -j4
         sudo make install
         Vrap ../src/input.dat
+    - name: Run some cfactors
+      shell: bash --login {0}
+      run: |
+        cd cfactors_nnpdf40
+        make run
