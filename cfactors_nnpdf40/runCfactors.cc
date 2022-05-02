@@ -67,8 +67,6 @@ int main(int argc, char *argv[]) {
 
     run("E866P");
     run("E866R");
-    run("E906R");
-
     run("E605");
 
     return 0;

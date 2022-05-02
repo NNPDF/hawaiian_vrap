@@ -36,5 +36,5 @@ jobs:
       if: contains(github.event.pull_request.labels.*.name, 'run-regression-test')
       shell: bash --login {0}
       run: |
-        cd cfactors_nnpdf40
-        make run
+        cd regression_test
+        ./test_runer.sh

@@ -71,10 +71,10 @@ int main(int argc, char *argv[]) {
       
       cout << M[i] << "   " << Y[i] << endl;
 
-      os << "Vrap inputE605nnlo.dat " << M[i] << " " << Y[i] << " > output/out.dat";
+      os << "Vrap inputE605nnlo.dat " << M[i] << " " << Y[i] << " > output/outNNLO.dat";
       system(os.str().c_str());
-      system("awk 'END {print $NF}' output/out.dat > output/out2.dat");
-      ifstream infile2("output/out2.dat");
+      system("awk 'END {print $NF}' output/outNNLO.dat > output/outNNLO2.dat");
+      ifstream infile2("output/outNNLO2.dat");
       double vrap;
       infile2 >> vrap;
       infile2.close();

@@ -79,17 +79,17 @@ int main(int argc, char *argv[]) {
 
       cout << M[i] << "   " << Y[i] << endl;
 
-      os << "Vrap inputE866nnlo.dat " << M[i] << " " << Y[i] << " > output/outB.dat";
+      os << "Vrap inputE866nnlo.dat " << M[i] << " " << Y[i] << " > output/outBNNLO.dat";
       system(os.str().c_str());
-      system("awk 'END {print $NF}' output/outB.dat > output/outB2.dat");
-      ifstream infile2("output/outB2.dat");
+      system("awk 'END {print $NF}' output/outBNNLO.dat > output/outBNNLO2.dat");
+      ifstream infile2("output/outBNNLO2.dat");
       infile2 >> vrapP;
       infile2.close();
       os.str("");
-      os << "Vrap inputE866deutnnlo.dat " << M[i] << " " << Y[i] << " > output/outB.dat";
+      os << "Vrap inputE866deutnnlo.dat " << M[i] << " " << Y[i] << " > output/outBNNLO.dat";
       system(os.str().c_str());
-      system("awk 'END {print $NF}' output/outB.dat > output/outB2.dat");
-      infile2.open("output/outB2.dat");
+      system("awk 'END {print $NF}' output/outBNNLO.dat > output/outBNNLO2.dat");
+      infile2.open("output/outBNNLO2.dat");
       infile2 >> vrapD;
       infile2.close();
       ofile << setw(4) << i
