@@ -55,9 +55,7 @@ do
         output_file=${outputfolder}/${input_file}
         run_for_kinematics input${input_file} input_kinematics/${dataset}.dat ${output_file}
         compare_two ${output_file} regression_data/${input_file} || failures="${failures} ${input_file}"
-        break
     done
-    break
 done
 
 if [ -v ${failures} ]
