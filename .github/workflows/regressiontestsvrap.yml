@@ -1,7 +1,11 @@
 name: Regression
 
-on: [push]
-
+on:
+  push:
+    paths:
+      - 'src/**'
+  pull_request:
+    types: [labeled]
 jobs:
   build:
 
@@ -29,6 +33,7 @@ jobs:
         sudo make install
         Vrap ../src/input.dat
     - name: Run some cfactors
+      if: contains(github.event.pull_request.labels.*.name, 'run-regression-test')
       shell: bash --login {0}
       run: |
         cd cfactors_nnpdf40
