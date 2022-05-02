@@ -50,7 +50,7 @@ Nf 5
 # PDF and order in alphas setting
 ######################################################
 UseOtherPDF yes
-PDFfile NNPDF31_nnlo_as_0118.LHgrid
+PDFfile NNPDF40_nnlo_as_01180.LHgrid
 PDFset 0
 AlphasZ 0.118
 
