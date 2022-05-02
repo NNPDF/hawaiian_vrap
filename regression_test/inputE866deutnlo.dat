@@ -11,8 +11,8 @@
 #
 ##################################################
   
-Collider pp
-E_CM 7000.
+Collider piso
+E_CM 38.8
 
 ####################################################
 # Physical Parameters
@@ -27,7 +27,8 @@ E_CM 7000.
 #
 ################################################################
 
-Alphat 0.0078125
+#Alphat 0.0078125
+Alphat 0.00757002271
 
 # use W mass:
 
@@ -37,7 +38,8 @@ Alphat 0.0078125
 
 # use Z mass:
 
-Q 91.1876
+#Q 91.1876
+Q 0
 VectorBoson Zgamma
 
 muFoverQ 1.0
@@ -49,22 +51,18 @@ Nf 5
 ######################################################
 # PDF and order in alphas setting
 ######################################################
-UseOtherPDF yes
-PDFfile NNPDF40_nnlo_as_01180.LHgrid
-PDFset 0
-AlphasZ 0.118
 
-# PDF_mode ABKM_2009_NLO
-# PDF_mode MSTW_2008_NNLO
+#PDF_mode ABKM_2009_NLO
+#PDF_mode MSTW_2008_NNLO
 # OutputFormat TopDrawStyle
 
 # If you want to choose pdfs, alpha_s(M_Z) and hard cross section order
 # "a la carte", here is an example:
-# UseOtherPDF yes
-# PDFfile MRST2004nnlo.LHgrid
-# PDFset 1
-# AlphasZ 0.120
-# Order NNLO
+UseOtherPDF yes
+PDFfile NNPDF40_nnlo_as_01180.LHgrid
+PDFset 0
+AlphasZ 0.118
+Order NLO
 
 # Do MSTW_2008_NLO with 1 sigma errors:
 # UseOtherPDF yes

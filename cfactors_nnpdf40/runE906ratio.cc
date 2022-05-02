@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
       double vrapP, vrapD;
       ostringstream os;
 
-      cout << M[i] << "   " << Y[i] << endl;
+      cout << "Running for: m=" << M[i] << "   y=" << Y[i] << endl;
 
       os << "Vrap inputE906nlo.dat " << M[i] << " " << Y[i] << " > output/outC.dat";
       system(os.str().c_str());
@@ -50,6 +50,7 @@ int main(int argc, char *argv[]) {
       infile2 >> vrapP;
       infile2.close();
       os.str("");
+      cout << "deut time\n";
       os << "Vrap inputE906deutnlo.dat " << M[i] << " " << Y[i] << " > output/outC.dat";
       system(os.str().c_str());
       system("awk 'END {print $NF}' output/outC.dat > output/outC2.dat");
@@ -79,17 +80,17 @@ int main(int argc, char *argv[]) {
 
       cout << M[i] << "   " << Y[i] << endl;
 
-      os << "Vrap inputE906nnlo.dat " << M[i] << " " << Y[i] << " > output/outC.dat";
+      os << "Vrap inputE906nnlo.dat " << M[i] << " " << Y[i] << " > output/outCNNLO.dat";
       system(os.str().c_str());
-      system("awk 'END {print $NF}' output/outC.dat > output/outC2.dat");
-      ifstream infile2("output/outC2.dat");
+      system("awk 'END {print $NF}' output/outCNNLO.dat > output/outCNNLO2.dat");
+      ifstream infile2("output/outCNNLO2.dat");
       infile2 >> vrapP;
       infile2.close();
       os.str("");
-      os << "Vrap inputE906deutnnlo.dat " << M[i] << " " << Y[i] << " > output/outC.dat";
+      os << "Vrap inputE906deutnnlo.dat " << M[i] << " " << Y[i] << " > output/outCNNLO.dat";
       system(os.str().c_str());
-      system("awk 'END {print $NF}' output/outC.dat > output/outC2.dat");
-      infile2.open("output/outC2.dat");
+      system("awk 'END {print $NF}' output/outCNNLO.dat > output/outCNNLO2.dat");
+      infile2.open("output/outCNNLO2.dat");
       infile2 >> vrapD;
       infile2.close();
       ofile << setw(4) << i

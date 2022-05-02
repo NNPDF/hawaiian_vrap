@@ -1,7 +1,11 @@
 name: Regression
 
-on: [push]
-
+on:
+  push:
+    paths:
+      - 'src/**'
+  pull_request:
+    types: [labeled]
 jobs:
   build:
 
@@ -16,9 +20,10 @@ jobs:
     - name: Install lhapdf and PDFs
       shell: bash --login {0}
       run: |
-        conda install gxx_linux-64 pkg-config sysroot_linux-64=2.17
+        conda install gxx_linux-64 pkg-config sysroot_linux-64=2.17 numpy
         conda install -y lhapdf -c conda-forge
-        lhapdf install NNPDF31_nnlo_as_0118 
+        lhapdf update
+        lhapdf install NNPDF40_nnlo_as_01180
     - name: Compile vrap
       shell: bash --login {0}
       run: |
@@ -28,3 +33,9 @@ jobs:
         make -j4
         sudo make install
         Vrap ../src/input.dat
+    - name: Run some cfactors
+      if: contains(github.event.pull_request.labels.*.name, 'run-regression-test')
+      shell: bash --login {0}
+      run: |
+        cd regression_test
+        ./test_runer.sh
