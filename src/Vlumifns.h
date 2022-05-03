@@ -4,6 +4,8 @@
    ============================================================= */
 #ifndef ZGLUMIFNS_H
 #define ZGLUMIFNS_H
+#include "pdf.h"
+
 enum exchange { gamma_only = 1, Zgamma_interf = 2, Z_only = 3, Zgamma = 4,
                 Wplus = 5, Wminus = 6 } ;
 // procedures to decide which piece(s) are being computed:

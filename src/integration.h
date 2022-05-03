@@ -1,3 +1,7 @@
+#pragma once
+
+#include "settings.h"
+
 /*================================================================
  The full (NLO, NNLO) DY calculation, with cuts, divides up into 
  3 pieces:
