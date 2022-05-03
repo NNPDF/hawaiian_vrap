@@ -7,13 +7,10 @@ libVrap_a_SOURCES = \
 	a02.C  a02.h   \
 	vegas.C     \
 	dilog.C     \
-	totfns.C    \
 	pdf.C pdf.h      \
-	CClasses.h CClasses.C    \
 	DClasses.h DClasses.C    \
 	IClasses.h IClasses.C    \
 	NAClasses.h  vegas.h dilog.h \
-	totfns.h \
 	complex.h complex.C    \
 	thbasics.h thbasics.C    \
 	random.h random.C    \
@@ -28,7 +25,7 @@ libVrap_a_SOURCES = \
 	qiqjfns.h qiqjfns.C    \
 	Vlumifns_LHApdf.C Vlumifns_LHApdf.h \
 	LHApdf.cpp LHApdf.h EWparams.h \
-	mode.C mode.h integration.h integration_tot.h \
+	mode.C mode.h integration.h \
 	options.h options.hpp options.C
 
 Vrap_SOURCES = Vrap.C
