@@ -2,8 +2,57 @@
 
 #include <cstddef>
 #include <iostream>
+#include <utility>
 
 using namespace pinerap;
+
+void reconstruct_lumi(
+    double (*lumi) (pdfArray const&, pdfArray const&, collider),
+    collider c,
+    std::vector<int32_t>& pdg_ids,
+    std::vector<double>& factors
+) {
+    pdfArray f1;
+    pdfArray f2;
+
+    // TODO: add missing partons
+    std::vector<std::pair<double pdfArray::*, int32_t>> partons = {
+        { &pdfArray::tbar, -6 },
+        { &pdfArray::bbar, -5 },
+        { &pdfArray::cbar, -4 },
+        { &pdfArray::sbar, -3 },
+        { &pdfArray::ubar, -2 },
+        { &pdfArray::dbar, -1 },
+        { &pdfArray::gluon, 21 },
+        { &pdfArray::d, 1 },
+        { &pdfArray::u, 2 },
+        { &pdfArray::s, 3 },
+        { &pdfArray::c, 4 },
+        { &pdfArray::b, 5 },
+        { &pdfArray::t, 6 },
+        { &pdfArray::x, 9999 }, // TODO: what is `x`?
+    };
+
+    // loop over partons of the first initial state
+    for (auto const a : partons) {
+        // loop over partons of the second initial state
+        for (auto const b : partons) {
+            // TODO: check that this zero-initializes
+            f1 = pdfArray();
+            f2 = pdfArray();
+
+            f1.*a.first = 1.0;
+            f2.*b.first = 1.0;
+
+            double const result = lumi(f1, f2, c);
+
+            pdg_ids.push_back(a.second);
+            pdg_ids.push_back(b.second);
+            factors.push_back(result);
+        }
+    }
+}
+
 /*
  * Initializes the pineappl grid with all the necessary parameters
  */
