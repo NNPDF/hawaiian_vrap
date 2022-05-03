@@ -566,11 +566,11 @@ DVector rap_y(){
     double tau = Q*Q/E_CM/E_CM;
     double x1 = sqrt(tau) * exp(y);
     double x2 = sqrt(tau) * exp(-y);
+
+    // Fill in the Leading Order result
+    piner.fill_grid(0, 0, x1, x2, prefactor);
+
     double Born_ans = Born_integrand(y);
-
-    // TODO This is not true, but I need to understand what `Born_ans` actually means
-    piner.fill_grid(0, 0, x1, x2, prefactor*Born_ans);
-
     // LO case
     if (order_flag == 0) { 
         std::cout << "Staring LO calculation: " << std::endl;

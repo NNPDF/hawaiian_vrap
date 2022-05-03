@@ -1,4 +1,5 @@
 #include "pineappl_interface.h"
+#include "Vlumifns_LHApdf.h"
 
 #include <cstddef>
 #include <iostream>
@@ -7,7 +8,7 @@
 using namespace pinerap;
 
 void reconstruct_lumi(
-    double (*lumi) (pdfArray const&, pdfArray const&, collider),
+    double (*lumi) (pdfArray const&, pdfArray const&, process p, collider),
     collider c,
     std::vector<int32_t>& pdg_ids,
     std::vector<double>& factors
@@ -44,7 +45,8 @@ void reconstruct_lumi(
             f1.*a.first = 1.0;
             f2.*b.first = 1.0;
 
-            double const result = lumi(f1, f2, c);
+            // process is always DY (1)
+            double const result = lumi(f1, f2, DY, c);
 
             pdg_ids.push_back(a.second);
             pdg_ids.push_back(b.second);
@@ -59,18 +61,13 @@ void reconstruct_lumi(
 void CheffPanopoulos::create_grid(int max_orders, double q2) {
     auto* lumi = pineappl_lumi_new();
 
-    // At LO we only have q Qb where q=Q (Z) or q != Q (W)
-    // (diagonal ckm)
+    // At LO we only have one lumi channel
+    std::vector<int32_t> pdg_ids;
+    std::vector<double> factors;
+    // we only care about collider piso for now (=3) take it from the runcard in the future
+    reconstruct_lumi(&qqbar_lumi, piso, pdg_ids, factors);
 
-    // TODO: start with Z only
-    int pdg_ids[] = {
-        1, -1, -1, 1,
-        2, -2, -2, 2,
-        3, -3, -3, 3,
-        4, -4, -4, 4,
-    };
-    double ckm_factors[8] = { 1.0 };
-    pineappl_lumi_add(lumi, 8, pdg_ids, ckm_factors);
+    pineappl_lumi_add(lumi, factors.size(), pdg_ids.data(), factors.data());
 
     // TODO only LO for now
     uint32_t orders[] = { 0, 2, 0, 0 };
@@ -81,7 +78,7 @@ void CheffPanopoulos::create_grid(int max_orders, double q2) {
     int how_many_bins = 1;
 
     auto* keyval = pineappl_keyval_new();
-    pineappl_keyval_set_double(keyval, "q2_min", 10); 
+    pineappl_keyval_set_double(keyval, "q2_min", 2.5); 
     grid = pineappl_grid_new(lumi, how_many_orders, orders, how_many_bins, bins, keyval);
     constant_q2 = q2;
 
