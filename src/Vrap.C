@@ -262,11 +262,11 @@ int main(int argc,char* argv[]){
 // order_flag = 2;
 
 
+   // TODO: this could very well be a loop over y??
 
     std::cout << "\n > Starting calculation:\n\n";
     piner.create_grid(order_flag, pow(Q, 2));
 
-   // TODO: this could very well be a loop over y??
         y = rapY;
         DVector temp_ans = rap_y();
         std::cout << "\nFinal result: " << temp_ans[0] << " +/- " << temp_ans[1] << std::endl;
