@@ -22,7 +22,7 @@ void CheffPanopoulos::create_grid(int max_orders, double q2) {
         5, -5
     };
     double ckm_factors[5] = { 1.0 };
-    pineappl_lumi_add(lumi, 1, pdg_ids, ckm_factors);
+    pineappl_lumi_add(lumi, 5, pdg_ids, ckm_factors);
 
     // TODO only LO for now
     uint32_t orders[] = { 0, 2, 0, 0 };
