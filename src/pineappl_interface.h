@@ -1,9 +1,18 @@
 #pragma once
 
+#include "LHApdf.h"
+#include "pdf.h"
 #include <pineappl_capi.h>
-
+#include <vector>
 
 namespace pinerap {
+
+    void reconstruct_lumi(
+        double (*lumi) (pdfArray const&, pdfArray const&, collider),
+        collider c,
+        std::vector<int32_t>& pdg_ids,
+        std::vector<double>& factors
+    );
 
     class CheffPanopoulos {
         /*
