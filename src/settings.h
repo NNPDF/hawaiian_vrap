@@ -6,6 +6,7 @@
 #include <string>
 #include "pdf.h"
 #include "Vlumifns.h"
+#include "pineappl_interface.h"
 
 double E_CM;            // hadron-hadron center-of-mass energy
 double Q, muR, muF;     // DY-mass; renormalization & factorization scales
@@ -16,6 +17,9 @@ double Nf;              // Nf = number of light quarks flavors; should ~ depend 
 
 // rapidity & integration ranges:
 double y, y_lower, y_upper, xi_l, xi_u, ymax, Ml, Mu; 
+
+// pienappl interface
+pinerap::CheffPanopoulos piner = pinerap::CheffPanopoulos();
 
 // collider type (pp, ppbar, piso), from `pdf.h`
 collider coll;  

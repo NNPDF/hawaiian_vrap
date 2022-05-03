@@ -1,4 +1,4 @@
-AM_CPPFLAGS = $(LHAPDF_CFLAGS)
+AM_CPPFLAGS = $(LHAPDF_CFLAGS) $(pineappl_capi_CFLAGS)
 
 noinst_LIBRARIES = libVrap.a
 bin_PROGRAMS = Vrap Vtot
@@ -19,6 +19,7 @@ libVrap_a_SOURCES = \
 	random.h random.C    \
 	QCDbasics.h QCDbasics.C    \
 	hardfns.h hardfns.C     \
+	pineappl_interface.C pineappl_interface.h settings.h \
 	Vlumifns.h Vlumifns.C    \
 	BornNLOfns.h BornNLOfns.C    \
 	qbarqfns.h qbarqfns.C    \
@@ -33,7 +34,7 @@ libVrap_a_SOURCES = \
 Vrap_SOURCES = Vrap.C
 Vtot_SOURCES = Vtot.C
 
-Vrap_LDADD = libVrap.a $(LHAPDF_LIBS)
-Vtot_LDADD = libVrap.a $(LHAPDF_LIBS)
+Vrap_LDADD = libVrap.a $(LHAPDF_LIBS) $(pineappl_capi_LIBS)
+Vtot_LDADD = libVrap.a $(LHAPDF_LIBS) $(pineappl_capi_LIBS)
 
 dist_data = INSTALL

@@ -34,30 +34,48 @@ double DY_prefactor(double M, double alpha){
 
 //================================================================
 // The Born-type terms in the integrand.
+double Born_integrand(double x1, double x2){
+    double asR = alpha_s(muR)/PI;
 
-double Born_integrand(double y){
-  double tau = Q*Q/E_CM/E_CM;
-  double asR = alpha_s(muR)/PI;
-  double x1 = sqrt(tau) * exp(y);
-  double x2 = sqrt(tau) * exp(-y);
-  if ((x1 >= 1.) || (x2 >= 1.)){ return 0.; }
-  double LO_term = 1.;
-  double NLO_term = Born_NLO(muF/Q);
-  double NNLO_term = Born_NNLO(Nf,muF/Q,muR/Q);
-  double Born_term;
-  if (order_flag == 0) {
-    Born_term = LO_term; }
-  if (order_flag == 1) {
-    Born_term = LO_term + asR * NLO_term; }
-  if (order_flag == 2) {
-    if (f_NNLO_only == 0) { Born_term = asR*asR * NNLO_term; }
-    else { Born_term = LO_term + asR * NLO_term + asR*asR * NNLO_term; }
-  }
-	pdfArray X1,X2;
-	LHAComputePdf(x1,muF,X1);	
-	LHAComputePdf(x2,muF,X2);	
-	return Born_term * qqbar_lumi(X1,X2,DY,coll);
+    if ((x1 >= 1.) || (x2 >= 1.)){ return 0.; }
+
+    double LO_term = 1.;
+    double NLO_term = Born_NLO(muF/Q);
+    double NNLO_term = Born_NNLO(Nf,muF/Q,muR/Q);
+    double Born_term;
+
+    if (order_flag == 0) {
+        Born_term = LO_term;
+    }
+    if (order_flag == 1) {
+        Born_term = LO_term + asR * NLO_term;
+    }
+    if (order_flag == 2) {
+        if (f_NNLO_only == 0) {
+            Born_term = asR*asR * NNLO_term;
+        }
+        else {
+            Born_term = LO_term + asR * NLO_term + asR*asR * NNLO_term;
+        }
+    }
+
+    pdfArray X1,X2;
+
+    LHAComputePdf(x1,muF,X1);	
+    LHAComputePdf(x2,muF,X2);
+
+    // Calls `qqbar_lumi` probably from `Vlumifns_LHApdf.C`
+    // but this can change depending on where the headers are coming from...
+    return Born_term * qqbar_lumi(X1,X2,DY,coll);
 }
+// LEGACY: (i.e., don't want to bother with changing all instances of this call)
+double Born_integrand(double y){
+    double tau = Q*Q/E_CM/E_CM;
+    double x1 = sqrt(tau) * exp(y);
+    double x2 = sqrt(tau) * exp(-y);
+    return Born_integrand(x1, x2);
+}
+
 
 //================================================================
 // The boost + real-type terms in the integrand.
@@ -534,76 +552,94 @@ DVector int_y(double xil, double xiu){
 }
 
 // Routine computes d sigma/dM/dy, plus errors:
-
 DVector rap_y(){
-  double total, total_error;
-  double prefactor = DY_prefactor(Q,alphat);
-  std::cout << "Prefactor = " << prefactor << std::endl;
-  double asR = alpha_s(muR)/PI;
-  DVector result(0,1);   DVector i_NLO(0,2);  DVector i_NNLO(0,2);
-  if (f_quiet==0) {
-    std::cout << std::setw(9) << std::setprecision(9) << " working on    y =  " << y << std::endl; 
-  }
-// LO case
-  if (order_flag == 0) { 
-    total = prefactor * Born_integrand(y);
-    total_error = 0.;
-    std::cout << "LO   = " << total << std::endl;
-  }
-// NLO case
-  else if (order_flag == 1) {
-    double Born_ans = Born_integrand(y);
-    std::cout << "LO   = " << prefactor * Born_ans << std::endl;
-    if (std::fabs(int_NLO(.03,.43,.93)) < 1.0e-16) {
-       if (f_quiet==0) {
-       std::cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << std::endl;
-       }
-       i_NLO.fill(3,0.,0.,0.);
-    }
-    else { i_NLO = sqint(1,2,5000,10,20,ranseed); }
-    total = prefactor * ( Born_ans + asR * i_NLO[0] );
-    total_error = prefactor * asR * i_NLO[1] ;
-    std::cout << "NLO  = " << prefactor * (Born_ans + asR * i_NLO[0]) << std::endl;
-  }
-// NNLO case
-  else {   //  order_flag = 2:
-    double Born_ans = Born_integrand(y);
-    std::cout << "LO   = " << prefactor * Born_ans << std::endl;
-    if (f_NNLO_only == 1) {
+    double total, total_error;
+    double prefactor = DY_prefactor(Q,alphat);
+    std::cout << "Prefactor = " << prefactor << std::endl;
+    double asR = alpha_s(muR)/PI;
+    DVector result(0,1);   DVector i_NLO(0,2);  DVector i_NNLO(0,2);
     if (f_quiet==0) {
-    std::cout << " computing NLO integral for y = " << y << std::endl; 
+        std::cout << std::setw(9) << std::setprecision(9) << " working on    y =  " << y << std::endl; 
     }
-    if (std::fabs(int_NLO(.03,.43,.93)) < 1.0e-16) {
-       if (f_quiet==0) {
-       std::cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << std::endl;
-       }
-       i_NLO.fill(3,0.,0.,0.);
+
+    // Note that Born_ans is different depending on the `order_flag`
+    double tau = Q*Q/E_CM/E_CM;
+    double x1 = sqrt(tau) * exp(y);
+    double x2 = sqrt(tau) * exp(-y);
+    double Born_ans = Born_integrand(y);
+
+    // TODO This is not true, but I need to understand what `Born_ans` actually means
+    piner.fill_grid(0, 0, x1, x2, prefactor*Born_ans);
+
+    // LO case
+    if (order_flag == 0) { 
+        std::cout << "Staring LO calculation: " << std::endl;
+        total = prefactor * Born_ans;
+        total_error = 0.;
+        std::cout << "LO   = " << total << std::endl;
     }
-    else { i_NLO = sqint(1,2,5000,10,20,ranseed); }
+
+    // NLO case
+    else if (order_flag == 1) {
+        std::cout << "LO   = " << prefactor * Born_ans << std::endl;
+
+        if (std::fabs(int_NLO(.03,.43,.93)) < 1.0e-16) {
+            if (f_quiet==0) std::cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << std::endl;
+
+            i_NLO.fill(3,0.,0.,0.);
+        } else {
+            i_NLO = sqint(1,2,5000,10,20,ranseed); 
+        }
+
+        total = prefactor * ( Born_ans + asR * i_NLO[0] );
+        total_error = prefactor * asR * i_NLO[1] ;
+
+        std::cout << "NLO  = " << prefactor * (Born_ans + asR * i_NLO[0]) << std::endl;
     }
-    std::cout << "NLO  = " << prefactor * (Born_ans + asR * i_NLO[0]) << std::endl;
+    // NNLO case
+    else {   //  order_flag = 2:
+        std::cout << "LO   = " << prefactor * Born_ans << std::endl;
+        if (f_NNLO_only == 1) {
+            if (f_quiet==0) {
+                std::cout << " computing NLO integral for y = " << y << std::endl; 
+            }
+            if (std::fabs(int_NLO(.03,.43,.93)) < 1.0e-16) {
+                if (f_quiet==0) {
+                    std::cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << std::endl;
+                }
+                i_NLO.fill(3,0.,0.,0.);
+            }
+            else {
+                i_NLO = sqint(1,2,5000,10,20,ranseed); 
+            }
+        }
+
+        std::cout << "NLO  = " << prefactor * (Born_ans + asR * i_NLO[0]) << std::endl;
+        if (f_quiet==0) {
+            std::cout << " computing NNLO integral for y = " << y << std::endl; 
+        }
+
+        i_NNLO = sqint(2,2,20000,3,10,ranseed);
+
+        if (f_NNLO_only == 0) {
+            total = prefactor * ( Born_ans + asR*asR * i_NNLO[0] );
+            total_error = prefactor * asR*asR * i_NNLO[1] ;
+        } else {
+            total = prefactor * ( Born_ans + asR * i_NLO[0] + asR*asR * i_NNLO[0] );
+            total_error = prefactor * asR * sqrt( i_NLO[1]*i_NLO[1]
+                                                + asR*asR * i_NNLO[1]*i_NNLO[1] );
+            std::cout << "NNLO = " << total << std::endl;
+        }
+    }
+
     if (f_quiet==0) {
-    std::cout << " computing NNLO integral for y = " << y << std::endl; 
+        std::cout << std::setw(8) << std::setprecision(8) <<  " y = " << y 
+            << ";   d^2sigma/dM/dy =  " << total
+            << "   pm  " << total_error << std::endl;
     }
-    i_NNLO = sqint(2,2,20000,3,10,ranseed);
-    if (f_NNLO_only == 0) {
-      total = prefactor * ( Born_ans + asR*asR * i_NNLO[0] );
-      total_error = prefactor * asR*asR * i_NNLO[1] ;
-    }
-    else {
-      total = prefactor * ( Born_ans + asR * i_NLO[0] + asR*asR * i_NNLO[0] );
-      total_error = prefactor * asR * sqrt( i_NLO[1]*i_NLO[1]
-                                          + asR*asR * i_NNLO[1]*i_NNLO[1] );
-      std::cout << "NNLO = " << total << std::endl;
-    }
-  }
-  if (f_quiet==0) {
-  std::cout << std::setw(8) << std::setprecision(8) <<  " y = " << y 
-       << ";   d^2sigma/dM/dy =  " << total
-       << "   pm  " << total_error << std::endl;
-  }
-  result.fill(2,total,total_error);
-  return result;
+
+    result.fill(2,total,total_error);
+    return result;
 }
 
 // ============ SCAN IN RAPIDITY y =========================

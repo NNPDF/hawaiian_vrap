@@ -223,6 +223,7 @@ int main(int argc,char* argv[]){
 
    printParamInfo();
 
+
 //double alpha_s_Z_PDF;
 // LHAPDF::initPDFSetByName("abkm09_5_nlo.LHgrid");
 // alpha_s_Z_PDF = alphasPDF(m_Z); 
@@ -260,11 +261,18 @@ int main(int argc,char* argv[]){
 // Just one (two?) rapidity point, y:
 // order_flag = 2;
 
-    y = rapY;
+
+
     std::cout << "\n > Starting calculation:\n\n";
-    DVector temp_ans = rap_y();
-    std::cout << "\nFinal result: " << temp_ans[0] << " +/- " << temp_ans[1] << std::endl;
-    std::cout << temp_ans[0] << std::endl;
+    piner.create_grid(order_flag, pow(Q, 2));
+
+   // TODO: this could very well be a loop over y??
+        y = rapY;
+        DVector temp_ans = rap_y();
+        std::cout << "\nFinal result: " << temp_ans[0] << " +/- " << temp_ans[1] << std::endl;
+        std::cout << temp_ans[0] << std::endl;
+
+    piner.save();
 
 // At fixed rapidity y, scan d^2sigma/dM/dY through
 //     Q*mu_r_lower < (muR=muF) < Q*mu_r_upper     with n_points steps:
