@@ -1,7 +1,7 @@
 AM_CPPFLAGS = $(LHAPDF_CFLAGS) $(pineappl_capi_CFLAGS)
 
 noinst_LIBRARIES = libVrap.a
-bin_PROGRAMS = Vrap Vtot
+bin_PROGRAMS = Vrap
 
 libVrap_a_SOURCES = \
 	a02.C  a02.h   \
@@ -32,9 +32,7 @@ libVrap_a_SOURCES = \
 	options.h options.hpp options.C
 
 Vrap_SOURCES = Vrap.C
-Vtot_SOURCES = Vtot.C
 
 Vrap_LDADD = libVrap.a $(LHAPDF_LIBS) $(pineappl_capi_LIBS)
-Vtot_LDADD = libVrap.a $(LHAPDF_LIBS) $(pineappl_capi_LIBS)
 
 dist_data = INSTALL
