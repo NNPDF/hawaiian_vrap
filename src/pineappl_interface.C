@@ -67,9 +67,11 @@ void CheffPanopoulos::create_grid(int max_orders, double q2) {
     // the future
     for (auto lumi_function: luminosities) {
         reconstruct_lumi(lumi_function, piso, pdg_ids, factors);
+        pineappl_lumi_add(lumi, factors.size(), pdg_ids.data(), factors.data());
+        pdg_ids.clear();
+        factors.clear();
     }
 
-    pineappl_lumi_add(lumi, factors.size(), pdg_ids.data(), factors.data());
 
     // TODO only LO for now
     std::vector<uint32_t> orders{0, 2, 0, 0};
