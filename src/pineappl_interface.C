@@ -48,6 +48,11 @@ void reconstruct_lumi(
             // process is always DY (1)
             double const result = lumi(f1, f2, DY, c);
 
+            // skip zero partonic combinations
+            if (result == 0.0) {
+                continue;
+            }
+
             pdg_ids.push_back(a.second);
             pdg_ids.push_back(b.second);
             factors.push_back(result);
