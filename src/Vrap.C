@@ -11,55 +11,26 @@
 #include "NAClasses.h"
 #include "DClasses.h"
 #include "dilog.h"
-#include "pdf.h"  // pdf distributions
-#include "Vlumifns.h" // luminosity functions required for Drell-Yan
 #include "BornNLOfns.h"  // Born kinematics & NLO cross section fns.
 #include "qbarqfns.h"  // NNLO hard cross section fns. for q-\bar{q} channel
 #include "qgfns.h"  // NNLO hard cross section fns. for q-g channel
 #include "ggfns.h"  // NNLO hard cross section fns. for g-g channel
 #include "qiqjfns.h"  // NNLO hard cross section fns. for q_i \neq q_j channel
 #include <fstream>
+#include "settings.h"
 #include "Vlumifns_LHApdf.h" // luminosity functions required for Drell-Yan
 #include "LHApdf.h"
 #include "mode.h"
-
-double E_CM;         // hadron-hadron center-of-mass energy
-double Q, muR, muF;  // DY-mass; renormalization & factorization scales
-double muRrel, muFrel;  // global muR/Q, muF/Q (needed to do M (Q) integral)
-double alphat;  // local value of alpha_QED(Q)
-exchange exchM;  // value of "exchange" for doing M (Q) integral
-double Nf;  // Nf = number of light quarks flavors; should ~ depend on Q.
-// rapidity & integration ranges:
-double y, y_lower, y_upper, xi_l, xi_u, ymax, Ml, Mu; 
-collider coll;
-int ranseed, n_points;
-bool NNLO_only;
-int f_NNLO_only;  // fudge parameter to isolate NNLO terms
-                  // normally should be 1
-                  // Set to 0 for only the NNLO hard cross section terms
-int f_quiet = 0; // Set to 1 to suppress intermediate printing by rap_y()
-                 // and by setV().
-std::string pdfMode;
-std::string pdfFile;
-bool useMyAlphaRunning=false;
-bool useOtherPDF;
-int pdfSet;
-int parton_flag; // 1: all, 2:qqbar 3: qg 4: gg 5:qq 6: qqbar_plus_qq 
-
-int o_f; int direction; int nbrYPnts;
-
 #include "integration.h"
-
-
 
 #include "options.h"
 
 
 class VrapOptionsHandler : public OptionsHandler {
-public:
-VrapOptionsHandler();
-	virtual ~VrapOptionsHandler(){};
-};
+    public:
+        VrapOptionsHandler();
+            virtual ~VrapOptionsHandler(){};
+    };
 
 VrapOptionsHandler::VrapOptionsHandler(){
 	add(new ValueSettingOption<double>("E_CM",E_CM,"Sets the hadron-hadron center of mass energy in GeV units."));
@@ -69,7 +40,6 @@ VrapOptionsHandler::VrapOptionsHandler(){
 	add(new ValueSettingOption<double>("Nf",Nf,"Sets the number of quark flavors."));
 	add(new ValueSettingOption<double>("Alphat",alphat,"Sets the value of alpha."));
 	add(new ValueSettingOption<int>("RandomSeed",ranseed,"Sets the random seed, must be a positive integer."));
-	//add(new multipleValueOption<collider>("Collider",coll,"pp",pp,"ppbar",ppbar,"Sets the type of collider. ") );
 	add(new multipleValueOption<collider>("Collider",coll,"pp",pp,"ppbar",ppbar,"piso",piso,"Sets the type of collider. ") );
 	add(new yesOrNoOption("NNLO_only",NNLO_only,"Sets whether to compute NNLO terms only."));
 	add(new yesOrNoOption("UseMyAlphaQEDRunning",useMyAlphaRunning,"Sets whether to use my running QED coupling, better for low-mass"));
@@ -89,76 +59,72 @@ VrapOptionsHandler::VrapOptionsHandler(){
 
 
 void defaultSettings(){
-		
-Nf = 5.;  // Default number of light quark flavors in hard cross section.
-NNLO_only=false;
+    Nf = 5.;  // Default number of light quark flavors in hard cross section.
+    NNLO_only=false;
 
+    // Default value of alpha QED.
+    alphat = 1./128.;   // USE FOR ALL Z/W COMPARISONS WITH FRANK!!!
+    // alphat = 1./132.1;  // Used for fxd. tgt. M=8 GeV in  hep-ph/0306192
 
-// Default value of alpha QED.
- alphat = 1./128.;   // USE FOR ALL Z/W COMPARISONS WITH FRANK!!!
-// alphat = 1./132.1;  // Used for fxd. tgt. M=8 GeV in  hep-ph/0306192
-
-// Uncomment for fixed-target Drell-Yan, M vs. y. table of K factors
-// (overwrites previous!):
-// coll = pp;   E_CM = 38.757;  Q = 8.;  Nf = 5.;   muF = Q;  muR = muF; 
-// f_NNLO_only = 0;  alphat = 1./132.1;   setV(gamma_only,Q,alphat,Nf,0);   
-
+    // Uncomment for fixed-target Drell-Yan, M vs. y. table of K factors
+    // (overwrites previous!):
+    // coll = pp;   E_CM = 38.757;  Q = 8.;  Nf = 5.;   muF = Q;  muR = muF; 
+    // f_NNLO_only = 0;  alphat = 1./132.1;   setV(gamma_only,Q,alphat,Nf,0);   
 
 	useOtherPDF=false;
 	pdfSet=-1;
 	parton_flag=1;
 	nbrYPnts=19;
 	direction=1;
-	}
+}
 
 
 void printBanner(){
- std::cout << "======================================================== " << std::endl;
- std::cout << "=                       Vrap-0.9                       = " << std::endl;
- std::cout << "=                                                      = " << std::endl;
- std::cout << "=       Computes rapidity distributions for            = " << std::endl;
- std::cout << "=   production of electroweak vector bosons in         = " << std::endl;
- std::cout << "=     hadronic collisions through NNLO in QCD          = " << std::endl;
- std::cout << "=                                                      = " << std::endl;
- std::cout << "=                 Based on the article                 = " << std::endl;
- std::cout << "=    `High precision QCD at hadron colliders:          = " << std::endl;
- std::cout << "=  Electroweak gauge boson rapidity distributions      = " << std::endl;
- std::cout << "=  at NNLO', by Charalampos Anastasiou, Lance Dixon,   = " << std::endl;
- std::cout << "=  Kirill Melnikov and Frank Petriello,                = " << std::endl;
- std::cout << "=  Phys. Rev. D69, 094008 (2004) [hep-ph/0312266]      = " << std::endl;
- std::cout << "=                                                      = " << std::endl;
- std::cout << "= This version includes an interface to parton         = " << std::endl; 
- std::cout << "= distribution functions via the Les Houches Accord    = " << std::endl;
- std::cout << "= (LHAPDF). This interface, and several other program  = " << std::endl;
- std::cout << "= improvements, provided by Daniel Maitre              = " << std::endl;
- std::cout << "=                                                      = " << std::endl;
- std::cout << "=  Questions?  lance at slac dot stanford dot edu      = " << std::endl;
- std::cout << "======================================================== " << std::endl; 
- std::cout << std::endl;
-
-	}
+    std::cout << "======================================================== " << std::endl;
+    std::cout << "=                       Vrap-0.9                       = " << std::endl;
+    std::cout << "=                                                      = " << std::endl;
+    std::cout << "=       Computes rapidity distributions for            = " << std::endl;
+    std::cout << "=   production of electroweak vector bosons in         = " << std::endl;
+    std::cout << "=     hadronic collisions through NNLO in QCD          = " << std::endl;
+    std::cout << "=                                                      = " << std::endl;
+    std::cout << "=                 Based on the article                 = " << std::endl;
+    std::cout << "=    `High precision QCD at hadron colliders:          = " << std::endl;
+    std::cout << "=  Electroweak gauge boson rapidity distributions      = " << std::endl;
+    std::cout << "=  at NNLO', by Charalampos Anastasiou, Lance Dixon,   = " << std::endl;
+    std::cout << "=  Kirill Melnikov and Frank Petriello,                = " << std::endl;
+    std::cout << "=  Phys. Rev. D69, 094008 (2004) [hep-ph/0312266]      = " << std::endl;
+    std::cout << "=                                                      = " << std::endl;
+    std::cout << "= This version includes an interface to parton         = " << std::endl; 
+    std::cout << "= distribution functions via the Les Houches Accord    = " << std::endl;
+    std::cout << "= (LHAPDF). This interface, and several other program  = " << std::endl;
+    std::cout << "= improvements, provided by Daniel Maitre              = " << std::endl;
+    std::cout << "=                                                      = " << std::endl;
+    std::cout << "=  Questions?  lance at slac dot stanford dot edu      = " << std::endl;
+    std::cout << "======================================================== " << std::endl; 
+    std::cout << std::endl;
+}
 	
 void printParamInfo(){	
- std::cout << "-------------------------------------------------------- " << std::endl; 
- std::cout << " ranseed =  " << ranseed << std::endl; 
- std::cout << " order_flag =  " << order_flag << std::endl; 
- std::cout << " E_CM =  " << E_CM 
-      << " GeV;   collider = " << coll << "  (1 = pp;  2 = ppbar)"  << std::endl; 
- std::cout << " alpha_s(M_Z) =  " << alpha_s_Z << std::endl; 
- std::cout << " Q =  " << Q << "   muR/Q = " << muRrel 
-                       << "   muF/Q = " << muFrel << std::endl; 
- std::cout << " alpha_QED used =  " << alphat << std::endl; 
- std::cout << " Nf =  " << Nf << "     NFf = " << NFf(int(Nf)) << std::endl;
- std::cout << " alpha_s(muR)/Pi =  " << alpha_s(muR)/PI << std::endl;
- std::cout << " DY prefactor = " << DY_prefactor(Q,alphat) << std::endl;
- if (useOtherPDF){
-	std::cout << " PDF file = " << pdfFile << std::endl;
-	std::cout << " PDF set = " << pdfSet << std::endl;
-} else {
-	std::cout << " PDF mode = " << pdfMode << std::endl;
-}
+    std::cout << "-------------------------------------------------------- " << std::endl; 
+    std::cout << " ranseed =  " << ranseed << std::endl; 
+    std::cout << " order_flag =  " << order_flag << std::endl; 
+    std::cout << " E_CM =  " << E_CM 
+        << " GeV;   collider = " << coll << "  (1 = pp;  2 = ppbar)"  << std::endl; 
+    std::cout << " alpha_s(M_Z) =  " << alpha_s_Z << std::endl; 
+    std::cout << " Q =  " << Q << "   muR/Q = " << muRrel 
+                        << "   muF/Q = " << muFrel << std::endl; 
+    std::cout << " alpha_QED used =  " << alphat << std::endl; 
+    std::cout << " Nf =  " << Nf << "     NFf = " << NFf(int(Nf)) << std::endl;
+    std::cout << " alpha_s(muR)/Pi =  " << alpha_s(muR)/PI << std::endl;
+    std::cout << " DY prefactor = " << DY_prefactor(Q,alphat) << std::endl;
+    if (useOtherPDF){
+        std::cout << " PDF file = " << pdfFile << std::endl;
+        std::cout << " PDF set = " << pdfSet << std::endl;
+    } else {
+        std::cout << " PDF mode = " << pdfMode << std::endl;
+    }
 
-std::cout << "-------------------------------------------------------- " << std::endl; 
+    std::cout << "-------------------------------------------------------- " << std::endl; 
 };
 
 //===========  MAIN PROGRAM  ==========================================
@@ -211,29 +177,32 @@ int main(int argc,char* argv[]){
 	}
 
 
-switch(parton_flag){
-	case 1: compute_all(); break;	
-	case 2: compute_qqbar(); break;	
-	case 3: compute_qg(); break;	
-	case 4: compute_gg(); break;	
-	case 5: compute_qq(); break;	
-	case 6: compute_qqbar_plus_qq(); break;	
-}
+    switch(parton_flag){
+        // From `Vlumifns.h`, sets up which parton channel are active
+        // flags: f_qqbar, f_qg, f_gg, f_qq;
+        case 1: compute_all(); break;	
+        case 2: compute_qqbar(); break;	
+        case 3: compute_qg(); break;	
+        case 4: compute_gg(); break;	
+        case 5: compute_qq(); break;	
+        case 6: compute_qqbar_plus_qq(); break;	
+    }
 
+    // alphat = alpha_QED(Q);   // my running QED coupling, better for low-mass
+    if (useMyAlphaRunning) {
+        alphat = alpha_QED(Q);
+    }
 
-// alphat = alpha_QED(Q);   // my running QED coupling, better for low-mass
-if ( useMyAlphaRunning){
-	alphat = alpha_QED(Q);
-}
+    // Set f_NNLO_only = 0 (1)  for NNLO terms only (LO+NLO+NNLO)
+    if (NNLO_only){
+        f_NNLO_only = 0;
+    } else {
+        f_NNLO_only = 1;	
+    }
 
- // Set f_NNLO_only = 0 (1)  for NNLO terms only (LO+NLO+NNLO)
-if (NNLO_only){
- f_NNLO_only = 0;
-} else {
- f_NNLO_only = 1;	
-}
-
-setV(exchM,Q,alphat,Nf,0);
+    // Compute all couplings for all luminosity channels
+    // these are then used by the different functions inside `Vlumifns.C`
+    setV(exchM,Q,alphat,Nf,0);
 
 
 // Uncomment for fixed-target Drell-Yan, M vs. y. table of K factors
@@ -242,21 +211,23 @@ setV(exchM,Q,alphat,Nf,0);
 // f_NNLO_only = 0;  alphat = 1./132.1;   setV(gamma_only,Q,alphat,Nf,0);   
 
 
-if (useOtherPDF){
-	set_mode(pdfFile,pdfSet);
-} else {
-	set_mode(pdfMode);
-}
+    if (useOtherPDF){
+        // initializes LHAPDF
+        set_mode(pdfFile, pdfSet);
+    } else {
+        set_mode(pdfMode);
+    }
 
-   muR = muRrel*Q;    muF = muFrel*Q;
+   muR = muRrel*Q;
+   muF = muFrel*Q;
 
-printParamInfo();
+   printParamInfo();
+
 
 //double alpha_s_Z_PDF;
 // LHAPDF::initPDFSetByName("abkm09_5_nlo.LHgrid");
 // alpha_s_Z_PDF = alphasPDF(m_Z); 
 // std::cout << " alpha_s(M_Z) =  " << alpha_s_Z_PDF << std::endl; 
-
 
 // To do the total cross section integral, for normalization/checks:
 // DVector norm_factor = int_y(0.,1.);
@@ -289,8 +260,20 @@ printParamInfo();
 
 // Just one (two?) rapidity point, y:
 // order_flag = 2;
- y = rapY;   DVector temp_ans = rap_y();
- std::cout << temp_ans[0] << std::endl;
+
+
+   // TODO: this could very well be a loop over y??
+
+    std::cout << "\n > Starting calculation:\n\n";
+    piner.create_grid(order_flag, pow(Q, 2));
+
+        y = rapY;
+        DVector temp_ans = rap_y();
+        std::cout << "\nFinal result: " << temp_ans[0] << " +/- " << temp_ans[1] << std::endl;
+        std::cout << temp_ans[0] << std::endl;
+
+    piner.save();
+
 // At fixed rapidity y, scan d^2sigma/dM/dY through
 //     Q*mu_r_lower < (muR=muF) < Q*mu_r_upper     with n_points steps:
 // arguments are: (y, mu_r_lower,mu_r_upper,n_points).

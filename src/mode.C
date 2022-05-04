@@ -104,11 +104,9 @@ void set_mode(const string& mode){
 
 }
 
-void set_mode(const string& filename,int iset){
-                LHAPDF::setVerbosity(0);
+void set_mode(const string& filename, int iset){
+        LHAPDF::setVerbosity(0);
 		LHAPDF::initPDFSetByName(filename);	
 		LHAPDF::initPDF(iset);		
 		return;
-
-	
 }

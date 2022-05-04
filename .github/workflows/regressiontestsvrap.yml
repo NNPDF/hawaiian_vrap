@@ -21,7 +21,7 @@ jobs:
       shell: bash --login {0}
       run: |
         conda install gxx_linux-64 pkg-config sysroot_linux-64=2.17 numpy
-        conda install -y lhapdf -c conda-forge
+        conda install -y lhapdf pineappl -c conda-forge
         lhapdf update
         lhapdf install NNPDF40_nnlo_as_01180
     - name: Compile vrap

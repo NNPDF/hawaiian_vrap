@@ -8,6 +8,7 @@ AC_CONFIG_FILES([
 ])
 
 PKG_CHECK_MODULES([LHAPDF], [lhapdf >= 6])
+PKG_CHECK_MODULES([pineappl_capi], [pineappl_capi])
 AM_PROG_AR
 
 AC_PROG_RANLIB
