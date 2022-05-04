@@ -47,3 +47,6 @@ configure
 depcomp
 install-sh
 missing
+
+# grids
+*.pineappl.lz4

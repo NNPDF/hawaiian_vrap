@@ -34,12 +34,15 @@ double DY_prefactor(double M, double alpha){
 
 //================================================================
 // The Born-type terms in the integrand.
-double Born_integrand(double x1, double x2){
+double Born_integrand(double y){
     double asR = alpha_s(muR)/PI;
+    double tau = Q*Q/E_CM/E_CM;
+    double x1 = sqrt(tau) * exp(y);
+    double x2 = sqrt(tau) * exp(-y);
 
     if ((x1 >= 1.) || (x2 >= 1.)){ return 0.; }
 
-    double LO_term = 1.;
+    double LO_term = 1.0;
     double NLO_term = Born_NLO(muF/Q);
     double NNLO_term = Born_NNLO(Nf,muF/Q,muR/Q);
     double Born_term;
@@ -64,16 +67,14 @@ double Born_integrand(double x1, double x2){
     LHAComputePdf(x1,muF,X1);	
     LHAComputePdf(x2,muF,X2);
 
+    // Now fill in the pineappl grids
+    piner.fill_grid(0, &qqbar_lumi, x1, x2, LO_term);
+    if (order_flag > 0) piner.fill_grid(1, &qqbar_lumi, x1, x2, NLO_term);
+    if (order_flag > 1) piner.fill_grid(4, &qqbar_lumi, x1, x2, NNLO_term);
+
     // Calls `qqbar_lumi` probably from `Vlumifns_LHApdf.C`
     // but this can change depending on where the headers are coming from...
     return Born_term * qqbar_lumi(X1,X2,DY,coll);
-}
-// LEGACY: (i.e., don't want to bother with changing all instances of this call)
-double Born_integrand(double y){
-    double tau = Q*Q/E_CM/E_CM;
-    double x1 = sqrt(tau) * exp(y);
-    double x2 = sqrt(tau) * exp(-y);
-    return Born_integrand(x1, x2);
 }
 
 
@@ -562,15 +563,13 @@ DVector rap_y(){
         std::cout << std::setw(9) << std::setprecision(9) << " working on    y =  " << y << std::endl; 
     }
 
+    // Set the prefactor for the pineappl grid
+    // this needs to be done at this stage since it is not included in the weights
+    piner.set_prefactor(prefactor);
+
     // Note that Born_ans is different depending on the `order_flag`
-    double tau = Q*Q/E_CM/E_CM;
-    double x1 = sqrt(tau) * exp(y);
-    double x2 = sqrt(tau) * exp(-y);
-
-    // Fill in the Leading Order result
-    piner.fill_grid(0, 0, x1, x2, prefactor);
-
     double Born_ans = Born_integrand(y);
+
     // LO case
     if (order_flag == 0) { 
         std::cout << "Staring LO calculation: " << std::endl;
