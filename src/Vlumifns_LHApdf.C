@@ -122,6 +122,9 @@ double qqbar_lumi(const pdfArray& X1, const pdfArray& X2, process p, collider c)
                                 + 2. * X1.b * X2.b ) ; }
   else return 0.;
 }
+double qqbar_lumi_dy(const pdfArray& X1, const pdfArray& X2, collider c){
+    return qqbar_lumi(X1, X2, DY, c);
+}
 
 /* For W^\pm production, the "BC" terms get a different type of luminosity
    function.  This function is equal to 2 * qbarq_lumi(DY) for the (Z,gamma)

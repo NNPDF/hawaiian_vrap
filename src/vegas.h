@@ -5,6 +5,7 @@
 /*   a special class for the integration program vegas   */
 
 #include "DClasses.h"
+#include "pineappl_interface.h"
 
 
 const double VEGASALPH = 1.5;

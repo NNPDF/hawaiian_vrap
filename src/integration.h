@@ -68,9 +68,9 @@ double Born_integrand(double y){
     LHAComputePdf(x2,muF,X2);
 
     // Now fill in the pineappl grids
-    piner.fill_grid(0, &qqbar_lumi, x1, x2, LO_term);
-    if (order_flag > 0) piner.fill_grid(1, &qqbar_lumi, x1, x2, NLO_term);
-    if (order_flag > 1) piner.fill_grid(4, &qqbar_lumi, x1, x2, NNLO_term);
+    piner.fill_grid(0, &qqbar_lumi_dy, x1, x2, LO_term);
+    if (order_flag > 0) piner.fill_grid(1, &qqbar_lumi_dy, x1, x2, NLO_term);
+    if (order_flag > 1) piner.fill_grid(4, &qqbar_lumi_dy, x1, x2, NNLO_term);
 
     // Calls `qqbar_lumi` probably from `Vlumifns_LHApdf.C`
     // but this can change depending on where the headers are coming from...
@@ -82,82 +82,118 @@ double Born_integrand(double y){
 // The boost + real-type terms in the integrand.
 // NLO and NNLO terms are separate routines.
 
-double int_NLO(double y, double ys, double z){
-  double lumiz1, lumiz2, lumiz, lumi0, qg_lumiz1, gq_lumiz2, boost_ans,
-         lumi_ys, lumi_0, lumi_1, gq_lumi_ys, qg_lumi_ys, 
-         gq_lumi_1, qg_lumi_0, real_ans;
-  double tau = Q*Q/E_CM/E_CM;
-// Boost terms in integrand:
-  // for ys = 0 boost (x2 is the radiator):
-  double x1a = sqrt(tau) * exp(y) ;
-  double x2a = sqrt(tau) * exp(-y)/z ;
+double int_NLO(double y, double ys, double z) {
+    double lumiz1, lumiz2, lumi0, qg_lumiz1, gq_lumiz2,
+        lumi_ys, lumi_0, lumi_1, gq_lumi_ys, qg_lumi_ys, gq_lumi_1, qg_lumi_0;
 
-	pdfArray X1a,X2a;
-	LHAComputePdf(x1a,muF,X1a);	
-	LHAComputePdf(x2a,muF,X2a);	
-	lumiz1 = qqbar_lumi(X1a,X2a,DY,coll); 
-	qg_lumiz1 = qg_lumi(X1a,X2a,coll);
-  // for ys = 1 boost (x1 is the radiator):
-  double x1b = sqrt(tau) * exp(y)/z ;
-  double x2b = sqrt(tau) * exp(-y) ;
-	pdfArray X1b,X2b;
-	LHAComputePdf(x1b,muF,X1b);	
-	LHAComputePdf(x2b,muF,X2b);	
-  lumiz2 = qqbar_lumi(X1b,X2b,DY,coll); 
-  gq_lumiz2 = gq_lumi(X1b,X2b,coll);
-lumiz = lumiz1 + lumiz2 ;
-  // for z = 1 subtraction (q qbar only):
-double x1_z1 = sqrt(tau) * exp(y) ;
-  double x2_z1 = sqrt(tau) * exp(-y) ;
-	pdfArray X1_z1,X2_z1;
-	LHAComputePdf(x1_z1,muF,X1_z1);	
-	LHAComputePdf(x2_z1,muF,X2_z1);	
-	lumi0 = 2. * qqbar_lumi(X1_z1,X2_z1,DY,coll);
-  boost_ans = 
-  // qqbar
-      NLO_qbarq_boost(z,muF/Q) * lumiz/z
-    - NLO_qbarq_boost_soft(z,muF/Q) * lumi0
-  // gq + qg 
-    + NLO_qg_boost(z,muF/Q) * ( gq_lumiz2 + qg_lumiz1 )/z ;
-//
-// Real terms in integrand:
-  double x1 = sqrt(tau) * exp(y) * sqrt((z+(1.-z)*ys)/z/(1.-(1.-z)*ys)) ;
-  double x2 = tau/x1/z ;
-	pdfArray X1,X2;
-	LHAComputePdf(x1,muF,X1);	
-	LHAComputePdf(x2,muF,X2);	
-	lumi_ys = qqbar_lumi(X1,X2,DY,coll); 
-	qg_lumi_ys = qg_lumi(X1,X2,coll);
-	gq_lumi_ys = gq_lumi(X1,X2,coll);
-  // for ys = 0 subtraction:
-  double x1_0 = sqrt(tau) * exp(y) ;
-  double x2_0 = tau/x1_0/z ;
-	pdfArray X1_0,X2_0;
-	LHAComputePdf(x1_0,muF,X1_0);	
-	LHAComputePdf(x2_0,muF,X2_0);	
-	lumi_0 = qqbar_lumi(X1_0,X2_0,DY,coll); 
-	qg_lumi_0 = qg_lumi(X1_0,X2_0,coll);
-  // for ys = 1 subtraction:
-  double x1_1 = sqrt(tau) * exp(y)/z ;
-  double x2_1 = tau/x1_1/z ;
-	pdfArray X1_1,X2_1;
-	LHAComputePdf(x1_1,muF,X1_1);	
-	LHAComputePdf(x2_1,muF,X2_1);	
-	lumi_1 = qqbar_lumi(X1_1,X2_1,DY,coll); 
-	gq_lumi_1 = gq_lumi(X1_1,X2_1,coll);
-  //
-  real_ans = 
-      // qqbar
-        NLO_qbarq_real(ys,z) * lumi_ys
-      - NLO_qbarq_real_soft(ys,z) * lumi_0
-      - NLO_qbarq_real_soft(1.-ys,z) * lumi_1
-     // qg + gq
-      + NLO_qg_real(1.-ys,z) * gq_lumi_ys 
-      - NLO_qg_real_soft(1.-ys,z) * gq_lumi_1
-      + NLO_qg_real(ys,z) * qg_lumi_ys
-      - NLO_qg_real_soft(ys,z) * qg_lumi_0 ;
-  real_ans = real_ans/z ;
-  return boost_ans + real_ans;
+    double tau = Q * Q / E_CM / E_CM;
+
+
+    // Boost terms in integrand:
+    double boost_ans = 0.0;
+    double real_ans = 0.0;
+    
+    // 1. Compute the weights: 
+    double w_nlo_qqbar_boost = NLO_qbarq_boost(z, muF / Q) / z;
+    double w_nlo_qbarq_boost_soft = -2.0*NLO_qbarq_boost_soft(z, muF / Q);
+    double w_nlo_qg_boost = NLO_qg_boost(z, muF / Q) / z;
+
+    // 2. Compute the luminosities and fill up the pineappl grid as appropiate
+
+    // for ys = 0 boost (x2 is the radiator):
+    double x1a = sqrt(tau) * exp(y);
+    double x2a = sqrt(tau) * exp(-y) / z;
+    pdfArray X1a, X2a;
+    LHAComputePdf(x1a, muF, X1a);
+    LHAComputePdf(x2a, muF, X2a);
+    lumiz1 = qqbar_lumi(X1a, X2a, DY, coll);
+    qg_lumiz1 = qg_lumi(X1a, X2a, coll);
+
+    piner.fill_grid(1, &qqbar_lumi_dy, x1a, x2a, w_nlo_qqbar_boost);
+    boost_ans += w_nlo_qqbar_boost*lumiz1;
+    piner.fill_grid(1, &qg_lumi, x1a, x2a, w_nlo_qg_boost);
+    boost_ans += w_nlo_qg_boost*qg_lumiz1;
+
+    // for ys = 1 boost (x1 is the radiator):
+    double x1b = sqrt(tau) * exp(y) / z;
+    double x2b = sqrt(tau) * exp(-y);
+    pdfArray X1b, X2b;
+    LHAComputePdf(x1b, muF, X1b);
+    LHAComputePdf(x2b, muF, X2b);
+    lumiz2 = qqbar_lumi(X1b, X2b, DY, coll);
+    gq_lumiz2 = gq_lumi(X1b, X2b, coll);
+
+    piner.fill_grid(1, &qqbar_lumi_dy, x1b, x2b, w_nlo_qqbar_boost);
+    boost_ans += w_nlo_qqbar_boost*lumiz2;
+    piner.fill_grid(1, &gq_lumi, x1b, x2b, w_nlo_qg_boost);
+    boost_ans += w_nlo_qg_boost*gq_lumiz2;
+
+    // for z = 1 subtraction (q qbar only):
+    double x1_z1 = sqrt(tau) * exp(y);
+    double x2_z1 = sqrt(tau) * exp(-y);
+    pdfArray X1_z1, X2_z1;
+    LHAComputePdf(x1_z1, muF, X1_z1);
+    LHAComputePdf(x2_z1, muF, X2_z1);
+    lumi0 = qqbar_lumi(X1_z1, X2_z1, DY, coll);
+
+    piner.fill_grid(1, &qqbar_lumi_dy, x1_z1, x2_z1, w_nlo_qbarq_boost_soft);
+    boost_ans += w_nlo_qbarq_boost_soft*lumi0;
+
+    // Real terms in integrand:
+    double r_nlo_qbarq_real = NLO_qbarq_real(ys, z)/z;
+    double r_nlo_qbarq_real_soft = -NLO_qbarq_real_soft(ys, z)/z;
+    double r_nlo_qbarq_real_soft_1my = -NLO_qbarq_real_soft(1.-ys, z)/z;
+    double r_nlo_gq_real = NLO_qg_real(1. - ys, z)/z;
+    double r_nlo_gq_real_soft = -NLO_qg_real_soft(1. - ys, z)/z;
+    double r_nlo_qg_real = NLO_qg_real(ys, z)/z;
+    double r_nlo_qg_real_soft = -NLO_qg_real_soft(ys, z)/z;
+
+    double x1 = sqrt(tau) * exp(y) *
+                sqrt((z + (1. - z) * ys) / z / (1. - (1. - z) * ys));
+    double x2 = tau / x1 / z;
+    pdfArray X1, X2;
+    LHAComputePdf(x1, muF, X1);
+    LHAComputePdf(x2, muF, X2);
+    lumi_ys = qqbar_lumi(X1, X2, DY, coll);
+    qg_lumi_ys = qg_lumi(X1, X2, coll);
+    gq_lumi_ys = gq_lumi(X1, X2, coll);
+
+    piner.fill_grid(1, &qqbar_lumi_dy, x1, x2, r_nlo_qbarq_real);
+    real_ans += r_nlo_qbarq_real * lumi_ys;
+    piner.fill_grid(1, &qg_lumi, x1, x2, r_nlo_qg_real);
+    real_ans += r_nlo_gq_real * gq_lumi_ys;
+    piner.fill_grid(1, &gq_lumi, x1, x2, r_nlo_gq_real);
+    real_ans += r_nlo_qg_real * qg_lumi_ys;
+
+    // for ys = 0 subtraction:
+    double x1_0 = sqrt(tau) * exp(y);
+    double x2_0 = tau / x1_0 / z;
+    pdfArray X1_0, X2_0;
+    LHAComputePdf(x1_0, muF, X1_0);
+    LHAComputePdf(x2_0, muF, X2_0);
+    lumi_0 = qqbar_lumi(X1_0, X2_0, DY, coll);
+    qg_lumi_0 = qg_lumi(X1_0, X2_0, coll);
+
+    piner.fill_grid(1, &qqbar_lumi_dy, x1_0, x2_0, r_nlo_qbarq_real_soft);
+    real_ans += r_nlo_qbarq_real_soft * lumi_0;
+    piner.fill_grid(1, &qg_lumi, x1_0, x2_0, r_nlo_qg_real_soft);
+    real_ans += r_nlo_qg_real_soft  * qg_lumi_0;
+
+    // for ys = 1 subtraction:
+    double x1_1 = sqrt(tau) * exp(y) / z;
+    double x2_1 = tau / x1_1 / z;
+    pdfArray X1_1, X2_1;
+    LHAComputePdf(x1_1, muF, X1_1);
+    LHAComputePdf(x2_1, muF, X2_1);
+    lumi_1 = qqbar_lumi(X1_1, X2_1, DY, coll);
+    gq_lumi_1 = gq_lumi(X1_1, X2_1, coll);
+
+    piner.fill_grid(1, &qqbar_lumi_dy, x1_1, x2_1, r_nlo_qbarq_real_soft_1my);
+    real_ans += r_nlo_qbarq_real_soft_1my * lumi_1;
+    piner.fill_grid(1, &gq_lumi, x1_1, x2_1, r_nlo_gq_real_soft);
+    real_ans += r_nlo_gq_real_soft  * gq_lumi_1;
+
+    return boost_ans + real_ans;
 }
 
 double int_NNLO(double y, double ys, double z){
@@ -416,6 +452,7 @@ DVector sqint(int n_f, int n_dim, int n_call, int n_adapt, int n_run,
   }
   VegasGrid V(x1,x2,n_call,ranseed);  // last argument is "ranseed"
   surf Sfc(0);
+  Sfc.vegas_piner = &piner;
   V.reset(n_call);
   Sfc.n = n_f;
   if (f_quiet==0){ std::cout << "adapting grid"<<std::endl; }
@@ -581,6 +618,9 @@ DVector rap_y(){
     // NLO case
     else if (order_flag == 1) {
         std::cout << "LO   = " << prefactor * Born_ans << std::endl;
+
+        // Disable grid filling, Vegas will enable it again later
+        piner.enable(false);
 
         if (std::fabs(int_NLO(.03,.43,.93)) < 1.0e-16) {
             if (f_quiet==0) std::cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << std::endl;

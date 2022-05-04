@@ -6,6 +6,7 @@
 
 #include "DClasses.h"
 #include "vegas.h"
+#include "pineappl_interface.h"
 
 /*   numerical analysis classes    :    
          derive from these classes and overload the virtual functions     
@@ -40,6 +41,7 @@ double interpolate(DVector & Xa, DVector & Ya, double x,
 class Surface{
    public:
       virtual double surface(DVector & V)=0;
+      pinerap::CheffPanopoulos *vegas_piner;
 
       double vegas(VegasGrid & grid,int its, double & sd, double & chi2);
       double vegasint(VegasGrid & grid,int its, 

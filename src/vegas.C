@@ -365,24 +365,28 @@ double Surface::vegasint(VegasGrid & grid, int its,
   DVector x(grid.nl,grid.nh);
   VegasCounter VC(grid);
   for (itt = 1; itt <= its; itt++) { 
-     grid.it++;
-     ti = 0.0; tsi = 0.0;
-     VC.reset();
-     while (VC.done == 0){
+    // Enable pineappl filling only for the last iteration
+    if (itt == its) vegas_piner->enable(true);
+    grid.it++;
+    ti = 0.0; tsi = 0.0;
+    VC.reset();
+    while (VC.done == 0){
         VC.resetstep();
         fb = f2b = 0.0;
         while (VC.step == 0){
-           x = grid.choose(wgt,VC);
- 	   f = wgt*surface(x);
-	   f2 = f*f;
-	   fb += f;
-	   f2b += f2;
+            x = grid.choose(wgt,VC);
+            // I no longer feel shame
+            vegas_piner->vegas_wgt = wgt;
+            f = wgt*surface(x);
+            f2 = f*f;
+            fb += f;
+            f2b += f2;
         }
         grid.record(fb,f2b,ti,tsi);
-     }
+    }
   /*   compute the final results for this iteration  */
-     grid.finish(ti,tsi,integral,sd,chi2);
-     if (grid.nprt > 0)  grid.integralinfo(itt,ti,tsi,integral,sd,chi2);
+    grid.finish(ti,tsi,integral,sd,chi2);
+    if (grid.nprt > 0)  grid.integralinfo(itt,ti,tsi,integral,sd,chi2);
   }
   return integral;
 }
