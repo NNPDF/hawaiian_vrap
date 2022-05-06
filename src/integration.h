@@ -69,7 +69,19 @@ double Born_integrand(double y){
 
     // Now fill in the pineappl grids
     piner.fill_grid(0, &qqbar_lumi_dy, x1, x2, LO_term);
-    if (order_flag > 0) piner.fill_grid(1, &qqbar_lumi_dy, x1, x2, NLO_term);
+    if (order_flag > 0) {
+        piner.fill_grid(1, &qqbar_lumi_dy, x1, x2, NLO_term);
+        double l_nlo, lmuF;
+        if (muF == Q) {
+            l_nlo = Born_NLO(2.0);
+            lmuF = -2.0*log(2.0);
+        } else {
+            l_nlo = Born_NLO(1.0);
+            lmuF = 2.0*log(muF/Q);
+        }
+        // The log(muR/Q) is empty at NLO
+        piner.fill_grid(3, &qqbar_lumi_dy, x1, x2, (NLO_term - l_nlo)/lmuF);
+    }
     if (order_flag > 1) piner.fill_grid(4, &qqbar_lumi_dy, x1, x2, NNLO_term);
 
     // Calls `qqbar_lumi` probably from `Vlumifns_LHApdf.C`
@@ -98,6 +110,23 @@ double int_NLO(double y, double ys, double z) {
     double w_nlo_qbarq_boost_soft = -2.0*NLO_qbarq_boost_soft(z, muF / Q);
     double w_nlo_qg_boost = NLO_qg_boost(z, muF / Q) / z;
 
+    // ---- log coefficient capturing
+    // if muF == Q we need to generate the log coefficient
+    // otherwise we need a version of the cross section w/o log
+    double l_qbarq, l_soft, l_qg, logmuF;
+    if (muF == Q) {
+        l_qbarq = NLO_qbarq_boost(z, 2.0) / z;
+        l_soft = -2.0*NLO_qbarq_boost_soft(z, 2.0);
+        l_qg = NLO_qg_boost(z, 2.0) / z;
+        logmuF = -2.0*log(2.0);
+    } else {
+        l_qbarq = NLO_qbarq_boost(z, 1.0) / z;
+        l_soft = -2.0*NLO_qbarq_boost_soft(z, 1.0);
+        l_qg = NLO_qg_boost(z, 1.0) / z;
+        logmuF = 2.0*log(muF/Q);
+    }
+    auto unlog = [logmuF](double x, double y) {return (x - y)/logmuF;};
+
     // 2. Compute the luminosities and fill up the pineappl grid as appropiate
 
     // for ys = 0 boost (x2 is the radiator):
@@ -110,8 +139,10 @@ double int_NLO(double y, double ys, double z) {
     qg_lumiz1 = qg_lumi(X1a, X2a, coll);
 
     piner.fill_grid(1, &qqbar_lumi_dy, x1a, x2a, w_nlo_qqbar_boost);
+    piner.fill_grid(3, &qqbar_lumi_dy, x1a, x2a, unlog(w_nlo_qqbar_boost,l_qbarq));
     boost_ans += w_nlo_qqbar_boost*lumiz1;
     piner.fill_grid(1, &qg_lumi, x1a, x2a, w_nlo_qg_boost);
+    piner.fill_grid(3, &qg_lumi, x1a, x2a, unlog(w_nlo_qg_boost, l_qg));
     boost_ans += w_nlo_qg_boost*qg_lumiz1;
 
     // for ys = 1 boost (x1 is the radiator):
@@ -124,8 +155,10 @@ double int_NLO(double y, double ys, double z) {
     gq_lumiz2 = gq_lumi(X1b, X2b, coll);
 
     piner.fill_grid(1, &qqbar_lumi_dy, x1b, x2b, w_nlo_qqbar_boost);
+    piner.fill_grid(3, &qqbar_lumi_dy, x1b, x2b, unlog(w_nlo_qqbar_boost, l_qbarq));
     boost_ans += w_nlo_qqbar_boost*lumiz2;
     piner.fill_grid(1, &gq_lumi, x1b, x2b, w_nlo_qg_boost);
+    piner.fill_grid(3, &gq_lumi, x1b, x2b, unlog(w_nlo_qg_boost, l_qg));
     boost_ans += w_nlo_qg_boost*gq_lumiz2;
 
     // for z = 1 subtraction (q qbar only):
@@ -137,6 +170,7 @@ double int_NLO(double y, double ys, double z) {
     lumi0 = qqbar_lumi(X1_z1, X2_z1, DY, coll);
 
     piner.fill_grid(1, &qqbar_lumi_dy, x1_z1, x2_z1, w_nlo_qbarq_boost_soft);
+    piner.fill_grid(3, &qqbar_lumi_dy, x1_z1, x2_z1, unlog(w_nlo_qbarq_boost_soft, l_soft));
     boost_ans += w_nlo_qbarq_boost_soft*lumi0;
 
     // Real terms in integrand:
