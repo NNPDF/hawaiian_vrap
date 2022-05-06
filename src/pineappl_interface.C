@@ -75,7 +75,8 @@ void CheffPanopoulos::create_grid(int max_orders, double q2) {
     }
 
 
-    // TODO only LO for now
+    // Only LO for now
+    // ------------------- (as, a, muR, muF)
     std::vector<uint32_t> orders{0, 2, 0, 0};
 
     if (order_flag > 0) { // Add NLO orders
