@@ -9,6 +9,7 @@
 vrap=../build/Vrap
 outputfolder=output
 verbose=n # y/n
+vrapout="results.out"
 
 run_for_kinematics() {
     runcard=$1
@@ -18,19 +19,15 @@ run_for_kinematics() {
     echo " > Running vrap for $runcard"
     echo "# mass rapidity     xs" > ${outfile}
 
-    while read -r line
-    do
-        if [[ $verbose == "y" ]]
-        then
-            res=$( ${vrap} ${runcard} ${line} | tee /dev/tty )
-        else
-            echo " > > m, y = " ${line}
-            res=$( ${vrap} ${runcard} ${line} )
-        fi
-        val=$(echo $res | awk '{print $NF}')
-        echo "     res=" ${val}
-        echo ${line}     ${val} >> ${outfile}
-    done < $kinfile
+    if [[ $verbose == "y" ]]
+    then
+        ${vrap} ${runcard} ${kinfile}
+    else
+        echo "Running for ${kinfile}, this could take some minutes..."
+        echo "If you want to follow the results do ~$ tail -f ${vrapout} in a different terminal"
+        ${vrap} ${runcard} ${kinfile} >/dev/null
+    fi
+    cat ${vrapout} >> ${outfile}
 }
 
 compare_two() {

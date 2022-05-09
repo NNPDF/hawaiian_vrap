@@ -60,6 +60,9 @@ CheffPanopoulos::CheffPanopoulos() {
  * Initializes the pineappl grid with all the necessary parameters
  */
 void CheffPanopoulos::create_grid(int max_orders, double q2) {
+    // Check whether this is a new grid that needs to be absorbed by mother_grid
+    if (grid_index > 0) pineappl_grid_merge_and_delete(mother_grid, grid);
+
     auto *lumi = pineappl_lumi_new();
 
     // At LO we only have one lumi channel
@@ -95,14 +98,18 @@ void CheffPanopoulos::create_grid(int max_orders, double q2) {
     }
     int how_many_orders = orders.size() / 4;
 
-    // TODO
-    double bins[] = {0.0, 1.0};
+    double grid_limit = 1.0*grid_index;
+    double bins[] = {grid_limit, grid_limit+0.9};
     int how_many_bins = 1;
 
     auto *keyval = pineappl_keyval_new();
     pineappl_keyval_set_double(keyval, "q2_min", 2.5);
     grid = pineappl_grid_new(lumi, how_many_orders, orders.data(), how_many_bins, bins,
                              keyval);
+
+    if (grid_index == 0) mother_grid = grid;
+    grid_index += 1;
+
     constant_q2 = q2;
 
     pineappl_keyval_delete(keyval);
@@ -125,7 +132,7 @@ void CheffPanopoulos::fill_grid(int order, LuminosityFunction lumi_function, dou
         int lumi_channel = lumi_index - luminosities.begin();
         double res = weight*prefactor*vegas_wgt;
         if (order > 0) res /= PI;
-        pineappl_grid_fill(grid, x1, x2, constant_q2, order, 0.5, lumi_channel, res);
+        pineappl_grid_fill(grid, x1, x2, constant_q2, order, grid_index+0.5, lumi_channel, res);
     }
 }
 
@@ -135,10 +142,16 @@ void CheffPanopoulos::save() {
     pineappl_grid_delete(grid);
 }
 
-void CheffPanopoulos::set_prefactor(double val){
+void CheffPanopoulos::rebin(const std::vector<std::pair<double, double>> qy_bins) {
+    // Merge the last bin into mother grid
+    if (grid_index > 0) pineappl_grid_merge_and_delete(mother_grid, grid);
+    const int nbins = qy_bins.size();
+}
+
+void CheffPanopoulos::set_prefactor(const double val){
     prefactor = val;
 }
 
-void CheffPanopoulos::enable(bool state) {
+void CheffPanopoulos::enable(const bool state) {
     is_enabled = state;
 }
