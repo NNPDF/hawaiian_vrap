@@ -256,6 +256,7 @@ int main(int argc,char* argv[]){
         results << Q << " " << y << " " << temp_ans[0] << std::endl;
     }
 
+    piner.rebin(qy_bins);
     piner.save();
 
  return 0;

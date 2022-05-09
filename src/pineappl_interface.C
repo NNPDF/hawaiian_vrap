@@ -61,7 +61,7 @@ CheffPanopoulos::CheffPanopoulos() {
  */
 void CheffPanopoulos::create_grid(int max_orders, double q2) {
     // Check whether this is a new grid that needs to be absorbed by mother_grid
-    if (grid_index > 0) pineappl_grid_merge_and_delete(mother_grid, grid);
+    if (next_grid_index > 1) pineappl_grid_merge_and_delete(mother_grid, grid);
 
     auto *lumi = pineappl_lumi_new();
 
@@ -98,8 +98,8 @@ void CheffPanopoulos::create_grid(int max_orders, double q2) {
     }
     int how_many_orders = orders.size() / 4;
 
-    double grid_limit = 1.0*grid_index;
-    double bins[] = {grid_limit, grid_limit+0.9};
+    double grid_limit = 1.0*next_grid_index;
+    double bins[] = {grid_limit, grid_limit+1.0};
     int how_many_bins = 1;
 
     auto *keyval = pineappl_keyval_new();
@@ -107,8 +107,8 @@ void CheffPanopoulos::create_grid(int max_orders, double q2) {
     grid = pineappl_grid_new(lumi, how_many_orders, orders.data(), how_many_bins, bins,
                              keyval);
 
-    if (grid_index == 0) mother_grid = grid;
-    grid_index += 1;
+    if (next_grid_index == 0) mother_grid = grid;
+    next_grid_index += 1;
 
     constant_q2 = q2;
 
@@ -132,20 +132,34 @@ void CheffPanopoulos::fill_grid(int order, LuminosityFunction lumi_function, dou
         int lumi_channel = lumi_index - luminosities.begin();
         double res = weight*prefactor*vegas_wgt;
         if (order > 0) res /= PI;
-        pineappl_grid_fill(grid, x1, x2, constant_q2, order, grid_index+0.5, lumi_channel, res);
+        pineappl_grid_fill(grid, x1, x2, constant_q2, order, next_grid_index-0.5, lumi_channel, res);
     }
 }
 
 void CheffPanopoulos::save() {
     char const *filename = "test.pineappl.lz4";
-    pineappl_grid_write(grid, filename);
-    pineappl_grid_delete(grid);
+    pineappl_grid_write(mother_grid, filename);
+    pineappl_grid_delete(mother_grid);
 }
 
 void CheffPanopoulos::rebin(const std::vector<std::pair<double, double>> qy_bins) {
     // Merge the last bin into mother grid
-    if (grid_index > 0) pineappl_grid_merge_and_delete(mother_grid, grid);
+    if (next_grid_index > 1) pineappl_grid_merge_and_delete(mother_grid, grid);
+
+    std::cout << "Rebinning\n";
     const int nbins = qy_bins.size();
+    const double normalization[nbins] = {1.0};
+    double limits[2*nbins*2];
+    int i = 0;
+    for(auto const qy: qy_bins) {
+        const double Q = qy.first;
+        const double y = qy.second;
+        limits[i++] = Q;
+        limits[i++] = Q;
+        limits[i++] = y;
+        limits[i++] = y;
+    }
+    pineappl_grid_set_remapper(mother_grid, 2, normalization, limits);
 }
 
 void CheffPanopoulos::set_prefactor(const double val){
