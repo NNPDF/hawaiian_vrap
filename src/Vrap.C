@@ -249,8 +249,8 @@ int main(int argc,char* argv[]){
 //        printParamInfo();
 
         std::cout << "\n > Starting calculation:\n\n";
-        piner.create_grid(order_flag, pow(Q, 2));
 
+        piner.create_grid(order_flag, pow(Q, 2));
         DVector temp_ans = rap_y();
         std::cout << "\nFinal result: " << temp_ans[0] << " +/- " << temp_ans[1] << std::endl;
         results << Q << " " << y << " " << temp_ans[0] << std::endl;
