@@ -146,20 +146,19 @@ void CheffPanopoulos::save() {
 void CheffPanopoulos::rebin(const std::vector<std::pair<double, double>> qy_bins) {
     // Merge the last bin into mother grid
     if (next_grid_index > 1) pineappl_grid_merge_and_delete(mother_grid, grid);
-//    const int nbins = qy_bins.size();
-//    double normalization[nbins];
-//    std::fill_n(normalization, nbins, 1.0);
-//    double limits[2*nbins*2];
-//    int i = 0;
-//    for(auto const qy: qy_bins) {
-//        const double Q = qy.first;
-//        const double y = qy.second;
-//        limits[i++] = Q;
-//        limits[i++] = Q;
-//        limits[i++] = y;
-//        limits[i++] = y;
-//    }
-//    pineappl_grid_set_remapper(mother_grid, 2, normalization, limits);
+    const int nbins = qy_bins.size();
+    std::vector<double> normalization(nbins, 1.0);
+    std::vector<double> limits;
+    limits.reserve(2*nbins*2);
+    for(auto const qy: qy_bins) {
+        const double Q = qy.first;
+        const double y = qy.second;
+        limits.push_back(Q);
+        limits.push_back(Q);
+        limits.push_back(y);
+        limits.push_back(y);
+    }
+    pineappl_grid_set_remapper(mother_grid, 2, normalization.data(), limits.data());
 }
 
 void CheffPanopoulos::set_prefactor(const double val){
