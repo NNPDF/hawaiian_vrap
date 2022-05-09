@@ -34,7 +34,7 @@ void pinerap::reconstruct_lumi(LuminosityFunction lumi, collider c,
             f2.*b.first = 1.0;
 
             // process is always DY (1)
-            double const result = lumi(f1, f2, DY, c);
+            double const result = lumi(f1, f2, c);
 
             // skip zero partonic combinations
             if (result == 0.0) {
@@ -51,7 +51,9 @@ void pinerap::reconstruct_lumi(LuminosityFunction lumi, collider c,
 /* Creates a vector with all possible luminosities
  */
 CheffPanopoulos::CheffPanopoulos() {
-    luminosities.push_back(&qqbar_lumi);
+    luminosities.push_back(&qqbar_lumi_dy);
+    luminosities.push_back(&qg_lumi);
+    luminosities.push_back(&gq_lumi);
 }
 
 /*
@@ -73,7 +75,8 @@ void CheffPanopoulos::create_grid(int max_orders, double q2) {
     }
 
 
-    // TODO only LO for now
+    // Only LO for now
+    // ------------------- (as, a, muR, muF)
     std::vector<uint32_t> orders{0, 2, 0, 0};
 
     if (order_flag > 0) { // Add NLO orders
@@ -117,10 +120,13 @@ void CheffPanopoulos::create_grid(int max_orders, double q2) {
  */
 void CheffPanopoulos::fill_grid(int order, LuminosityFunction lumi_function, double x1,
                                 double x2, double weight) {
-    auto lumi_index = std::find(luminosities.begin(), luminosities.end(), lumi_function);
-    int lumi_channel = lumi_index - luminosities.begin();
-    pineappl_grid_fill(grid, x1, x2, constant_q2, order, 0.5, lumi_channel,
-                       weight*prefactor);
+    if (is_enabled) {
+        auto lumi_index = std::find(luminosities.begin(), luminosities.end(), lumi_function);
+        int lumi_channel = lumi_index - luminosities.begin();
+        double res = weight*prefactor*vegas_wgt;
+        if (order > 0) res /= PI;
+        pineappl_grid_fill(grid, x1, x2, constant_q2, order, 0.5, lumi_channel, res);
+    }
 }
 
 void CheffPanopoulos::save() {
@@ -131,4 +137,8 @@ void CheffPanopoulos::save() {
 
 void CheffPanopoulos::set_prefactor(double val){
     prefactor = val;
+}
+
+void CheffPanopoulos::enable(bool state) {
+    is_enabled = state;
 }
