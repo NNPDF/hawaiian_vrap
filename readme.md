@@ -5,7 +5,7 @@ cd src && autoreconf -fiv && cd ..
 mkdir -p build && cd build
 ../src/configure --prefix=$PWD
 make -j4
-./Vrap ../src/input.dat # needs to have NNPDF40_nnlo_as_01180 installed
+./Vrap ../regression_test/inputE605nlo.dat 7 0.2 # needs to have NNPDF40_nnlo_as_01180 installed
 ```
 
 The older standard we can use with more recent versions of `lhapdf` is `c++11` so some changes have been necessary in order to get `vrap` to compile: https://github.com/NNPDF/external/pull/58
