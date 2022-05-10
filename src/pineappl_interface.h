@@ -35,7 +35,7 @@ class CheffPanopoulos {
      */
   public:
     CheffPanopoulos();
-    void create_grid(int max_orders, double q2);
+    void create_grid(int max_orders, double q2, collider coll);
     void fill_grid(int order, LuminosityFunction lumi_function, double x1,
                    double x2, double weight);
     void set_prefactor(const double);

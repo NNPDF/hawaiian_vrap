@@ -59,7 +59,7 @@ CheffPanopoulos::CheffPanopoulos() {
 /*
  * Initializes the pineappl grid with all the necessary parameters
  */
-void CheffPanopoulos::create_grid(int max_orders, double q2) {
+void CheffPanopoulos::create_grid(int max_orders, double q2, collider coll) {
     // Check whether this is a new grid that needs to be absorbed by mother_grid
     if (next_grid_index > 1) pineappl_grid_merge_and_delete(mother_grid, grid);
 
@@ -68,10 +68,9 @@ void CheffPanopoulos::create_grid(int max_orders, double q2) {
     // At LO we only have one lumi channel
     std::vector<int32_t> pdg_ids;
     std::vector<double> factors;
-    // we only care about collider piso for now (=3) take it from the runcard in
-    // the future
+    // Take the collider type from the runcard
     for (auto lumi_function: luminosities) {
-        reconstruct_lumi(lumi_function, piso, pdg_ids, factors);
+        reconstruct_lumi(lumi_function, coll, pdg_ids, factors);
         pineappl_lumi_add(lumi, factors.size(), pdg_ids.data(), factors.data());
         pdg_ids.clear();
         factors.clear();
