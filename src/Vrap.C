@@ -7,6 +7,7 @@
  ====================================================================*/
 
 #include <iomanip>
+#include <vector>
 #include "QCDbasics.h"
 #include "NAClasses.h"
 #include "DClasses.h"
@@ -131,6 +132,8 @@ void printParamInfo(){
 
 int main(int argc,char* argv[]){
 
+    std::vector<std::pair<double, double>> qy_bins;
+
 	printBanner();
 
 	defaultSettings();
@@ -165,17 +168,32 @@ int main(int argc,char* argv[]){
 	}
 
 	if(argc>2) {
-	  Q = strtod(argv[2], NULL);
+        // Accept as input a file of kinematics
+        std::ifstream kin_file(argv[2]);
+        if (kin_file.good()) {
+            std::cout << "Readinf kinematics file: " << argv[2] << std::endl;
+            Q = -1;
+            while(!kin_file.eof()) {
+                double a, b;
+                if( ! (kin_file >> a >> b)) break;
+                std::pair<double, double> tmp = {a,b};
+                qy_bins.push_back(tmp);
+            }
+        } else {
+            // Then probably it was _not_ a file of kinematics
+	        Q = strtod(argv[2], NULL);
+        }
 	}
-	double rapY = 0;
+
 	if(argc>3) {
-	  rapY = strtod(argv[3], NULL);
+        if (Q == -1){
+            // Crash big time, no time for fancy options
+            throw  std::invalid_argument("When given a kinematics file is given no more options are accepted");
+        }
+        y = strtod(argv[3], NULL);
+        std::pair<double, double> tmp = {Q, y};
+        qy_bins.push_back(tmp);
 	}
-
-	if(argc>4) {
-		pdfSet = strtod(argv[4], NULL);
-	}
-
 
     switch(parton_flag){
         // From `Vlumifns.h`, sets up which parton channel are active
@@ -188,134 +206,58 @@ int main(int argc,char* argv[]){
         case 6: compute_qqbar_plus_qq(); break;	
     }
 
-    // alphat = alpha_QED(Q);   // my running QED coupling, better for low-mass
-    if (useMyAlphaRunning) {
-        alphat = alpha_QED(Q);
-    }
+    std::fstream results;
+    results.open("results.out", std::ios::out);
+    
+    for(auto const qy: qy_bins) {
+        Q = qy.first;
+        y = qy.second;
 
-    // Set f_NNLO_only = 0 (1)  for NNLO terms only (LO+NLO+NNLO)
-    if (NNLO_only){
-        f_NNLO_only = 0;
-    } else {
-        f_NNLO_only = 1;	
-    }
+        // alphat = alpha_QED(Q);   // my running QED coupling, better for low-mass
+        if (useMyAlphaRunning) {
+            alphat = alpha_QED(Q);
+        }
 
-    // Compute all couplings for all luminosity channels
-    // these are then used by the different functions inside `Vlumifns.C`
-    setV(exchM,Q,alphat,Nf,0);
+        // Set f_NNLO_only = 0 (1)  for NNLO terms only (LO+NLO+NNLO)
+        if (NNLO_only){
+            f_NNLO_only = 0;
+        } else {
+            f_NNLO_only = 1;	
+        }
 
-
-// Uncomment for fixed-target Drell-Yan, M vs. y. table of K factors
-// (overwrites previous!):
-// coll = pp;   E_CM = 38.757;  Q = 8.;  Nf = 5.;   muF = Q;  muR = muF; 
-// f_NNLO_only = 0;  alphat = 1./132.1;   setV(gamma_only,Q,alphat,Nf,0);   
-
-
-    if (useOtherPDF){
-        // initializes LHAPDF
-        set_mode(pdfFile, pdfSet);
-    } else {
-        set_mode(pdfMode);
-    }
-
-   muR = muRrel*Q;
-   muF = muFrel*Q;
-
-   printParamInfo();
+        // Compute all couplings for all luminosity channels
+        // these are then used by the different functions inside `Vlumifns.C`
+        setV(exchM,Q,alphat,Nf,0);
 
 
-//double alpha_s_Z_PDF;
-// LHAPDF::initPDFSetByName("abkm09_5_nlo.LHgrid");
-// alpha_s_Z_PDF = alphasPDF(m_Z); 
-// std::cout << " alpha_s(M_Z) =  " << alpha_s_Z_PDF << std::endl; 
-
-// To do the total cross section integral, for normalization/checks:
-// DVector norm_factor = int_y(0.,1.);
-
-// To scan the total cross section in (muR = muF), through
-//    Q*mu_r_lower < (muR=muF) < Q*mu_r_upper     with n_points steps:
-// DMatrix mutotresultMatrix = scan_mu_tot(0.2,5.0,10);
-
-// Compute and print unnormalized rapidity distributions, 
-// with arguments (ymax,n_points)
-
-// "sym_scan_rap_y(n_points,forwrev,o_f)"
-// scans through 0 < y < ymax with n_points steps,
-// for the case of a symmetric distribution.
-// forwrev = 1  -> print output from -ymax to +ymax
-// forwrev = -1  -> print output from +ymax to -ymax
-// o_f = output_format = 0  -> print for topdraw: y, d sigma/dy  ( error
-// o_f = output_format = 1  -> just list d sigma/dy values.
-//
-//DMatrix resultMatrix = sym_scan_rap_y(nbrYPnts,direction,o_f); // "normally" 19   /// <- this was uncommented MB
-// Case of an asymmetric distribution, scans from -ymax to +ymax:
-// DMatrix resultMatrix = asym_scan_rap_y(nbrYPnts,direction,o_f); // "normally" 38
-
-// Scan all curves at once (symmetric case):
-// sym_scan_all(alekhin,nbrYPnts,0.5,2.0);
-// Scan all curves at once (asymmetric case):
-// asym_scan_all(alekhin,nbrYPnts,0.5,2.0);
-// Scan all W+/W- ratio curves at once (symmetric case):
-// Wpm_ratio_scan_all(alekhin,nbrYPnts,0.5,2.0);
-
-// Just one (two?) rapidity point, y:
-// order_flag = 2;
+        // Uncomment for fixed-target Drell-Yan, M vs. y. table of K factors
+        // (overwrites previous!):
+        // coll = pp;   E_CM = 38.757;  Q = 8.;  Nf = 5.;   muF = Q;  muR = muF; 
+        // f_NNLO_only = 0;  alphat = 1./132.1;   setV(gamma_only,Q,alphat,Nf,0);   
 
 
-   // TODO: this could very well be a loop over y??
+        if (useOtherPDF){
+            // initializes LHAPDF
+            set_mode(pdfFile, pdfSet);
+        } else {
+            set_mode(pdfMode);
+        }
 
-    std::cout << "\n > Starting calculation:\n\n";
-    piner.create_grid(order_flag, pow(Q, 2));
+        muR = muRrel*Q;
+        muF = muFrel*Q;
 
-        y = rapY;
+//        printParamInfo();
+
+        std::cout << "\n > Starting calculation:\n\n";
+
+        piner.create_grid(order_flag, pow(Q, 2));
         DVector temp_ans = rap_y();
         std::cout << "\nFinal result: " << temp_ans[0] << " +/- " << temp_ans[1] << std::endl;
-        std::cout << temp_ans[0] << std::endl;
+        results << Q << " " << y << " " << temp_ans[0] << std::endl;
+    }
 
+    piner.rebin(qy_bins);
     piner.save();
-
-// At fixed rapidity y, scan d^2sigma/dM/dY through
-//     Q*mu_r_lower < (muR=muF) < Q*mu_r_upper     with n_points steps:
-// arguments are: (y, mu_r_lower,mu_r_upper,n_points).
-// scan_mu(0.0,0.2,5.0,10);
-
-// Same as "scan_mu" except for W+/W- ratio:
-// Wpm_ratio_scan_mu(2.0,0.2,5.0,10);
-
-// Make table of K factors for J. Stirling:
-// makeKtable(1.0, 5, 4.0, 16.0, 6);
- 
-// Make table of "C" factors for J. Stirling:
-// makeCtable(1.0, 5, 4.0, 16.0, 6);
-// makeCtable(1.0, 20, 14.0, 20.0, 3);
-
-// Make table of "D" and "E" factors for J. Stirling:
-//  makeDEtable(1.0, 5, 4.0, 16.0, 6);
-
-// Integral over M (Simpson's rule; scan in y):
-// int_M_sym_scan_y(Zgamma,66.,116.,200,3,0);
-
-// Monte Carlo integral over M from Ml to Mu, at fixed y:
- // y = 0.;   Ml = 66.;  Mu = 116.;  exchM = Zgamma;  
- // DVector temp_y_M = rap_y_M();
-
-// Monte Carlo integral over M from Ml to Mu, symmetric y scan (n_points):
-// sym_scan_rap_y_M(Zgamma,66.,116.,nbrYPnts,direction);
-
-// Monte Carlo integral over M from Ml to Mu, asymmetric y scan (n_points):
-// asym_scan_rap_y_M(Wplus,60.,100.,nbrYPnts,direction);
-
-// hard_fn_test();
-// lumi_test();
-
-/*
-// Use int_y(xi_l,xi_u) to integrate over a specified rapidity interval
- y_lower = 0.0; 
- y_upper = 1.0; 
- xi_l = 0.5 * (1. + tanh(y_lower));  // range in terms of xi variable.
- xi_u = 0.5 * (1. + tanh(y_upper));
- DVector temp_int_y = int_y(xi_l, xi_u);
-*/
 
  return 0;
 }

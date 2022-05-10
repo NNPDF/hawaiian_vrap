@@ -32,7 +32,7 @@ jobs:
         ../src/configure --prefix=/usr
         make -j4
         sudo make install
-        Vrap ../src/input.dat
+        Vrap ../regression_test/inputE605nlo.dat 7 0.2 # needs to have NNPDF40_nnlo_as_01180 installed
     - name: Run some cfactors
       if: contains(github.event.pull_request.labels.*.name, 'run-regression-test')
       shell: bash --login {0}
