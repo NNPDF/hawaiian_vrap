@@ -40,6 +40,10 @@ def run_comparison(dataset_vp, dataset_pin, pdf_name = "NNPDF40_nnlo_as_01180", 
     if len(res_pine_partial) == 2:
         res_pine_raw /= pd.DataFrame(res_pine_partial[1])
     elif len(res_pine_partial) == 10:
+        # Two wrong bins:
+#         res_pine_partial[3][1] = 0.0
+#         res_pine_partial[5][0] = 0.0
+        ##############
         res_pine_raw = pd.DataFrame(np.sum(res_pine_partial, axis=0))
     elif len(res_pine_partial) == 20:
         res_pine_raw = pd.DataFrame(np.sum(res_pine_partial[:10], axis=0)) / pd.DataFrame(np.sum(res_pine_partial[10:], axis=0))
@@ -66,11 +70,9 @@ if __name__ == "__main__":
 #     a, b = run_comparison("DYE605", "E605nlo", ratio=54.35, verbose=False)
 #     a, b = run_comparison("DYE886P", "E886Pnlo", ratio=54.35, mass_divide=True, verbose=False)
 #     a, b = run_comparison("DYE886R", ["E886deutRnlo", "E886Rnlo"], verbose=False)
-#     A, b = run_comparison("DYE906_D", "E906deutnlo_bin_*", ratio=54.35, mass_divide=True, remove_points=False)
-    a, b = run_comparison("DYE906R", "E906*nlo_bin_*", mass_divide=True, remove_points=False)
-    # only the first bin is ok!
-#     a, b = run_comparison("DYE906R", ["E906deutRnlo", "E906Rnlo"])
-#     for i in range(10):
-#         print(f"BIN {i+1}")
-# #         a, b = run_comparison("DYE906_D", f"E906deutnlo_bin_0{i}", ratio=54.35, mass_divide=True, remove_points=False)
+#     a, b = run_comparison("DYE906_D", "E906deutnlo_bin_*", ratio=54.35, mass_divide=True, remove_points=False)
+    a, b = run_comparison("DYE906R", "E906*nlo_bin_*", mass_divide=False, remove_points=False)
+#     i = 9
+#     a, b = run_comparison("DYE906_D", f"E906deutnlo_bin_0{i}", ratio=54.35, mass_divide=True, remove_points=False)
+    # problems at: i=3,5
 #         a, b = run_comparison("DYE906_D", f"E906nlo_bin_0{i}", ratio=54.35, mass_divide=True, remove_points=False)

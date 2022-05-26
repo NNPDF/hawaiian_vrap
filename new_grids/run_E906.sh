@@ -2,7 +2,8 @@
 
 # Script to run the very complicated E906R
 
-kinfile=input_kinematics/E906R.dat
+#kinfile=input_kinematics/E906R.dat
+kinfile=input_kinematics/new_E906R.dat
 
 generate_fake_kinematics() {
     fake_file=${1}
