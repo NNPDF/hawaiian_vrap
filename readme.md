@@ -1,6 +1,23 @@
+# Hawaian Vrap
+
+This program is an extension of the original [Vrap](https://www.slac.stanford.edu/~lance/Vrap/) program for computing rapidity distribution of leptop pairs via virtual photons.
+[See below](#vrap) for a note on the original code.
+
+## Changes with respect to Vrap
+
+The code in this repository adds and option to use isoscalar targets as a collider type (`piso`) in addition to the original `pp` and `ppbar` options.
+It also interfaces the code with [pineappl](https://n3pdf.github.io/pineappl/), a library that produces fast-interpolation grids for fitting parton distribution functions.
+
+:warning: The goal of these modifications is to generate `pineappl` grids for fixed-target DY to be used by the NNPDF fitting collaboration.
+As such, this use-case is the only one that has been tested and benchmarked during the development (see [regression tests](https://github.com/scarlehoff/Hawaiian_vrap/tree/main/regression_test)).
+
 ## How to run
 
+In order to run the code, clone the repository and run the following commands:
+
 ```bash
+git clone https://github.com/NNPDF/Hawaiian_vrap.git
+cd Hawaiian_vrap
 cd src && autoreconf -fiv && cd ..
 mkdir -p build && cd build
 ../src/configure --prefix=$PWD
@@ -8,32 +25,21 @@ make -j4
 ./Vrap ../regression_test/inputE605nlo.dat 7 0.2 # needs to have NNPDF40_nnlo_as_01180 installed
 ```
 
-The older standard we can use with more recent versions of `lhapdf` is `c++11` so some changes have been necessary in order to get `vrap` to compile: https://github.com/NNPDF/external/pull/58
+## Disclaimer
 
-## How to reproduce NNPDF40 c-factors
+As warned in Lance Dixon's webpage, for fixed-target kinematics the results might be slightly off due to an integration problem at high $\frac{M^2}{s}$.
 
-The scripts to compute the 4.0 c-factors are stored in the `cfactors_nnpdf40` folder.
-These will use system calls to call `Vrap` with various arguments. If you compiled `vrap` as above the following should work (in the `cfactors_nnpdf40` folder):
-
-```bash
-export PATH=$PATH:$PWD/../build:
-./runE605 1 1 # This will run NNLO, to run NLO just d `./runE605
-```
-
-Once we've run NNLO and NLO we can create the cfactor with the `runCfactors` script, commenting out the necessary datasets.
-
-## Compare cfactors from NNPDF and vrap
-
-There's a small python script that compares side by side the NNPDF and vrap cfactors:
+> For large values of M^2/s, as typically encountered in fixed-target production, the version of the program given here is a bit off, due to an integration issue.
 
 
-```bash
-python -i compare_cfactor.py cfactors_nnpdf40/output/E605_Cfactors.dat cfactors_nnpdf40/nnpdf40_theory200/CF_QCD_DYE605.dat
-```
+# Vrap
 
-TODO: a script that compiles and runs and checks that the results are compatible with the NNPDF40 cfactors (i.e., regression tests)
+Vrap is program for computing rapidity distributions for production of lepton-pairs
+via virtual photons, W or Z bosons at hadron colliders at NNLO in QCD
+developed originally by Frank Petriello and Lance Dixon.
+The original version of vrap can be obtained in [Lance Dixon's website](https://www.slac.stanford.edu/~lance/Vrap/).
 
-
+The code in this repository modifies version 0.9 of Vrap and it is made public on this repository with the permission of the original authors.
 
 ---
 
