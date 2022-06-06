@@ -11,12 +11,12 @@
 #include "thbasics.h"
 #include "random.h"
 
-const double GeV2fb = 389379292000.;   // GeV^2*fb conversion constant
-const double GeV2pb = 389379292.;   // GeV^2*pb conversion constant
+const double GeV2fb = 389379372100.;   // GeV^2*fb conversion constant
+const double GeV2pb = 389379372.1;   // GeV^2*pb conversion constant
 // QED coupling, and Fermi constant
-const double alpha0 = 1/137.036;    const double G_F = 1.16639e-05;
+const double alpha0 = 1/137.036;    const double G_F = 1.1663787e-05;
 // sin^2 theta_W(M_Z)_{MS-bar}, "effective" (Z pole asymmetry) value
-const double s2W = 0.23143;   const double sW = sqrt(s2W);  
+const double s2W = 0.23121;   const double sW = sqrt(s2W);  
 const double c2W = 1.-s2W;   const double cW = sqrt(c2W);
 // QCD color constants
 const double N_c = 3.;
@@ -45,7 +45,7 @@ const double m_c = 1.25; const double m_b = 4.24;
 const double m_t = 164.6;
 
 // W and Z masses:
-const double m_W = 80.398;   
+const double m_W = 80.379;   
 const double m_Z = 91.1876;
 // running couplings:
 const double alpha_QED_Z = 1/128.9;   // alpha_QED(m_Z).
