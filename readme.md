@@ -31,3 +31,11 @@ As warned in Lance Dixon's webpage, for fixed-target kinematics the results migh
 > For large values of M^2/s, as typically encountered in fixed-target production, the version of the program given here is a bit off, due to an integration issue.
 
 A cut on $\tau$ is typically enforced on the data to avoid this issue.
+
+## Citations
+
+The numerical program, "Vrap", is based on the paper
+Phys.Rev.D69:094008,2004 [hep-ph/0312266]
+by C. Anastasiou, L. Dixon, K. Melnikov and F. Petriello.
+
+Please cite this paper whenever the "Vrap" program is used.
