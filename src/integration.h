@@ -635,6 +635,9 @@ DVector rap_y(){
     }
 
     // Multiply the jacobian factor from https://github.com/NNPDF/Hawaiian_vrap/issues/10
+    if (jacobian866) {
+      prefactor *= pow(Q/E_CM,3);
+    }
     prefactor *= sqrt(2.0)*E_CM;
 
     // Set the prefactor for the pineappl grid

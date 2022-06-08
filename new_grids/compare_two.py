@@ -78,7 +78,7 @@ def run_comparison(
     elif verbose:
         print(all_res)
 
-    if np.allclose(res_vp, res_pine * ratio, rtol=1e-2):
+    if np.allclose(res_vp, res_pine * ratio, rtol=1.3e-2):
         print(f"The pineappl and NNPDF version are compatible!")
     else:
         print(f"XXX The pineappl and NNPDF version are NOT compatible!")
@@ -86,9 +86,8 @@ def run_comparison(
 
 
 if __name__ == "__main__":
-    a, b = run_comparison("DYE605", "E605nlo", verbose=True)
-    #     a, b = run_comparison("DYE886P", "rescaled_E886Pnlo", ratio=54.35, mass_divide=False, verbose=True)
-#     a, b = run_comparison("DYE886P", "E886Pnlo", ratio=54.35, mass_divide=True, verbose=True)
+#     a, b = run_comparison("DYE605", "E605nlo", verbose=False)
+    a, b = run_comparison("DYE886P", "E866nlo") # ratio=54.35, mass_divide=False, verbose=True)
 #     a, b = run_comparison("DYE886R", ["E886deutRnlo", "E886Rnlo"], verbose=False)
 #     a, b = run_comparison("DYE906_D", "E906deutnlo_bin_*", ratio=54.35, mass_divide=True, remove_points=False)
 #     a, b = run_comparison("DYE906R", "E906*nlo_bin_*", mass_divide=False, remove_points=False)

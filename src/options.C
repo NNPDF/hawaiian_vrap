@@ -38,6 +38,7 @@ std::ostream& singleValueOption::printHelp(std::ostream& os) const {
 bool yesOrNoOption::process(std::istream& is,std::string& message) const {
 	std::string answer;
 	is >> answer;
+    std::cout << answer ;
 	if ( answer == "Yes" || answer == "On" || answer == "yes" || answer == "on" || answer == "YES" || answer == "ON"  ){
 		d_valueToSet=true;
 		message = "" ;
