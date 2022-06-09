@@ -6,7 +6,23 @@ The code in this repository modifies version 0.9 of Vrap and it is redistributed
 
 ## Changes with respect to Vrap
 
-The code in this repository adds and option to use isoscalar targets as a hadron type (`piso`) in addition to the original `pp` and `ppbar` options. It also interfaces the code with [pineappl](https://n3pdf.github.io/pineappl/), a library that produces fast-interpolation grids for fitting parton distribution functions.
+#### Isoscalar targets
+
+The code in this repository adds and option to use isoscalar targets as a hadron type (`piso`) in addition to the original `pp` and `ppbar` options. 
+
+### Pineappl interface
+
+It also interfaces the code with [pineappl](https://n3pdf.github.io/pineappl/), a library that produces fast-interpolation grids for fitting parton distribution functions.
+
+
+#### Apfel-jacobian factors
+
+The calculations used in NNPDF need to match the format of the experimental data. For this a jacobian factor of $\sqrt{2s}$ is applied with respect to the vanilla vrap implementation.
+
+In addition, the data from DYE886 and DYE605 differ by a factor of $\left(\frac{\sqrt{s}}{M}\right)$, which is added as an option to the runcard:
+`jacobian886: True`.
+
+See [issue #10](https://github.com/scarlehoff/Hawaiian_vrap/issues/10) for more information.
 
 :warning: The goal of these modifications is to generate `pineappl` grids for fixed-target Drell-Yan. These grids are used by the NNPDF Collaboration to determine parton distribution functions. As such, this use-case is the only one that has been tested and benchmarked (see [regression tests](https://github.com/scarlehoff/Hawaiian_vrap/tree/main/regression_test)).
 

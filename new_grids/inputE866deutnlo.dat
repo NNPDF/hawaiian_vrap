@@ -13,6 +13,7 @@
   
 Collider piso
 E_CM 38.8
+jacobian866 Yes
 
 ####################################################
 # Physical Parameters

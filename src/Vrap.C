@@ -54,7 +54,8 @@ VrapOptionsHandler::VrapOptionsHandler(){
 	add(new multipleValueOption<exchange>("VectorBoson",exchM,"gamma_only",gamma_only,"Zgamma_interf",Zgamma_interf,"Z_only",Z_only,"Zgamma",Zgamma,"Wplus",Wplus,"Wminus",Wminus,"Sets which vector boson to use."));
 	add(new ValueSettingOption<int>("NumberOfYPoints",nbrYPnts,"Sets the number of rapidity values at which to compute."));
 	add(new multipleValueOption<int>("PrintDirection",direction,"Forward",+1,"Reverse",-1,"Sets the order in which output is printed (for td). ") );  
-        add(new multipleValueOption<int>("OutputFormat",o_f,"TopDrawStyle",0,"ListValues",1,"Sets the style output is printed (for td or just list dsig/dy). ") );
+  add(new multipleValueOption<int>("OutputFormat",o_f,"TopDrawStyle",0,"ListValues",1,"Sets the style output is printed (for td or just list dsig/dy). ") );
+	add(new yesOrNoOption("jacobian866",jacobian866,"Sets whether to use the jacobian of (sqrt(s)/M)^3."));
 	//enableDebug();
 }
 

@@ -634,6 +634,12 @@ DVector rap_y(){
         std::cout << std::setw(9) << std::setprecision(9) << " working on    y =  " << y << std::endl; 
     }
 
+    // Multiply the jacobian factor from https://github.com/NNPDF/Hawaiian_vrap/issues/10
+    if (jacobian866) {
+      prefactor *= pow(Q/E_CM,3);
+    }
+    prefactor *= sqrt(2.0)*E_CM;
+
     // Set the prefactor for the pineappl grid
     // this needs to be done at this stage since it is not included in the weights
     piner.set_prefactor(prefactor);

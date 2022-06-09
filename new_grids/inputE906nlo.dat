@@ -13,6 +13,7 @@
   
 Collider pp
 E_CM 15.06
+jacobian866 Yes
 
 ####################################################
 # Physical Parameters
