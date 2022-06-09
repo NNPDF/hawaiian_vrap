@@ -22,9 +22,9 @@ The calculations used in NNPDF need to match the format of the experimental data
 In addition, the data from DYE886 and DYE605 differ by a factor of $\left(\frac{\sqrt{s}}{M}\right)$, which is added as an option to the runcard:
 `jacobian886: True`.
 
-See [issue #10](https://github.com/scarlehoff/Hawaiian_vrap/issues/10) for more information.
+See [issue #10](https://github.com/NNPDF/hawaiian_vrap/issues/10) for more information.
 
-:warning: The goal of these modifications is to generate `pineappl` grids for fixed-target Drell-Yan. These grids are used by the NNPDF Collaboration to determine parton distribution functions. As such, this use-case is the only one that has been tested and benchmarked (see [regression tests](https://github.com/scarlehoff/Hawaiian_vrap/tree/main/regression_test)).
+:warning: The goal of these modifications is to generate `pineappl` grids for fixed-target Drell-Yan. These grids are used by the NNPDF Collaboration to determine parton distribution functions. As such, this use-case is the only one that has been tested and benchmarked (see [regression tests](https://github.com/NNPDF/hawaiian_vrap/tree/main/regression_test)).
 
 ## How to run
 
