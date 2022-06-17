@@ -55,7 +55,7 @@ VrapOptionsHandler::VrapOptionsHandler(){
 	add(new ValueSettingOption<int>("NumberOfYPoints",nbrYPnts,"Sets the number of rapidity values at which to compute."));
 	add(new multipleValueOption<int>("PrintDirection",direction,"Forward",+1,"Reverse",-1,"Sets the order in which output is printed (for td). ") );  
   add(new multipleValueOption<int>("OutputFormat",o_f,"TopDrawStyle",0,"ListValues",1,"Sets the style output is printed (for td or just list dsig/dy). ") );
-	add(new yesOrNoOption("jacobian866",jacobian866,"Sets whether to use the jacobian of (sqrt(s)/M)^3."));
+	add(new yesOrNoOption("jacobianTau2M",jacobianTau2M,"Sets whether to use the jacobian of (M/sqrt(s))^3."));
 	//enableDebug();
 }
 
@@ -124,6 +124,10 @@ void printParamInfo(){
         std::cout << " PDF set = " << pdfSet << std::endl;
     } else {
         std::cout << " PDF mode = " << pdfMode << std::endl;
+    }
+
+    if (jacobianTau2M) {
+        std::cout << "(jacobianTau2M=True) Transforming the output result to M^3*dsigma/dM" << std::endl;
     }
 
     std::cout << "-------------------------------------------------------- " << std::endl; 
@@ -253,7 +257,8 @@ int main(int argc,char* argv[]){
 
         piner.create_grid(order_flag, pow(Q, 2), coll);
         DVector temp_ans = rap_y();
-        std::cout << "\nFinal result: " << temp_ans[0] << " +/- " << temp_ans[1] << std::endl;
+        std::cout << "\nFinal result: " << temp_ans[0] << " +/- " << temp_ans[1];
+        std::cout << std::endl;
         results << Q << " " << y << " " << temp_ans[0] << " " << temp_ans[1] << std::endl;
     }
 

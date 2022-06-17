@@ -40,7 +40,7 @@ std::string pdfFile;
 
 bool useMyAlphaRunning = false;
 bool useOtherPDF;
-bool jacobian866 = false;
+bool jacobianTau2M = false;
 int pdfSet;
 int parton_flag; // 1: all, 2:qqbar 3: qg 4: gg 5:qq 6: qqbar_plus_qq
 
