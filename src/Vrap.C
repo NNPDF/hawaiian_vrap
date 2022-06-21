@@ -83,7 +83,7 @@ void defaultSettings(){
 
 void printBanner(){
     std::cout << "======================================================== " << std::endl;
-    std::cout << "=              Hawaiian Vrap-VERSION                   = " << std::endl;
+    std::cout << "=                Hawaiian Vrap-" VERSION "                     = " << std::endl;
     std::cout << "=                                                      = " << std::endl;
     std::cout << "=       Computes rapidity distributions for            = " << std::endl;
     std::cout << "=   production of electroweak vector bosons in         = " << std::endl;
