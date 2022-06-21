@@ -83,7 +83,7 @@ void defaultSettings(){
 
 void printBanner(){
     std::cout << "======================================================== " << std::endl;
-    std::cout << "=                       Vrap-0.9                       = " << std::endl;
+    std::cout << "=              Hawaiian Vrap-VERSION                   = " << std::endl;
     std::cout << "=                                                      = " << std::endl;
     std::cout << "=       Computes rapidity distributions for            = " << std::endl;
     std::cout << "=   production of electroweak vector bosons in         = " << std::endl;
@@ -101,7 +101,11 @@ void printBanner(){
     std::cout << "= (LHAPDF). This interface, and several other program  = " << std::endl;
     std::cout << "= improvements, provided by Daniel Maitre              = " << std::endl;
     std::cout << "=                                                      = " << std::endl;
-    std::cout << "=  Questions?  lance at slac dot stanford dot edu      = " << std::endl;
+    std::cout << "= This version includes an interface to the grid       = " << std::endl;
+    std::cout << "= generation program pineappl                          = " << std::endl;
+    std::cout << "= https://n3pdf.github.io/pineappl/                    = " << std::endl;
+    std::cout << "=                                                      = " << std::endl;
+    std::cout << "=  Questions?  juacrumar at lairen dot eu              = " << std::endl;
     std::cout << "======================================================== " << std::endl; 
     std::cout << std::endl;
 }
@@ -147,11 +151,15 @@ int main(int argc,char* argv[]){
     std::string filename;
 	if (argc >=2 ){
 		filename = std::string(argv[1]);
-		if (filename == "help" || filename[0]=='-'){
-			std::cout << "Here is the list of options that can be set in the input file\n " <<std::endl;
-			VOH.printHelp(std::cout);
-			return 0;
-		}
+        if (filename[0] == '-') {
+            if (filename == "--version") {
+                std::cout << VERSION << std::endl;
+                return 0;
+            }
+            std::cout << "Here is the list of options that can be set in the input file\n " <<std::endl;
+            VOH.printHelp(std::cout);
+            return 0;
+        }
 		std::cout << "Reading input from: " << filename << std::endl;
 	} else {
         std::cerr << "Usage: Vrap InputFile\n" << std::endl;

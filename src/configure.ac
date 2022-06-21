@@ -1,4 +1,4 @@
-AC_INIT([Vrap], [0.9], [lance@slac.stanford.edu])
+AC_INIT([Vrap], [1.1], [lance@slac.stanford.edu])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign])
 AC_PROG_CXX
 
