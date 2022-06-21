@@ -13,7 +13,7 @@
   
 Collider piso
 E_CM 15.063
-jacobian866 Yes
+jacobianTau2M Yes
 
 ####################################################
 # Physical Parameters

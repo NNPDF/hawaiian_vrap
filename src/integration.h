@@ -623,7 +623,7 @@ DVector int_y(double xil, double xiu){
  return result;
 }
 
-// Routine computes d sigma/dM/dy, plus errors:
+// Routine computes d sigma/dsqrt(tau)/dy, plus errors:
 DVector rap_y(){
     double total, total_error;
     double prefactor = DY_prefactor(Q,alphat);
@@ -635,7 +635,7 @@ DVector rap_y(){
     }
 
     // Multiply the jacobian factor from https://github.com/NNPDF/Hawaiian_vrap/issues/10
-    if (jacobian866) {
+    if (jacobianTau2M) {
       prefactor *= pow(Q/E_CM,3);
     }
     prefactor *= sqrt(2.0)*E_CM;
@@ -712,9 +712,13 @@ DVector rap_y(){
     }
 
     if (f_quiet==0) {
-        std::cout << std::setw(8) << std::setprecision(8) <<  " y = " << y 
-            << ";   d^2sigma/dM/dy =  " << total
-            << "   pm  " << total_error << std::endl;
+        std::cout << std::setw(8) << std::setprecision(8) <<  " y = " << y;
+        if (jacobianTau2M) {
+            std::cout << ";   M^3*d^2sigma/dM/dy =  " << total;
+        } else {
+            std::cout << ";   s*d^2sigma/dsqrt(tau)/dy =  " << total;
+        }
+        std::cout << "   pm  " << total_error << std::endl;
     }
 
     result.fill(2,total,total_error);
