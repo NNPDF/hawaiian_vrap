@@ -12,21 +12,27 @@ void pinerap::reconstruct_lumi(LuminosityFunction lumi, collider c,
                       std::vector<double> &factors) {
     pdfArray f1;
     pdfArray f2;
+    pdfArray sampler;
 
-    // TODO: add missing partons
     std::vector<std::pair<double pdfArray::*, int32_t>> partons = {
         {&pdfArray::tbar, -6},  {&pdfArray::bbar, -5}, {&pdfArray::cbar, -4},
         {&pdfArray::sbar, -3},  {&pdfArray::ubar, -2}, {&pdfArray::dbar, -1},
         {&pdfArray::gluon, 21}, {&pdfArray::d, 1},     {&pdfArray::u, 2},
         {&pdfArray::s, 3},      {&pdfArray::c, 4},     {&pdfArray::b, 5},
-        {&pdfArray::t, 6},      {&pdfArray::x, 9999}, // TODO: what is `x`?
+        {&pdfArray::t, 6},      {&pdfArray::x, 9999},
     };
+
+    // Create a sampler to automatically skip partons that the PDF does not include
+    LHAComputePdf(0.1, 10.0, sampler);
 
     // loop over partons of the first initial state
     for (auto const a : partons) {
+        if (sampler.*a.first == 0.0) continue;
+
         // loop over partons of the second initial state
         for (auto const b : partons) {
-            // TODO: check that this zero-initializes
+            if (sampler.*b.first == 0.0) continue;
+
             f1 = pdfArray();
             f2 = pdfArray();
 
@@ -71,7 +77,9 @@ void CheffPanopoulos::create_grid(int max_orders, double q2, collider coll) {
     // Take the collider type from the runcard
     for (auto lumi_function: luminosities) {
         reconstruct_lumi(lumi_function, coll, pdg_ids, factors);
-        pineappl_lumi_add(lumi, factors.size(), pdg_ids.data(), factors.data());
+        if (!pdg_ids.empty()) { 
+            pineappl_lumi_add(lumi, factors.size(), pdg_ids.data(), factors.data());
+        }
         pdg_ids.clear();
         factors.clear();
     }
