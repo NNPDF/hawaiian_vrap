@@ -58,8 +58,22 @@ void pinerap::reconstruct_lumi(LuminosityFunction lumi, collider c,
  */
 CheffPanopoulos::CheffPanopoulos() {
     luminosities.push_back(&qqbar_lumi_dy);
+    // appear at NLO
     luminosities.push_back(&qg_lumi);
     luminosities.push_back(&gq_lumi);
+    // appear at NNLO
+    luminosities.push_back(&qqbar_ax_lumi);
+    luminosities.push_back(&qqbar_BC_lumi);
+    luminosities.push_back(&qqbar_lumi_g);
+    luminosities.push_back(&qq_11_lumi);
+    luminosities.push_back(&qq_12_lumi);
+    luminosities.push_back(&qq_12_lumi);
+    luminosities.push_back(&qq_12_ax_lumi);
+    luminosities.push_back(&qq_22_lumi);
+    luminosities.push_back(&qq_CE1_lumi);
+    luminosities.push_back(&qq_CE2_lumi);
+    luminosities.push_back(&qq_CF_lumi);
+    luminosities.push_back(&gg_lumi);
 }
 
 /*
@@ -85,23 +99,23 @@ void CheffPanopoulos::create_grid(int max_orders, double q2, collider coll) {
     }
 
 
-    // Only LO for now
+    // Leading Order
     // ------------------- (as, a, muR, muF)
     std::vector<uint32_t> orders{0, 2, 0, 0};
 
     if (order_flag > 0) { // Add NLO orders
-        orders.insert(orders.end(), {1, 2, 0, 0});
-        orders.insert(orders.end(), {1, 2, 1, 0});
-        orders.insert(orders.end(), {1, 2, 0, 1});
+        orders.insert(orders.end(), {1, 2, 0, 0}); // nlo 
+        orders.insert(orders.end(), {1, 2, 1, 0}); // muR
+        orders.insert(orders.end(), {1, 2, 0, 1}); // muF
     }
-    if (order_flag > 1) { // Add NLO orders
-        orders.insert(orders.end(), {2, 2, 0, 0});
-        orders.insert(orders.end(), {2, 2, 1, 0});
-        orders.insert(orders.end(), {2, 2, 0, 1});
-        orders.insert(orders.end(), {2, 2, 1, 1});
-        orders.insert(orders.end(), {2, 2, 1, 1});
-        orders.insert(orders.end(), {2, 2, 2, 0});
-        orders.insert(orders.end(), {2, 2, 0, 2});
+    if (order_flag > 1) { // Add NNLO orders
+        orders.insert(orders.end(), {2, 2, 0, 0}); // nnlo
+        orders.insert(orders.end(), {2, 2, 1, 0}); // muR
+        orders.insert(orders.end(), {2, 2, 0, 1}); // muF
+        orders.insert(orders.end(), {2, 2, 1, 1}); // muR x muF
+        orders.insert(orders.end(), {2, 2, 1, 1}); // muR x muF
+        orders.insert(orders.end(), {2, 2, 2, 0}); // muR^2
+        orders.insert(orders.end(), {2, 2, 0, 2}); // muF^2 
     }
     int how_many_orders = orders.size() / 4;
 
@@ -130,16 +144,17 @@ void CheffPanopoulos::create_grid(int max_orders, double q2, collider coll) {
  *  1 - NLO
  *  2 - NNLO
  * and a luminosity channel
- *  TBD
  * fills the grid
  */
 void CheffPanopoulos::fill_grid(int order, LuminosityFunction lumi_function, double x1,
                                 double x2, double weight) {
+
     if (is_enabled) {
         auto lumi_index = std::find(luminosities.begin(), luminosities.end(), lumi_function);
         int lumi_channel = lumi_index - luminosities.begin();
         double res = weight*prefactor*vegas_wgt;
         if (order > 0) res /= PI;
+        if (order > 1) res /= PI;
         pineappl_grid_fill(grid, x1, x2, constant_q2, order, next_grid_index-0.5, lumi_channel, res);
     }
 }

@@ -56,6 +56,8 @@ double Born_integrand(double y){
     if (order_flag == 2) {
         if (f_NNLO_only == 0) {
             Born_term = asR*asR * NNLO_term;
+            LO_term = 0.0;
+            NLO_term = 0.0;
         }
         else {
             Born_term = LO_term + asR * NLO_term + asR*asR * NNLO_term;
@@ -79,10 +81,13 @@ double Born_integrand(double y){
             l_nlo = Born_NLO(1.0);
             lmuF = 2.0*log(muF/Q);
         }
-        // The log(muR/Q) is empty at NLO
+        // The log(muR/Q) (grid=2) is empty at NLO
         piner.fill_grid(3, &qqbar_lumi_dy, x1, x2, (NLO_term - l_nlo)/lmuF);
     }
-    if (order_flag > 1) piner.fill_grid(4, &qqbar_lumi_dy, x1, x2, NNLO_term);
+    if (order_flag > 1) {
+        std::cout << NNLO_term << " hello\n";
+        piner.fill_grid(4, &qqbar_lumi_dy, x1, x2, NNLO_term);
+    }
 
     // Calls `qqbar_lumi` probably from `Vlumifns_LHApdf.C`
     // but this can change depending on where the headers are coming from...
@@ -99,7 +104,6 @@ double int_NLO(double y, double ys, double z) {
         lumi_ys, lumi_0, lumi_1, gq_lumi_ys, qg_lumi_ys, gq_lumi_1, qg_lumi_0;
 
     double tau = Q * Q / E_CM / E_CM;
-
 
     // Boost terms in integrand:
     double boost_ans = 0.0;
@@ -231,23 +235,39 @@ double int_NLO(double y, double ys, double z) {
 }
 
 double int_NNLO(double y, double ys, double z){
-  double lumiz1, lumiz2, lumiz, lumi0, qg_lumiz1, gq_lumiz2, 
-    qq_11_lumiz1, qq_22_lumiz2, qq_CE1_lumiz1, qq_CE2_lumiz2, boost_ans,
-    lumi_ys, lumi_0, lumi_1, lumi_z1, 
-    qbarq_BC_lumi_ys, qbarq_NFf_lumi_ys, qbarq_ax_lumi_ys,
-    qg_lumi_ys, qg_lumi_0, gq_lumi_ys, gq_lumi_1, gg_lumi_ys,
-    qq_11_lumi_ys, qq_11_lumi_0, qq_22_lumi_ys, qq_22_lumi_1,
-    qq_12_lumi_ys, qq_12_ax_lumi_ys, 
-    qq_CE1_lumi_ys, qq_CE2_lumi_ys, qq_CF_lumi_ys, 
-    qq_CE1_lumi_0, qq_CE2_lumi_1, real_ans;
-  if ((ys < 1.0e-08) || (ys > 1.0-1.0e-08) || (z > 1.0-1.0e-08)){ return 0.; }
-  double tau = Q*Q/E_CM/E_CM;
-  if ((tau * exp(2.*y) >= 1.) || (tau * exp(-2.*y) >= 1.)
-                                 || (z <= tau)){ return 0.; } 
-// Boost terms in integrand:
-  // for ys = 0 boost (x2 is the radiator):
-  double x1a = sqrt(tau) * exp(y) ;
-  double x2a = sqrt(tau) * exp(-y)/z ;
+    double lumiz1, lumiz2, lumi0, qg_lumiz1, gq_lumiz2, 
+        qq_11_lumiz1, qq_22_lumiz2, qq_CE1_lumiz1, qq_CE2_lumiz2,
+        lumi_ys, lumi_0, lumi_1, lumi_z1, 
+        qbarq_BC_lumi_ys, qbarq_NFf_lumi_ys, qbarq_ax_lumi_ys,
+        qg_lumi_ys, qg_lumi_0, gq_lumi_ys, gq_lumi_1, gg_lumi_ys,
+        qq_11_lumi_ys, qq_11_lumi_0, qq_22_lumi_ys, qq_22_lumi_1,
+        qq_12_lumi_ys, qq_12_ax_lumi_ys, 
+        qq_CE1_lumi_ys, qq_CE2_lumi_ys, qq_CF_lumi_ys, 
+        qq_CE1_lumi_0, qq_CE2_lumi_1; 
+
+    if ((ys < 1.0e-08) || (ys > 1.0-1.0e-08) || (z > 1.0-1.0e-08)){ return 0.; }
+    double tau = Q*Q/E_CM/E_CM;
+    if ((tau * exp(2.*y) >= 1.) || (tau * exp(-2.*y) >= 1.) 
+                                || (z <= tau)){ return 0.; } 
+
+    // TODO: log capturing like in int_NLO
+    double boost_ans = 0.0;
+    double real_ans = 0.0;
+
+    // Boost terms in integrand:
+    double w_qqbar_boost_soft = -2.0*qbarq_boost_soft(z,Nf,muF/Q,muR/Q);
+    double w_qqbar_boost = (
+            qbarq_boost_hard(z,Nf,muF/Q,muR/Q)
+            - w_qqbar_boost_soft/2.0
+            - qq11_boost_tot(z,1.)
+        )/z ;
+    double w_qg_boost = qg_boost_tot(z,Nf,muF/Q,muR/Q)/z;
+    double w_qq11_boost = qq11_boost_tot(z,muF/Q)/z;
+    double w_qqCE_boost = qq_CE_boost_tot(z,muF/Q)/z;
+
+    // for ys = 0 boost (x2 is the radiator):
+    double x1a = sqrt(tau) * exp(y) ;
+    double x2a = sqrt(tau) * exp(-y)/z ;
 	pdfArray X1a,X2a;
 	LHAComputePdf(x1a,muF,X1a);	
 	LHAComputePdf(x2a,muF,X2a);	
@@ -255,37 +275,79 @@ double int_NNLO(double y, double ys, double z){
 	qg_lumiz1 = qg_lumi(X1a,X2a,coll); 
 	qq_11_lumiz1 = qq_11_lumi(X1a,X2a,coll);
 	qq_CE1_lumiz1 = qq_CE1_lumi(X1a,X2a,coll);
-  // for ys = 1 boost (x1 is the radiator):
-  double x1b = sqrt(tau) * exp(y)/z ;
-  double x2b = sqrt(tau) * exp(-y) ;
-	pdfArray X1b,X2b;
-	LHAComputePdf(x1b,muF,X1b);	
-	LHAComputePdf(x2b,muF,X2b);	
-	lumiz2 = qqbar_lumi(X1b,X2b,DY,coll); 
-	gq_lumiz2 = gq_lumi(X1b,X2b,coll);
-	qq_22_lumiz2 = qq_22_lumi(X1b,X2b,coll); 
-	qq_CE2_lumiz2 = qq_CE2_lumi(X1b,X2b,coll);
-  lumiz = lumiz1 + lumiz2 ;
-  // for z = 1 subtraction (q qbar only):
-  double x1_z_1 = sqrt(tau) * exp(y) ;
-  double x2_z_1 = sqrt(tau) * exp(-y) ;
-	pdfArray X1_z_1,X2_z_1;
-	LHAComputePdf(x1_z_1,muF,X1_z_1);	
-	LHAComputePdf(x2_z_1,muF,X2_z_1);	
-	lumi0 = 2. * qqbar_lumi(X1_z_1,X2_z_1,DY,coll);
-  boost_ans = 
-     ( qbarq_boost_soft(z,Nf,muF/Q,muR/Q) + qbarq_boost_hard(z,Nf,muF/Q,muR/Q)
-       // removed to q_iq_j channel:
-     - qq11_boost_tot(z,1.) )  * lumiz/z 
-    - qbarq_boost_soft(z,Nf,muF/Q,muR/Q) * lumi0 
-    + qg_boost_tot(z,Nf,muF/Q,muR/Q) * ( qg_lumiz1/z + gq_lumiz2/z )  
-    + qq11_boost_tot(z,muF/Q) * ( qq_11_lumiz1/z + qq_22_lumiz2/z )
-    + qq_CE_boost_tot(z,muF/Q) * ( qq_CE1_lumiz1/z + qq_CE2_lumiz2/z )
-    ; 
-//
-// Real terms in integrand:
-  double x1 = sqrt(tau) * exp(y) * sqrt((z+(1.-z)*ys)/z/(1.-(1.-z)*ys)) ;
-  double x2 = tau/x1/z ;
+
+    piner.fill_grid(4, &qqbar_lumi_dy, x1a, x2a, w_qqbar_boost);
+    boost_ans += lumiz1*w_qqbar_boost;
+    piner.fill_grid(4, &qg_lumi, x1a, x2a, w_qg_boost);
+    boost_ans += qg_lumiz1*w_qg_boost;
+    piner.fill_grid(4, &qq_11_lumi, x1a, x2a, w_qq11_boost);
+    boost_ans += qq_11_lumiz1*w_qq11_boost;
+    piner.fill_grid(4, &qq_CE1_lumi, x1a, x2a, w_qqCE_boost);
+    boost_ans += qq_CE1_lumiz1*w_qqCE_boost;
+
+    // for ys = 1 boost (x1 is the radiator):
+    double x1b = sqrt(tau) * exp(y)/z ;
+    double x2b = sqrt(tau) * exp(-y) ;
+    pdfArray X1b,X2b;
+    LHAComputePdf(x1b,muF,X1b);	
+    LHAComputePdf(x2b,muF,X2b);	
+    lumiz2 = qqbar_lumi(X1b,X2b,DY,coll); 
+    gq_lumiz2 = gq_lumi(X1b,X2b,coll);
+    qq_22_lumiz2 = qq_22_lumi(X1b,X2b,coll); 
+    qq_CE2_lumiz2 = qq_CE2_lumi(X1b,X2b,coll);
+
+    piner.fill_grid(4, &qqbar_lumi_dy, x1b, x2b, w_qqbar_boost);
+    boost_ans += lumiz2*w_qqbar_boost;
+    piner.fill_grid(4, &gq_lumi, x1b, x2b, w_qg_boost);
+    boost_ans += gq_lumiz2*w_qg_boost;
+    piner.fill_grid(4, &qq_22_lumi, x1b, x2b, w_qq11_boost);
+    boost_ans += qq_22_lumiz2*w_qq11_boost;
+    piner.fill_grid(4, &qq_CE2_lumi, x1b, x2b, w_qqCE_boost);
+    boost_ans += qq_CE2_lumiz2*w_qqCE_boost;
+
+    // for z = 1 subtraction (q qbar only):
+    double x1_z_1 = sqrt(tau) * exp(y) ;
+    double x2_z_1 = sqrt(tau) * exp(-y) ;
+    pdfArray X1_z_1,X2_z_1;
+    LHAComputePdf(x1_z_1,muF,X1_z_1);	
+    LHAComputePdf(x2_z_1,muF,X2_z_1);	
+    lumi0 = qqbar_lumi(X1_z_1,X2_z_1,DY,coll);
+
+    piner.fill_grid(4, &qqbar_lumi_dy, x1_z_1, x2_z_1, w_qqbar_boost_soft);
+    boost_ans += lumi0*w_qqbar_boost_soft;
+
+    // Real terms in integrand:
+    // qqbar
+    double r_qbarq = qbarq_real_hard(ys,z,Nf,muF/Q,muR/Q)/z;
+    double r_qbarq_soft_0 = -(qbarq_real_soft_0(ys,z,Nf,muF/Q,muR/Q) - qq11_real_soft(ys,z,1.))/z;
+    double r_qbarq_soft_1 = -(qbarq_real_soft_1(ys,z,Nf,muF/Q,muR/Q) - qq11_real_soft(1.-ys,z,1.))/z;
+    double r_qbarq_soft_z1 =-qbarq_real_soft_z1(ys,z,Nf,muF/Q);
+    double r_qbarq_BC = qbarq_BC_real_hard(ys,z)/z;
+    double r_qbarq_Nf = qbarq_NFf_real_hard(ys,z)/z;
+    double r_qbarq_ax = qq_AB_ax_real_hard(ys,z)/z;
+    // qg
+    double r_qg = qg_real_hard(ys,z,Nf,muF/Q,muR/Q)/z;
+    double r_qg_1my = qg_real_hard(1.-ys,z,Nf,muF/Q,muR/Q)/z;
+    double r_qg_soft = - qg_real_soft(ys,z,Nf,muF/Q,muR/Q)/z;
+    double r_qg_soft_1my = - qg_real_soft(1.-ys,z,Nf,muF/Q,muR/Q)/z;
+    // gg
+    double r_gg = gg_real_hard(ys,z,muF/Q)/z;
+    // qi qbarj and identical quark terms
+    double r_qq11 = qq11_real_hard(ys,z,muF/Q)/z;
+    double r_qq11_1my = qq11_real_hard(1.-ys,z,muF/Q)/z;
+    double r_qq11_soft = - qq11_real_soft(ys,z,muF/Q)/z;
+    double r_qq11_soft_1my = - qq11_real_soft(1.-ys,z,muF/Q)/z;
+    double r_qq12 = qq12_real_hard(ys,z)/z;
+    double r_qq12_ax = qq_CD_ax_real_hard(ys,z)/z;
+    double r_qqCE = qq_CE_real_hard(ys,z)/z;
+    double r_qqCE_1my = qq_CE_real_hard(1.-ys,z)/z;
+    double r_qqCE_soft = -qq_CE_real_soft(ys,z)/z; 
+    double r_qqCE_soft_1my = -qq_CE_real_soft(1.-ys,z)/z;
+    double r_qqCF = qq_CF_real_hard(ys,z)/z;
+
+    // Now fill the grids!
+    double x1 = sqrt(tau) * exp(y) * sqrt((z+(1.-z)*ys)/z/(1.-(1.-z)*ys)) ;
+    double x2 = tau/x1/z ;
 	pdfArray X1,X2;
 	LHAComputePdf(x1,muF,X1);	
 	LHAComputePdf(x2,muF,X2);	
@@ -303,92 +365,106 @@ double int_NNLO(double y, double ys, double z){
 	qq_CE1_lumi_ys = qq_CE1_lumi(X1,X2,coll);
 	qq_CE2_lumi_ys = qq_CE2_lumi(X1,X2,coll);
 	qq_CF_lumi_ys = qq_CF_lumi(X1,X2,coll);
-  // for ys = 0 subtraction:
-  double x1_0 = sqrt(tau) * exp(y) ;
-  double x2_0 = tau/x1_0/z ;
-	pdfArray X1_0,X2_0;
-	LHAComputePdf(x1_0,muF,X1_0);	
-	LHAComputePdf(x2_0,muF,X2_0);	
-	lumi_0 = qqbar_lumi(X1_0,X2_0,DY,coll); 
-  qg_lumi_0 = qg_lumi(X1_0,X2_0,coll); 
-  qq_11_lumi_0 = qq_11_lumi(X1_0,X2_0,coll); 
-  qq_CE1_lumi_0 = qq_CE1_lumi(X1_0,X2_0,coll);
-  // for ys = 1 subtraction:
-  double x1_1 = sqrt(tau) * exp(y)/z ;
-  double x2_1 = tau/x1_1/z ;
-	pdfArray X1_1,X2_1;
-	LHAComputePdf(x1_1,muF,X1_1);	
-	LHAComputePdf(x2_1,muF,X2_1);	
-	lumi_1 = qqbar_lumi(X1_1,X2_1,DY,coll); 
-  gq_lumi_1 = gq_lumi(X1_1,X2_1,coll); 
-  qq_22_lumi_1 = qq_22_lumi(X1_1,X2_1,coll); 
-  qq_CE2_lumi_1 = qq_CE2_lumi(X1_1,X2_1,coll);
-  // for z = 1 subtraction (q qbar only):
-  double x1_z1 = sqrt(tau) * exp(y) ;
-  double x2_z1 = sqrt(tau) * exp(-y) ;
-	pdfArray X1_z1,X2_z1;
-	LHAComputePdf(x1_z1,muF,X1_z1);	
-	LHAComputePdf(x2_z1,muF,X2_z1);	
-	lumi_z1 = qqbar_lumi(X1_z1,X2_z1,DY,coll);
-  //
-  real_ans = 
-  // q-\bar{q}:
-    // 1) nonsingular terms: now includes unsubtracted soft pieces;
-    //   BC terms have been removed, now have own luminosity function
-    //   C^2 and C*D terms have been removed to q_i q_j channel;
-    //   muF- and muR-dependence now included
-      qbarq_real_hard(ys,z,Nf,muF/Q,muR/Q) * lumi_ys
-    // 2) y -> 0 and y -> 1 singular subtraction terms:
-    - ( qbarq_real_soft_0(ys,z,Nf,muF/Q,muR/Q)
-       // removed to q_iq_j channel:
-       - qq11_real_soft(ys,z,1.) ) * lumi_0
-    - ( qbarq_real_soft_1(ys,z,Nf,muF/Q,muR/Q)
-       // removed to q_iq_j channel:
-       - qq11_real_soft(1.-ys,z,1.) ) * lumi_1
-     // 3) z -> 1 singular + subtraction terms (they alone work):
-    - qbarq_real_soft_z1(ys,z,Nf,muF/Q) * lumi_z1 * z
-  // q\bar{q} BC terms:
-    + qbarq_BC_real_hard(ys,z) * qbarq_BC_lumi_ys
-  // q\bar{q} NFf terms:
-    + qbarq_NFf_real_hard(ys,z) * qbarq_NFf_lumi_ys
-    + qq_AB_ax_real_hard(ys,z) * qbarq_ax_lumi_ys  // extra axial term for Z
-  // qg:
-    + qg_real_hard(ys,z,Nf,muF/Q,muR/Q) * qg_lumi_ys
-    + qg_real_hard(1.-ys,z,Nf,muF/Q,muR/Q) * gq_lumi_ys
-    - qg_real_soft(ys,z,Nf,muF/Q,muR/Q) * qg_lumi_0
-    - qg_real_soft(1.-ys,z,Nf,muF/Q,muR/Q) * gq_lumi_1
-  // gg (only "hard" terms):
-    + gg_real_hard(ys,z,muF/Q) * gg_lumi_ys
-  // q_i q_j (qbar_j)   and   identical quark terms:
-    + qq11_real_hard(ys,z,muF/Q) * qq_11_lumi_ys
-    + qq11_real_hard(1.-ys,z,muF/Q) * qq_22_lumi_ys
-    - qq11_real_soft(ys,z,muF/Q) * qq_11_lumi_0
-    - qq11_real_soft(1.-ys,z,muF/Q) * qq_22_lumi_1
-    + qq12_real_hard(ys,z) * qq_12_lumi_ys         // a.k.a. CD_V
-    + qq_CD_ax_real_hard(ys,z) * qq_12_ax_lumi_ys  // CD_axial term, for Z
-    + qq_CE_real_hard(ys,z) * qq_CE1_lumi_ys
-    + qq_CE_real_hard(1.-ys,z) * qq_CE2_lumi_ys
-    + qq_CF_real_hard(ys,z) * qq_CF_lumi_ys
-    - qq_CE_real_soft(ys,z) * qq_CE1_lumi_0
-    - qq_CE_real_soft(1.-ys,z) * qq_CE2_lumi_1
-    ;
-  real_ans = real_ans/z;
-  // TEMPORARY DIAGNOSTICS:
-  if (std::fabs(boost_ans + real_ans) >= 0.0) { }
-  else { std::cout << std::setw(15) << std::setprecision(15)
+
+    piner.fill_grid(4, &qqbar_lumi_dy, x1, x2, r_qbarq);
+    real_ans += lumi_ys*r_qbarq;
+    piner.fill_grid(4, &qqbar_BC_lumi, x1, x2, r_qbarq_BC);
+    real_ans += qbarq_BC_lumi_ys*r_qbarq_BC;
+    piner.fill_grid(4, &qqbar_lumi_g, x1, x2, r_qbarq_Nf);
+    real_ans += qbarq_NFf_lumi_ys*r_qbarq_Nf;
+    piner.fill_grid(4, &qqbar_ax_lumi, x1, x2, r_qbarq_ax);
+    real_ans += qbarq_ax_lumi_ys*r_qbarq_ax;
+    piner.fill_grid(4, &qg_lumi, x1, x2, r_qg);
+    real_ans += qg_lumi_ys*r_qg;
+    piner.fill_grid(4, &gq_lumi, x1, x2, r_qg_1my);
+    real_ans += gq_lumi_ys*r_qg_1my;
+    piner.fill_grid(4, &gg_lumi, x1, x2, r_gg);
+    real_ans += gg_lumi_ys*r_gg;
+    piner.fill_grid(4, &qq_11_lumi, x1, x2, r_qq11);
+    real_ans += qq_11_lumi_ys*r_qq11;
+    piner.fill_grid(4, &qq_22_lumi, x1, x2, r_qq11_1my);
+    real_ans += qq_22_lumi_ys*r_qq11_1my;
+    piner.fill_grid(4, &qq_12_lumi, x1, x2, r_qq12);
+    real_ans += qq_12_lumi_ys*r_qq12;
+    piner.fill_grid(4, &qq_12_ax_lumi, x1, x2, r_qq12_ax);
+    real_ans += qq_12_ax_lumi_ys*r_qq12_ax;
+    piner.fill_grid(4, &qq_CE1_lumi, x1, x2, r_qqCE);
+    real_ans += qq_CE1_lumi_ys*r_qqCE;
+    piner.fill_grid(4, &qq_CE2_lumi, x1, x2, r_qqCE_1my);
+    real_ans += qq_CE2_lumi_ys*r_qqCE_1my;
+    piner.fill_grid(4, &qq_CF_lumi, x1, x2, r_qqCF);
+    real_ans += qq_CF_lumi_ys*r_qqCF;
+
+    
+    // for ys = 0 subtraction:
+    double x1_0 = sqrt(tau) * exp(y) ;
+    double x2_0 = tau/x1_0/z ;
+    pdfArray X1_0,X2_0;
+    LHAComputePdf(x1_0,muF,X1_0);	
+    LHAComputePdf(x2_0,muF,X2_0);	
+    lumi_0 = qqbar_lumi(X1_0,X2_0,DY,coll); 
+    qg_lumi_0 = qg_lumi(X1_0,X2_0,coll); 
+    qq_11_lumi_0 = qq_11_lumi(X1_0,X2_0,coll); 
+    qq_CE1_lumi_0 = qq_CE1_lumi(X1_0,X2_0,coll);
+
+    piner.fill_grid(4, &qqbar_lumi_dy, x1_0, x2_0, r_qbarq_soft_0);
+    real_ans += lumi_0*r_qbarq_soft_0;
+    piner.fill_grid(4, &qg_lumi, x1_0, x2_0, r_qg_soft);
+    real_ans += qg_lumi_0*r_qg_soft;
+    piner.fill_grid(4, &qq_11_lumi, x1_0, x2_0, r_qq11_soft);
+    real_ans += qq_11_lumi_0*r_qq11_soft;
+    piner.fill_grid(4, &qq_CE1_lumi, x1_0, x2_0, r_qqCE_soft);
+    real_ans += qq_CE1_lumi_0*r_qqCE_soft;
+
+
+    // for ys = 1 subtraction:
+    double x1_1 = sqrt(tau) * exp(y)/z ;
+    double x2_1 = tau/x1_1/z ;
+    pdfArray X1_1,X2_1;
+    LHAComputePdf(x1_1,muF,X1_1);	
+    LHAComputePdf(x2_1,muF,X2_1);	
+    lumi_1 = qqbar_lumi(X1_1,X2_1,DY,coll); 
+    gq_lumi_1 = gq_lumi(X1_1,X2_1,coll); 
+    qq_22_lumi_1 = qq_22_lumi(X1_1,X2_1,coll); 
+    qq_CE2_lumi_1 = qq_CE2_lumi(X1_1,X2_1,coll);
+
+    piner.fill_grid(4, &qqbar_lumi_dy, x1_1, x2_1, r_qbarq_soft_1);
+    real_ans += lumi_1*r_qbarq_soft_1;
+    piner.fill_grid(4, &gq_lumi, x1_1, x2_1, r_qg_soft_1my);
+    real_ans += gq_lumi_1*r_qg_soft_1my;
+    piner.fill_grid(4, &qq_22_lumi, x1_1, x2_1, r_qq11_soft_1my);
+    real_ans += qq_22_lumi_1*r_qq11_soft_1my;
+    piner.fill_grid(4, &qq_CE2_lumi, x1_1, x2_1, r_qqCE_soft_1my);
+    real_ans += qq_CE2_lumi_1*r_qqCE_soft_1my;
+
+
+    // for z = 1 subtraction (q qbar only):
+    double x1_z1 = sqrt(tau) * exp(y) ;
+    double x2_z1 = sqrt(tau) * exp(-y) ;
+    pdfArray X1_z1,X2_z1;
+    LHAComputePdf(x1_z1,muF,X1_z1);	
+    LHAComputePdf(x2_z1,muF,X2_z1);	
+    lumi_z1 = qqbar_lumi(X1_z1,X2_z1,DY,coll);
+
+    piner.fill_grid(4, &qqbar_lumi_dy, x1_z1, x2_z1, r_qbarq_soft_z1);
+    real_ans += lumi_z1*r_qbarq_soft_z1;
+
+    // TEMPORARY DIAGNOSTICS:
+    if (std::fabs(boost_ans + real_ans) >= 0.0) { }
+    else { std::cout << std::setw(15) << std::setprecision(15)
                 << "  y =  " << y
                 << "  ;  ys  " << ys 
                 << "  ;  z =  " << z << std::endl; 
-           std::cout << " boost_ans =  " << boost_ans
+            std::cout << " boost_ans =  " << boost_ans
                 << " ;   real_ans =  " << real_ans << std::endl;
-           std::cout << " qq_CD_ax_real_hard(ys,z) =  " 
+            std::cout << " qq_CD_ax_real_hard(ys,z) =  " 
                 << qq_CD_ax_real_hard(ys,z) 
                 << " ; qq_12_ax_lumi_ys = "  << qq_12_ax_lumi_ys << std::endl;
-           std::cout << " qq_AB_ax_real_hard(ys,z) =  " 
+            std::cout << " qq_AB_ax_real_hard(ys,z) =  " 
                 << qq_AB_ax_real_hard(ys,z) 
                 << " ; qbarq_ax_lumi_ys = " << qbarq_ax_lumi_ys << std::endl;
-  }
-  return boost_ans + real_ans;
+    }
+    return boost_ans + real_ans;
 }
 
 /*=================================================================
@@ -434,7 +510,8 @@ public:
   double surface(DVector & x){
 // Integrands for evaluation at fixed y:
     if (n==1){  // evaluate NLO integrand at fixed y
-      return int_NLO(y, x[1], x[2]) ; }
+      return int_NLO(y, x[1], x[2]) ;
+    }
     if (n==2){  // evaluate NNLO integrand at fixed y
       return int_NNLO(y, x[1], x[2]) ; }
 // Integrands for integration over a range in y:
@@ -519,7 +596,7 @@ DVector int_y(double xil, double xiu){
   double prefactor = DY_prefactor(Q,alphat);
   double asR = alpha_s(muR)/PI;
   std::cout  << std::endl << "Now computing integral over rapidity" << std::endl << std::endl;
-// LO case
+    // LO case
   if (order_flag == 0) {
     if (std::fabs(Born_integrand(0.2)) < 1.0e-16){
       std::cout << "   Setting Born terms to 0, since f_qqbar = 0  " << std::endl;
@@ -655,13 +732,15 @@ DVector rap_y(){
         std::cout << "LO   = " << total << std::endl;
     }
 
+    // Below pineappl is disabled at various places since Vrap will call the integrand for various checks
+    // after the checks are done and before the Vegas integration start, it will be re-enabled (by Vegas)
+
+
     // NLO case
-    else if (order_flag == 1) {
+    if (order_flag == 1) {
         std::cout << "LO   = " << prefactor * Born_ans << std::endl;
 
-        // Disable grid filling, Vegas will enable it again later
         piner.enable(false);
-
         if (std::fabs(int_NLO(.03,.43,.93)) < 1.0e-16) {
             if (f_quiet==0) std::cout << "Setting NLO non-Born terms to 0, since integrand ~ 0 " << std::endl;
 
@@ -676,8 +755,10 @@ DVector rap_y(){
         std::cout << "NLO  = " << prefactor * (Born_ans + asR * i_NLO[0]) << std::endl;
     }
     // NNLO case
-    else {   //  order_flag = 2:
+    else if (order_flag == 2) {   //  order_flag = 2:
         std::cout << "LO   = " << prefactor * Born_ans << std::endl;
+
+        piner.enable(false);
         if (f_NNLO_only == 1) {
             if (f_quiet==0) {
                 std::cout << " computing NLO integral for y = " << y << std::endl; 
@@ -693,6 +774,7 @@ DVector rap_y(){
             }
         }
 
+        piner.enable(false);
         std::cout << "NLO  = " << prefactor * (Born_ans + asR * i_NLO[0]) << std::endl;
         if (f_quiet==0) {
             std::cout << " computing NNLO integral for y = " << y << std::endl; 
