@@ -35,6 +35,7 @@ double DY_prefactor(double M, double alpha){
 //================================================================
 // The Born-type terms in the integrand.
 double Born_integrand(double y){
+    double logterms[5];
     double asR = alpha_s(muR)/PI;
     double tau = Q*Q/E_CM/E_CM;
     double x1 = sqrt(tau) * exp(y);
@@ -44,7 +45,7 @@ double Born_integrand(double y){
 
     double LO_term = 1.0;
     double NLO_term = Born_NLO(muF/Q);
-    double NNLO_term = Born_NNLO(Nf,muF/Q,muR/Q);
+    double NNLO_term = Born_NNLO(Nf,muF/Q,muR/Q, logterms);
     double Born_term;
 
     if (order_flag == 0) {
@@ -85,8 +86,10 @@ double Born_integrand(double y){
         piner.fill_grid(3, &qqbar_lumi_dy, x1, x2, (NLO_term - l_nlo)/lmuF);
     }
     if (order_flag > 1) {
-        std::cout << NNLO_term << " hello\n";
         piner.fill_grid(4, &qqbar_lumi_dy, x1, x2, NNLO_term);
+        for (int i = 0; i < 5; i++) {
+            piner.fill_grid(i+5, &qqbar_lumi_dy, x1, x2, logterms[i]);
+        }
     }
 
     // Calls `qqbar_lumi` probably from `Vlumifns_LHApdf.C`

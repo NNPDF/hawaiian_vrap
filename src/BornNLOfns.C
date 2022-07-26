@@ -13,10 +13,19 @@ double Born_NLO(double muFQ){
 }
 
 // The NNLO Born kinematics terms:
-double Born_NNLO(double Nf, double muFQ, double muRQ){
+double Born_NNLO(double Nf, double muFQ, double muRQ, double *logterms){
   double Z2 = ZETA2;  double Z3 = ZETA3;
   double C_F = 4./3.;  double C_A = 3.;  
   double lnQF = -2.*log(muFQ);  double lnRF = 2.*log(muRQ/muFQ);
+
+  logterms[0] = -11.0/6.0*C_A*C_F*Z2 + (11.0/3.0)*C_A*C_F + (1.0/3.0)*C_F*Nf*Z2 - 2.0/3.0*C_F*Nf;
+  logterms[1] = (11.0/6.0)*C_A*C_F*Z2 + (3.0/2.0)*C_A*C_F*Z3 - 123.0/16.0*C_A*C_F - 3.0/2.0*pow(C_F,
+      2)*Z2 - 11*pow(C_F, 2)*Z3 + (93.0/16.0)*pow(C_F, 2) - 1.0/3.0*C_F*Nf*Z2 +
+      (11.0/8.0)*C_F*Nf;
+  logterms[2] = (11.0/8.0)*C_A*C_F - 1.0/4.0*C_F*Nf;
+  logterms[3] = 0;
+  logterms[4] = -33.0/16.0*C_A*C_F - 2*pow(C_F, 2)*Z2 + (9.0/8.0)*pow(C_F, 2) + (3.0/8.0)*C_F*Nf;
+
   return 1./16. * ( 
     C_A * C_F * (
     - 11. * lnQF*lnQF + (193./3. - 24 * Z3) * lnQF

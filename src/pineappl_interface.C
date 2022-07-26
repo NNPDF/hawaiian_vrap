@@ -113,7 +113,6 @@ void CheffPanopoulos::create_grid(int max_orders, double q2, collider coll) {
         orders.insert(orders.end(), {2, 2, 1, 0}); // muR
         orders.insert(orders.end(), {2, 2, 0, 1}); // muF
         orders.insert(orders.end(), {2, 2, 1, 1}); // muR x muF
-        orders.insert(orders.end(), {2, 2, 1, 1}); // muR x muF
         orders.insert(orders.end(), {2, 2, 2, 0}); // muR^2
         orders.insert(orders.end(), {2, 2, 0, 2}); // muF^2 
     }
