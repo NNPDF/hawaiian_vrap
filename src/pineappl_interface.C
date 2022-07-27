@@ -189,3 +189,87 @@ void CheffPanopoulos::set_prefactor(const double val){
 void CheffPanopoulos::enable(const bool state) {
     is_enabled = state;
 }
+
+// unlogging
+void pinerap::unlog_muFmuR(double z, double y, unlog_f1 fun, double factor, double* logterms) {
+    // The function will produce
+    // fun(... muF, muR) = c0 + c1*log(muR) + c2*log(muF) + c3*log(muF*muR) + c4*log(muR)**2 + c5*log(muF)**2
+    // We will use the following values to find all coefficients
+    // log(1) = 0
+    // log(e) = 1
+    // log(1/e) = -1
+    const double e = std::exp(1.);
+    const double ooe = std::exp(-1.);
+    //                           muF muQ
+    const double lmu = 2.0;
+    const double c0 = fun(z, y, 1., 1.);
+    const double c1pc4 = fun(z, y, 1., e) -c0;
+    const double mc1pc4 = fun(z, y, 1., ooe) -c0;
+    const double c2pc5 = fun(z, y, e, 1.) -c0;
+    const double mc2pc5 = fun(z, y, ooe, e) -c0;
+    const double c3 = fun(z, y, e, e) - c0 - c1pc4 - c2pc5;
+
+    logterms[0] += factor*(c1pc4-mc1pc4)/2.0/lmu;
+    logterms[1] += factor*(c2pc5-mc2pc5)/2.0/lmu;
+    logterms[2] += factor*c3/lmu/lmu;
+    logterms[3] += factor*(c1pc4+mc1pc4)/2.0/pow(lmu, 2);
+    logterms[4] += factor*(c2pc5+mc2pc5)/2.0/pow(lmu, 2);
+}
+void pinerap::unlog_muF(double z, unlog_f2 fun, double factor, double* logterms) {
+    // The function will produce at max:
+    // fun(... muF) = c0 + c1*log(muF) + c2*log(muF)**2
+    // We will use the following values to find all coefficients
+    // log(1) = 0
+    // log(e) = 1
+    // log(1/e) = -1
+    const double e = std::exp(1.);
+    const double ooe = std::exp(-1.);
+    //                           muF muQ
+    const double lmu = 2.0;
+    const double c0 = fun(z, 1.);
+    const double c1pc2 = fun(z, e) -c0;
+    const double mc1pc2 = fun(z, ooe) -c0;
+
+    logterms[1] += factor*(c1pc2-mc1pc2)/2.0/lmu;
+    logterms[4] += factor*(c1pc2+mc1pc2)/2.0/pow(lmu, 2);
+}
+void pinerap::r_unlog_muFmuR(double ys, double z, double nf, unlog_r1 fun, double factor, double* logterms) {
+    const double e = std::exp(1.);
+    const double ooe = std::exp(-1.);
+    //                           muF muQ
+    const double lmu = 2.0;
+    const double c0 = fun(ys,z, nf, 1., 1.);
+    const double c1pc4 = fun(ys,z, nf, 1., e) -c0;
+    const double mc1pc4 = fun(ys,z, nf, 1., ooe) -c0;
+    const double c2pc5 = fun(ys,z, nf, e, 1.) -c0;
+    const double mc2pc5 = fun(ys,z, nf, ooe, e) -c0;
+    const double c3 = fun(ys,z, nf, e, e) - c0 - c1pc4 - c2pc5;
+
+    logterms[0] += factor*(c1pc4-mc1pc4)/2.0/lmu;
+    logterms[1] += factor*(c2pc5-mc2pc5)/2.0/lmu;
+    logterms[2] += factor*c3/lmu/lmu;
+    logterms[3] += factor*(c1pc4+mc1pc4)/2.0/pow(lmu, 2);
+    logterms[4] += factor*(c2pc5+mc2pc5)/2.0/pow(lmu, 2);
+}
+void pinerap::r_unlog_muF2(double ys, double z, unlog_r2 fun, double factor, double* logterms) {
+    const double e = std::exp(1.);
+    const double ooe = std::exp(-1.);
+    const double lmu = 2.0;
+    const double c0 = fun(ys,z, 1.);
+    const double c1pc2 = fun(ys,z, e) -c0;
+    const double mc1pc2 = fun(ys,z, ooe) -c0;
+
+    logterms[1] += factor*(c1pc2-mc1pc2)/2.0/lmu;
+    logterms[4] += factor*(c1pc2+mc1pc2)/2.0/pow(lmu, 2);
+}
+void pinerap::r_unlog_muF(double ys, double z, double Nf, unlog_nf fun, double factor, double* logterms) {
+    const double e = std::exp(1.);
+    const double ooe = std::exp(-1.);
+    const double lmu = 2.0;
+    const double c0 = fun(ys,z,Nf, 1.);
+    const double c1pc2 = fun(ys,z,Nf, e) -c0;
+    const double mc1pc2 = fun(ys,z,Nf, ooe) -c0;
+
+    logterms[1] += factor*(c1pc2-mc1pc2)/2.0/lmu;
+    logterms[4] += factor*(c1pc2+mc1pc2)/2.0/pow(lmu, 2);
+}

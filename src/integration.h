@@ -1,6 +1,7 @@
 #pragma once
 
 #include "settings.h"
+#include "pineappl_interface.h"
 
 /*================================================================
  The full (NLO, NNLO) DY calculation, with cuts, divides up into 
@@ -264,9 +265,23 @@ double int_NNLO(double y, double ys, double z){
             - w_qqbar_boost_soft/2.0
             - qq11_boost_tot(z,1.)
         )/z ;
+    double w_qqbar_boost_l[5] = {};
+    double w_qqbar_boost_soft_l[5] = {};
+    pinerap::unlog_muFmuR(z, Nf, qbarq_boost_soft, 1.0/z, w_qqbar_boost_l);
+    for (int i = 0; i < 5; i++) w_qqbar_boost_soft_l[i] = -2.0*z*w_qqbar_boost_l[i];
+    pinerap::unlog_muFmuR(z, Nf, qbarq_boost_hard, 1.0/z, w_qqbar_boost_l);
+
+    double w_qg_boost_l[5] = {};
     double w_qg_boost = qg_boost_tot(z,Nf,muF/Q,muR/Q)/z;
+    pinerap::unlog_muFmuR(z, Nf, qg_boost_tot, 1.0/z, w_qg_boost_l);
+
+    double w_qq11_boost_l[5] = {};
     double w_qq11_boost = qq11_boost_tot(z,muF/Q)/z;
+    pinerap::unlog_muF(z, qq11_boost_tot, 1.0/z, w_qq11_boost_l);
+
+    double w_qqCE_boost_l[5] = {};
     double w_qqCE_boost = qq_CE_boost_tot(z,muF/Q)/z;
+    pinerap::unlog_muF(z, qq_CE_boost_tot, 1.0/z, w_qqCE_boost_l);
 
     // for ys = 0 boost (x2 is the radiator):
     double x1a = sqrt(tau) * exp(y) ;
@@ -288,6 +303,14 @@ double int_NNLO(double y, double ys, double z){
     piner.fill_grid(4, &qq_CE1_lumi, x1a, x2a, w_qqCE_boost);
     boost_ans += qq_CE1_lumiz1*w_qqCE_boost;
 
+    for (int i = 0; i < 5; i++) {
+        int j = i+5;
+        piner.fill_grid(j, &qqbar_lumi_dy, x1a, x2a, w_qqbar_boost_l[i]);
+        piner.fill_grid(j, &qg_lumi, x1a, x2a, w_qg_boost_l[i]);
+        piner.fill_grid(j, &qq_11_lumi, x1a, x2a, w_qq11_boost_l[i]);
+        piner.fill_grid(j, &qq_CE1_lumi, x1a, x2a, w_qqCE_boost_l[i]);
+    }
+
     // for ys = 1 boost (x1 is the radiator):
     double x1b = sqrt(tau) * exp(y)/z ;
     double x2b = sqrt(tau) * exp(-y) ;
@@ -308,6 +331,14 @@ double int_NNLO(double y, double ys, double z){
     piner.fill_grid(4, &qq_CE2_lumi, x1b, x2b, w_qqCE_boost);
     boost_ans += qq_CE2_lumiz2*w_qqCE_boost;
 
+    for (int i = 0; i < 5; i++) {
+        int j = i+5;
+        piner.fill_grid(j, &qqbar_lumi_dy, x1b, x2b, w_qqbar_boost_l[i]);
+        piner.fill_grid(j, &gq_lumi, x1b, x2b, w_qg_boost_l[i]);
+        piner.fill_grid(j, &qq_22_lumi, x1b, x2b, w_qq11_boost_l[i]);
+        piner.fill_grid(j, &qq_CE2_lumi, x1b, x2b, w_qqCE_boost_l[i]);
+    }
+
     // for z = 1 subtraction (q qbar only):
     double x1_z_1 = sqrt(tau) * exp(y) ;
     double x2_z_1 = sqrt(tau) * exp(-y) ;
@@ -318,28 +349,58 @@ double int_NNLO(double y, double ys, double z){
 
     piner.fill_grid(4, &qqbar_lumi_dy, x1_z_1, x2_z_1, w_qqbar_boost_soft);
     boost_ans += lumi0*w_qqbar_boost_soft;
+    for (int i = 0; i < 5; i++) {
+        int j = i+5;
+        piner.fill_grid(j, &qqbar_lumi_dy, x1_z_1, x2_z_1, w_qqbar_boost_soft_l[i]);
+    }
 
     // Real terms in integrand:
     // qqbar
+    double r_qbarq_l[5] = {};
     double r_qbarq = qbarq_real_hard(ys,z,Nf,muF/Q,muR/Q)/z;
+    pinerap::r_unlog_muFmuR(ys, z, Nf, qbarq_real_hard, 1.0/z, r_qbarq_l);
+    double r_qbarq_soft_0_l[5] = {};
     double r_qbarq_soft_0 = -(qbarq_real_soft_0(ys,z,Nf,muF/Q,muR/Q) - qq11_real_soft(ys,z,1.))/z;
+    pinerap::r_unlog_muFmuR(ys, z, Nf, qbarq_real_soft_0, -1.0/z, r_qbarq_soft_0_l);
+    double r_qbarq_soft_1_l[5] = {};
     double r_qbarq_soft_1 = -(qbarq_real_soft_1(ys,z,Nf,muF/Q,muR/Q) - qq11_real_soft(1.-ys,z,1.))/z;
+    pinerap::r_unlog_muFmuR(ys, z, Nf, qbarq_real_soft_1, -1.0/z, r_qbarq_soft_1_l);
+    double r_qbarq_soft_z1_l[5] = {};
     double r_qbarq_soft_z1 =-qbarq_real_soft_z1(ys,z,Nf,muF/Q);
+    pinerap::r_unlog_muF(ys, z, Nf, qbarq_real_soft_z1, -1.0, r_qbarq_soft_z1_l);
     double r_qbarq_BC = qbarq_BC_real_hard(ys,z)/z;
     double r_qbarq_Nf = qbarq_NFf_real_hard(ys,z)/z;
     double r_qbarq_ax = qq_AB_ax_real_hard(ys,z)/z;
     // qg
+    double r_qg_l[5] = {};
     double r_qg = qg_real_hard(ys,z,Nf,muF/Q,muR/Q)/z;
+    pinerap::r_unlog_muFmuR(ys, z, Nf, qg_real_hard, 1.0/z, r_qg_l);
+    double r_qg_1my_l[5] = {};
     double r_qg_1my = qg_real_hard(1.-ys,z,Nf,muF/Q,muR/Q)/z;
+    pinerap::r_unlog_muFmuR(1.-ys, z, Nf, qg_real_hard, 1.0/z, r_qg_1my_l);
+    double r_qg_soft_l[5] = {};
     double r_qg_soft = - qg_real_soft(ys,z,Nf,muF/Q,muR/Q)/z;
+    pinerap::r_unlog_muFmuR(1.-ys, z, Nf, qg_real_soft, -1.0/z, r_qg_soft_l);
+    double r_qg_soft_1my_l[5] = {};
     double r_qg_soft_1my = - qg_real_soft(1.-ys,z,Nf,muF/Q,muR/Q)/z;
+    pinerap::r_unlog_muFmuR(1.-ys, z, Nf, qg_real_soft, -1.0/z, r_qg_1my_l);
     // gg
+    double r_gg_l[5] = {};
     double r_gg = gg_real_hard(ys,z,muF/Q)/z;
+    pinerap::r_unlog_muF2(ys, z, gg_real_hard, 1.0/z, r_gg_l);
     // qi qbarj and identical quark terms
+    double r_qq11_l[5] = {};
     double r_qq11 = qq11_real_hard(ys,z,muF/Q)/z;
+    pinerap::r_unlog_muF2(ys, z, qq11_real_hard, 1.0/z, r_qq11_l);
+    double r_qq11_1my_l[5] = {};
     double r_qq11_1my = qq11_real_hard(1.-ys,z,muF/Q)/z;
+    pinerap::r_unlog_muF2(1.-ys, z, qq11_real_hard, 1.0/z, r_qq11_1my_l);
+    double r_qq11_soft_l[5] = {};
     double r_qq11_soft = - qq11_real_soft(ys,z,muF/Q)/z;
+    pinerap::r_unlog_muF2(ys, z, qq11_real_soft, -1.0/z, r_qq11_soft_l);
+    double r_qq11_soft_1my_l[5] = {};
     double r_qq11_soft_1my = - qq11_real_soft(1.-ys,z,muF/Q)/z;
+    pinerap::r_unlog_muF2(1.-ys, z, qq11_real_soft, -1.0/z, r_qq11_soft_1my_l);
     double r_qq12 = qq12_real_hard(ys,z)/z;
     double r_qq12_ax = qq_CD_ax_real_hard(ys,z)/z;
     double r_qqCE = qq_CE_real_hard(ys,z)/z;
@@ -398,6 +459,17 @@ double int_NNLO(double y, double ys, double z){
     piner.fill_grid(4, &qq_CF_lumi, x1, x2, r_qqCF);
     real_ans += qq_CF_lumi_ys*r_qqCF;
 
+
+    for (int i = 0; i < 5; i++) {
+        int j = i+5;
+        piner.fill_grid(j, &qqbar_lumi_dy, x1, x2, r_qbarq_l[i]);
+        piner.fill_grid(j, &qg_lumi, x1, x2, r_qg_l[i]);
+        piner.fill_grid(j, &gq_lumi, x1, x2, r_qg_1my_l[i]);
+        piner.fill_grid(j, &gg_lumi, x1, x2, r_gg_l[i]);
+        piner.fill_grid(j, &qq_11_lumi, x1, x2, r_qq11_l[i]);
+        piner.fill_grid(j, &qq_22_lumi, x1, x2, r_qq11_1my_l[i]);
+    }
+
     
     // for ys = 0 subtraction:
     double x1_0 = sqrt(tau) * exp(y) ;
@@ -418,6 +490,13 @@ double int_NNLO(double y, double ys, double z){
     real_ans += qq_11_lumi_0*r_qq11_soft;
     piner.fill_grid(4, &qq_CE1_lumi, x1_0, x2_0, r_qqCE_soft);
     real_ans += qq_CE1_lumi_0*r_qqCE_soft;
+
+    for (int i = 0; i < 5; i++) {
+        int j = i+5;
+        piner.fill_grid(j, &qqbar_lumi_dy, x1_0, x2_0, r_qbarq_soft_0_l[i]);
+        piner.fill_grid(j, &qg_lumi, x1_0, x2_0, r_qg_soft_l[i]);
+        piner.fill_grid(j, &qq_11_lumi, x1_0, x2_0, r_qq11_soft_l[i]);
+    }
 
 
     // for ys = 1 subtraction:
@@ -440,6 +519,13 @@ double int_NNLO(double y, double ys, double z){
     piner.fill_grid(4, &qq_CE2_lumi, x1_1, x2_1, r_qqCE_soft_1my);
     real_ans += qq_CE2_lumi_1*r_qqCE_soft_1my;
 
+    for (int i = 0; i < 5; i++) {
+        int j = i+5;
+        piner.fill_grid(j, &qqbar_lumi_dy, x1_1, x2_1, r_qbarq_soft_1_l[i]);
+        piner.fill_grid(j, &gq_lumi, x1_1, x2_1, r_qg_soft_1my_l[i]);
+        piner.fill_grid(j, &qq_22_lumi, x1_1, x2_1, r_qq11_soft_1my_l[i]);
+    }
+
 
     // for z = 1 subtraction (q qbar only):
     double x1_z1 = sqrt(tau) * exp(y) ;
@@ -451,6 +537,13 @@ double int_NNLO(double y, double ys, double z){
 
     piner.fill_grid(4, &qqbar_lumi_dy, x1_z1, x2_z1, r_qbarq_soft_z1);
     real_ans += lumi_z1*r_qbarq_soft_z1;
+
+
+    for (int i = 0; i < 5; i++) {
+        int j = i+5;
+        piner.fill_grid(j, &qqbar_lumi_dy, x1_z1, x2_z1, r_qbarq_soft_z1_l[i]);
+    }
+
 
     // TEMPORARY DIAGNOSTICS:
     if (std::fabs(boost_ans + real_ans) >= 0.0) { }
