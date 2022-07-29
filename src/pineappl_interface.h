@@ -53,6 +53,12 @@ class CheffPanopoulos {
     pineappl_grid *grid, *mother_grid; 
 };
 
+
+template<typename T>
+void unlogger_muFmuR(double x, double y, double z, double factor, double* logterms, T&& fun);
+template<typename T>
+void unlogger_muF(double x, double y, double z, double factor, double* logterms, T&& fun);
+
 typedef double (unlog_f1)(double, double, double, double); // z, nf, muF/Q, muR/Q
 typedef double (unlog_f0)(double, double, double); // nf, muF/Q, muR/Q
 typedef double (unlog_f2)(double, double); // z, mu/Q

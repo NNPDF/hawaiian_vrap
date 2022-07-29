@@ -190,25 +190,9 @@ void CheffPanopoulos::enable(const bool state) {
     is_enabled = state;
 }
 
-// unlogging
-void pinerap::unlog_muFmuR0(double Nf, unlog_f0 fun, double* logterms) {
-    const double e = std::exp(0.5);
-    const double ooe = std::exp(-0.5);
-    //                           muF muQ
-    const double c0 = fun(Nf, 1., 1.);
-    const double c1pc4 = fun(Nf, 1., e) -c0;
-    const double mc1pc4 = fun(Nf, 1., ooe) -c0;
-    const double c2pc5 = fun(Nf, e, 1.) -c0;
-    const double mc2pc5 = fun(Nf, ooe, 1.) -c0;
-    const double c3 = fun(Nf, e, e) - c0 - c1pc4 - c2pc5;
-
-    logterms[0] += (c1pc4-mc1pc4)/2.0;
-    logterms[1] += (c2pc5-mc2pc5)/2.0;
-    logterms[2] += c3;
-    logterms[3] += (c1pc4+mc1pc4)/2.0;
-    logterms[4] += (c2pc5+mc2pc5)/2.0;
-}
-void pinerap::unlog_muFmuR(double z, double y, unlog_f1 fun, double factor, double* logterms) {
+// unlogger functions
+template<typename T>
+void pinerap::unlogger_muFmuR(double x, double y, double z, double factor, double* logterms, T&& fun) {
     // The function will produce
     // fun(... muF, muR) = c0 + c1*log(muR) + c2*log(muF) + c3*log(muF*muR) + c4*log(muR)**2 + c5*log(muF)**2
     // We will use the following values to find all coefficients
@@ -218,12 +202,12 @@ void pinerap::unlog_muFmuR(double z, double y, unlog_f1 fun, double factor, doub
     const double e = std::exp(0.5);
     const double ooe = std::exp(-0.5);
     //                           muF muQ
-    const double c0 = fun(z, y, 1., 1.);
-    const double c1pc4 = fun(z, y, 1., e) -c0;
-    const double mc1pc4 = fun(z, y, 1., ooe) -c0;
-    const double c2pc5 = fun(z, y, e, 1.) -c0;
-    const double mc2pc5 = fun(z, y, ooe, 1.) -c0;
-    const double c3 = fun(z, y, e, e) - c0 - c1pc4 - c2pc5;
+    const double c0 = fun(x, y, z, 1., 1.);
+    const double c1pc4 = fun(x, y, z, 1., e) -c0;
+    const double mc1pc4 = fun(x, y, z, 1., ooe) -c0;
+    const double c2pc5 = fun(x, y, z, e, 1.) -c0;
+    const double mc2pc5 = fun(x, y, z, ooe, 1.) -c0;
+    const double c3 = fun(x, y, z, e, e) - c0 - c1pc4 - c2pc5;
 
     logterms[0] += factor*(c1pc4-mc1pc4)/2.0;
     logterms[1] += factor*(c2pc5-mc2pc5)/2.0;
@@ -231,7 +215,8 @@ void pinerap::unlog_muFmuR(double z, double y, unlog_f1 fun, double factor, doub
     logterms[3] += factor*(c1pc4+mc1pc4)/2.0;
     logterms[4] += factor*(c2pc5+mc2pc5)/2.0;
 }
-void pinerap::unlog_muF(double z, unlog_f2 fun, double factor, double* logterms) {
+template<typename T>
+void pinerap::unlogger_muF(double x, double y, double z, double factor, double* logterms, T&& fun) {
     // The function will produce at max:
     // fun(... muF) = c0 + c1*log(muF) + c2*log(muF)**2
     // We will use the following values to find all coefficients
@@ -241,47 +226,50 @@ void pinerap::unlog_muF(double z, unlog_f2 fun, double factor, double* logterms)
     const double e = std::exp(0.5);
     const double ooe = std::exp(-0.5);
     //                           muF muQ
-    const double c0 = fun(z, 1.);
-    const double c1pc2 = fun(z, e) -c0;
-    const double mc1pc2 = fun(z, ooe) -c0;
+    const double c0 = fun(x, y, z, 1.);
+    const double c1pc2 = fun(x, y, z, e) -c0;
+    const double mc1pc2 = fun(x, y, z, ooe) -c0;
 
     logterms[1] += factor*(c1pc2-mc1pc2)/2.0;
     logterms[4] += factor*(c1pc2+mc1pc2)/2.0;
 }
-void pinerap::r_unlog_muFmuR(double ys, double z, double nf, unlog_r1 fun, double factor, double* logterms) {
-    const double e = std::exp(0.5);
-    const double ooe = std::exp(-0.5);
-    //                           muF muQ
-    const double c0 = fun(ys,z, nf, 1., 1.);
-    const double c1pc4 = fun(ys,z, nf, 1., e) -c0;
-    const double mc1pc4 = fun(ys,z, nf, 1., ooe) -c0;
-    const double c2pc5 = fun(ys,z, nf, e, 1.) -c0;
-    const double mc2pc5 = fun(ys,z, nf, ooe, 1.) -c0;
-    const double c3 = fun(ys,z, nf, e, e) - c0 - c1pc4 - c2pc5;
 
-    logterms[0] += factor*(c1pc4-mc1pc4)/2.0;
-    logterms[1] += factor*(c2pc5-mc2pc5)/2.0;
-    logterms[2] += factor*c3;
-    logterms[3] += factor*(c1pc4+mc1pc4)/2.0;
-    logterms[4] += factor*(c2pc5+mc2pc5)/2.0;
+// Unlogging interfaces
+void pinerap::unlog_muFmuR(double z, double y, unlog_f1 fun, double factor, double* logterms) {
+    auto lambda_fun = [fun](double x, double y, double z, double muF, double muR) {
+        return fun(x, y, muF, muR);
+    };
+    unlogger_muFmuR(z, y, 0.0, factor, logterms, lambda_fun);
+}
+void pinerap::unlog_muFmuR0(double Nf, unlog_f0 fun, double* logterms) {
+    auto lambda_fun = [fun](double x, double y, double z, double muF, double muR) {
+        return fun(x, muF, muR);
+    };
+    //factor == 1.0
+    unlogger_muFmuR(Nf, 0.0, 0.0, 1.0, logterms, lambda_fun);
+}
+void pinerap::unlog_muF(double z, unlog_f2 fun, double factor, double* logterms) {
+    auto lambda_fun = [fun](double x, double y, double z, double muF) {
+        return fun(x, muF);
+    };
+    unlogger_muF(z, 0.0, 0.0, factor, logterms, lambda_fun);
+}
+
+void pinerap::r_unlog_muFmuR(double ys, double z, double nf, unlog_r1 fun, double factor, double* logterms) {
+    auto lambda_fun = [fun](double x, double y, double z, double muF, double muR) {
+        return fun(x, y, z, muF, muR);
+    };
+    unlogger_muFmuR(ys, z, nf, factor, logterms, lambda_fun);
 }
 void pinerap::r_unlog_muF2(double ys, double z, unlog_r2 fun, double factor, double* logterms) {
-    const double e = std::exp(0.5);
-    const double ooe = std::exp(-0.5);
-    const double c0 = fun(ys,z, 1.);
-    const double c1pc2 = fun(ys,z, e) -c0;
-    const double mc1pc2 = fun(ys,z, ooe) -c0;
-
-    logterms[1] += factor*(c1pc2-mc1pc2);
-    logterms[4] += factor*(c1pc2+mc1pc2);
+    auto lambda_fun = [fun](double x, double y, double z, double muF) {
+        return fun(x, y, muF);
+    };
+    unlogger_muF(ys, z, 0.0, factor, logterms, lambda_fun);
 }
 void pinerap::r_unlog_muF(double ys, double z, double Nf, unlog_nf fun, double factor, double* logterms) {
-    const double e = std::exp(0.5);
-    const double ooe = std::exp(-0.5);
-    const double c0 = fun(ys,z,Nf, 1.);
-    const double c1pc2 = fun(ys,z,Nf, e) -c0;
-    const double mc1pc2 = fun(ys,z,Nf, ooe) -c0;
-
-    logterms[1] += factor*(c1pc2-mc1pc2)/2.0;
-    logterms[4] += factor*(c1pc2+mc1pc2)/2.0;
+    auto lambda_fun = [fun](double x, double y, double z, double muF) {
+        return fun(x, y, z, muF);
+    };
+    unlogger_muF(ys, z, Nf, factor, logterms, lambda_fun);
 }
