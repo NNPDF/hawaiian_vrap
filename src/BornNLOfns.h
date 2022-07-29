@@ -8,7 +8,7 @@
 
 // The NLO & NNLO Born kinematics terms:
 double Born_NLO(double muFQ);
-double Born_NNLO(double Nf, double muFQ, double muRF, double *logterms);
+double Born_NNLO(double Nf, double muFQ, double muRF);
 // The NLO boost terms, and "soft" (z=1) subtraction (for q-\bar{q]):
 double NLO_qbarq_boost(double z, double muFQ);
 double NLO_qbarq_boost_soft(double z, double muFQ);

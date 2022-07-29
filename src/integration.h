@@ -36,7 +36,7 @@ double DY_prefactor(double M, double alpha){
 //================================================================
 // The Born-type terms in the integrand.
 double Born_integrand(double y){
-    double logterms[5];
+    double l_nlo, lmuF;
     double asR = alpha_s(muR)/PI;
     double tau = Q*Q/E_CM/E_CM;
     double x1 = sqrt(tau) * exp(y);
@@ -46,8 +46,16 @@ double Born_integrand(double y){
 
     double LO_term = 1.0;
     double NLO_term = Born_NLO(muF/Q);
-    double NNLO_term = Born_NNLO(Nf,muF/Q,muR/Q, logterms);
+    double NNLO_term = Born_NNLO(Nf,muF/Q,muR/Q);
     double Born_term;
+
+    if (muF == Q) {
+        l_nlo = Born_NLO(2.0);
+        lmuF = -2.0*log(2.0);
+    } else {
+        l_nlo = Born_NLO(1.0);
+        lmuF = 2.0*log(muF/Q);
+    }
 
     if (order_flag == 0) {
         Born_term = LO_term;
@@ -60,6 +68,8 @@ double Born_integrand(double y){
             Born_term = asR*asR * NNLO_term;
             LO_term = 0.0;
             NLO_term = 0.0;
+            l_nlo = 0.0;
+            lmuF = 1.0;
         }
         else {
             Born_term = LO_term + asR * NLO_term + asR*asR * NNLO_term;
@@ -75,19 +85,16 @@ double Born_integrand(double y){
     piner.fill_grid(0, &qqbar_lumi_dy, x1, x2, LO_term);
     if (order_flag > 0) {
         piner.fill_grid(1, &qqbar_lumi_dy, x1, x2, NLO_term);
-        double l_nlo, lmuF;
-        if (muF == Q) {
-            l_nlo = Born_NLO(2.0);
-            lmuF = -2.0*log(2.0);
-        } else {
-            l_nlo = Born_NLO(1.0);
-            lmuF = 2.0*log(muF/Q);
-        }
+
         // The log(muR/Q) (grid=2) is empty at NLO
         piner.fill_grid(3, &qqbar_lumi_dy, x1, x2, (NLO_term - l_nlo)/lmuF);
     }
     if (order_flag > 1) {
         piner.fill_grid(4, &qqbar_lumi_dy, x1, x2, NNLO_term);
+
+        double logterms[5] = {};
+        pinerap::unlog_muFmuR0(Nf, Born_NNLO, logterms);
+
         for (int i = 0; i < 5; i++) {
             piner.fill_grid(i+5, &qqbar_lumi_dy, x1, x2, logterms[i]);
         }
@@ -254,7 +261,6 @@ double int_NNLO(double y, double ys, double z){
     if ((tau * exp(2.*y) >= 1.) || (tau * exp(-2.*y) >= 1.) 
                                 || (z <= tau)){ return 0.; } 
 
-    // TODO: log capturing like in int_NLO
     double boost_ans = 0.0;
     double real_ans = 0.0;
 
@@ -380,10 +386,10 @@ double int_NNLO(double y, double ys, double z){
     pinerap::r_unlog_muFmuR(1.-ys, z, Nf, qg_real_hard, 1.0/z, r_qg_1my_l);
     double r_qg_soft_l[5] = {};
     double r_qg_soft = - qg_real_soft(ys,z,Nf,muF/Q,muR/Q)/z;
-    pinerap::r_unlog_muFmuR(1.-ys, z, Nf, qg_real_soft, -1.0/z, r_qg_soft_l);
+    pinerap::r_unlog_muFmuR(ys, z, Nf, qg_real_soft, -1.0/z, r_qg_soft_l);
     double r_qg_soft_1my_l[5] = {};
     double r_qg_soft_1my = - qg_real_soft(1.-ys,z,Nf,muF/Q,muR/Q)/z;
-    pinerap::r_unlog_muFmuR(1.-ys, z, Nf, qg_real_soft, -1.0/z, r_qg_1my_l);
+    pinerap::r_unlog_muFmuR(1.-ys, z, Nf, qg_real_soft, -1.0/z, r_qg_soft_1my_l);
     // gg
     double r_gg_l[5] = {};
     double r_gg = gg_real_hard(ys,z,muF/Q)/z;
@@ -462,15 +468,14 @@ double int_NNLO(double y, double ys, double z){
 
     for (int i = 0; i < 5; i++) {
         int j = i+5;
+        piner.fill_grid(j, &gg_lumi, x1, x2, r_gg_l[i]);
         piner.fill_grid(j, &qqbar_lumi_dy, x1, x2, r_qbarq_l[i]);
         piner.fill_grid(j, &qg_lumi, x1, x2, r_qg_l[i]);
         piner.fill_grid(j, &gq_lumi, x1, x2, r_qg_1my_l[i]);
-        piner.fill_grid(j, &gg_lumi, x1, x2, r_gg_l[i]);
         piner.fill_grid(j, &qq_11_lumi, x1, x2, r_qq11_l[i]);
         piner.fill_grid(j, &qq_22_lumi, x1, x2, r_qq11_1my_l[i]);
     }
 
-    
     // for ys = 0 subtraction:
     double x1_0 = sqrt(tau) * exp(y) ;
     double x2_0 = tau/x1_0/z ;
@@ -537,7 +542,6 @@ double int_NNLO(double y, double ys, double z){
 
     piner.fill_grid(4, &qqbar_lumi_dy, x1_z1, x2_z1, r_qbarq_soft_z1);
     real_ans += lumi_z1*r_qbarq_soft_z1;
-
 
     for (int i = 0; i < 5; i++) {
         int j = i+5;

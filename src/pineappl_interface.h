@@ -54,7 +54,9 @@ class CheffPanopoulos {
 };
 
 typedef double (unlog_f1)(double, double, double, double); // z, nf, muF/Q, muR/Q
+typedef double (unlog_f0)(double, double, double); // nf, muF/Q, muR/Q
 typedef double (unlog_f2)(double, double); // z, mu/Q
+void unlog_muFmuR0(double Nf, unlog_f0 fun, double* logterms);
 void unlog_muFmuR(double, double, unlog_f1, double, double*);
 void unlog_muF(double, unlog_f2, double, double*);
 
