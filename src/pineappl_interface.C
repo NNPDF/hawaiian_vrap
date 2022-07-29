@@ -58,8 +58,22 @@ void pinerap::reconstruct_lumi(LuminosityFunction lumi, collider c,
  */
 CheffPanopoulos::CheffPanopoulos() {
     luminosities.push_back(&qqbar_lumi_dy);
+    // appear at NLO
     luminosities.push_back(&qg_lumi);
     luminosities.push_back(&gq_lumi);
+    // appear at NNLO
+    luminosities.push_back(&qqbar_ax_lumi);
+    luminosities.push_back(&qqbar_BC_lumi);
+    luminosities.push_back(&qqbar_lumi_g);
+    luminosities.push_back(&qq_11_lumi);
+    luminosities.push_back(&qq_12_lumi);
+    luminosities.push_back(&qq_12_lumi);
+    luminosities.push_back(&qq_12_ax_lumi);
+    luminosities.push_back(&qq_22_lumi);
+    luminosities.push_back(&qq_CE1_lumi);
+    luminosities.push_back(&qq_CE2_lumi);
+    luminosities.push_back(&qq_CF_lumi);
+    luminosities.push_back(&gg_lumi);
 }
 
 /*
@@ -85,23 +99,22 @@ void CheffPanopoulos::create_grid(int max_orders, double q2, collider coll) {
     }
 
 
-    // Only LO for now
+    // Leading Order
     // ------------------- (as, a, muR, muF)
     std::vector<uint32_t> orders{0, 2, 0, 0};
 
     if (order_flag > 0) { // Add NLO orders
-        orders.insert(orders.end(), {1, 2, 0, 0});
-        orders.insert(orders.end(), {1, 2, 1, 0});
-        orders.insert(orders.end(), {1, 2, 0, 1});
+        orders.insert(orders.end(), {1, 2, 0, 0}); // nlo 
+        orders.insert(orders.end(), {1, 2, 1, 0}); // muR
+        orders.insert(orders.end(), {1, 2, 0, 1}); // muF
     }
-    if (order_flag > 1) { // Add NLO orders
-        orders.insert(orders.end(), {2, 2, 0, 0});
-        orders.insert(orders.end(), {2, 2, 1, 0});
-        orders.insert(orders.end(), {2, 2, 0, 1});
-        orders.insert(orders.end(), {2, 2, 1, 1});
-        orders.insert(orders.end(), {2, 2, 1, 1});
-        orders.insert(orders.end(), {2, 2, 2, 0});
-        orders.insert(orders.end(), {2, 2, 0, 2});
+    if (order_flag > 1) { // Add NNLO orders
+        orders.insert(orders.end(), {2, 2, 0, 0}); // nnlo
+        orders.insert(orders.end(), {2, 2, 1, 0}); // muR
+        orders.insert(orders.end(), {2, 2, 0, 1}); // muF
+        orders.insert(orders.end(), {2, 2, 1, 1}); // muR x muF
+        orders.insert(orders.end(), {2, 2, 2, 0}); // muR^2
+        orders.insert(orders.end(), {2, 2, 0, 2}); // muF^2 
     }
     int how_many_orders = orders.size() / 4;
 
@@ -130,16 +143,17 @@ void CheffPanopoulos::create_grid(int max_orders, double q2, collider coll) {
  *  1 - NLO
  *  2 - NNLO
  * and a luminosity channel
- *  TBD
  * fills the grid
  */
 void CheffPanopoulos::fill_grid(int order, LuminosityFunction lumi_function, double x1,
                                 double x2, double weight) {
+
     if (is_enabled) {
         auto lumi_index = std::find(luminosities.begin(), luminosities.end(), lumi_function);
         int lumi_channel = lumi_index - luminosities.begin();
         double res = weight*prefactor*vegas_wgt;
         if (order > 0) res /= PI;
+        if (order > 3) res /= PI;
         pineappl_grid_fill(grid, x1, x2, constant_q2, order, next_grid_index-0.5, lumi_channel, res);
     }
 }
@@ -174,4 +188,88 @@ void CheffPanopoulos::set_prefactor(const double val){
 
 void CheffPanopoulos::enable(const bool state) {
     is_enabled = state;
+}
+
+// unlogger functions
+template<typename T>
+void pinerap::unlogger_muFmuR(double x, double y, double z, double factor, double* logterms, T&& fun) {
+    // The function will produce
+    // fun(... muF, muR) = c0 + c1*log(muR) + c2*log(muF) + c3*log(muF*muR) + c4*log(muR)**2 + c5*log(muF)**2
+    // We will use the following values to find all coefficients
+    // log(1) = 0
+    // log(e) = 1
+    // log(1/e) = -1
+    const double e = std::exp(0.5);
+    const double ooe = std::exp(-0.5);
+    //                           muF muQ
+    const double c0 = fun(x, y, z, 1., 1.);
+    const double c1pc4 = fun(x, y, z, 1., e) -c0;
+    const double mc1pc4 = fun(x, y, z, 1., ooe) -c0;
+    const double c2pc5 = fun(x, y, z, e, 1.) -c0;
+    const double mc2pc5 = fun(x, y, z, ooe, 1.) -c0;
+    const double c3 = fun(x, y, z, e, e) - c0 - c1pc4 - c2pc5;
+
+    logterms[0] += factor*(c1pc4-mc1pc4)/2.0;
+    logterms[1] += factor*(c2pc5-mc2pc5)/2.0;
+    logterms[2] += factor*c3;
+    logterms[3] += factor*(c1pc4+mc1pc4)/2.0;
+    logterms[4] += factor*(c2pc5+mc2pc5)/2.0;
+}
+template<typename T>
+void pinerap::unlogger_muF(double x, double y, double z, double factor, double* logterms, T&& fun) {
+    // The function will produce at max:
+    // fun(... muF) = c0 + c1*log(muF) + c2*log(muF)**2
+    // We will use the following values to find all coefficients
+    // log(1) = 0
+    // log(e) = 1
+    // log(1/e) = -1
+    const double e = std::exp(0.5);
+    const double ooe = std::exp(-0.5);
+    //                           muF muQ
+    const double c0 = fun(x, y, z, 1.);
+    const double c1pc2 = fun(x, y, z, e) -c0;
+    const double mc1pc2 = fun(x, y, z, ooe) -c0;
+
+    logterms[1] += factor*(c1pc2-mc1pc2)/2.0;
+    logterms[4] += factor*(c1pc2+mc1pc2)/2.0;
+}
+
+// Unlogging interfaces
+void pinerap::unlog_muFmuR(double z, double y, unlog_f1 fun, double factor, double* logterms) {
+    auto lambda_fun = [fun](double x, double y, double z, double muF, double muR) {
+        return fun(x, y, muF, muR);
+    };
+    unlogger_muFmuR(z, y, 0.0, factor, logterms, lambda_fun);
+}
+void pinerap::unlog_muFmuR0(double Nf, unlog_f0 fun, double* logterms) {
+    auto lambda_fun = [fun](double x, double y, double z, double muF, double muR) {
+        return fun(x, muF, muR);
+    };
+    //factor == 1.0
+    unlogger_muFmuR(Nf, 0.0, 0.0, 1.0, logterms, lambda_fun);
+}
+void pinerap::unlog_muF(double z, unlog_f2 fun, double factor, double* logterms) {
+    auto lambda_fun = [fun](double x, double y, double z, double muF) {
+        return fun(x, muF);
+    };
+    unlogger_muF(z, 0.0, 0.0, factor, logterms, lambda_fun);
+}
+
+void pinerap::r_unlog_muFmuR(double ys, double z, double nf, unlog_r1 fun, double factor, double* logterms) {
+    auto lambda_fun = [fun](double x, double y, double z, double muF, double muR) {
+        return fun(x, y, z, muF, muR);
+    };
+    unlogger_muFmuR(ys, z, nf, factor, logterms, lambda_fun);
+}
+void pinerap::r_unlog_muF2(double ys, double z, unlog_r2 fun, double factor, double* logterms) {
+    auto lambda_fun = [fun](double x, double y, double z, double muF) {
+        return fun(x, y, muF);
+    };
+    unlogger_muF(ys, z, 0.0, factor, logterms, lambda_fun);
+}
+void pinerap::r_unlog_muF(double ys, double z, double Nf, unlog_nf fun, double factor, double* logterms) {
+    auto lambda_fun = [fun](double x, double y, double z, double muF) {
+        return fun(x, y, z, muF);
+    };
+    unlogger_muF(ys, z, Nf, factor, logterms, lambda_fun);
 }

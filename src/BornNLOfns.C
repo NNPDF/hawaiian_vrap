@@ -17,6 +17,7 @@ double Born_NNLO(double Nf, double muFQ, double muRQ){
   double Z2 = ZETA2;  double Z3 = ZETA3;
   double C_F = 4./3.;  double C_A = 3.;  
   double lnQF = -2.*log(muFQ);  double lnRF = 2.*log(muRQ/muFQ);
+
   return 1./16. * ( 
     C_A * C_F * (
     - 11. * lnQF*lnQF + (193./3. - 24 * Z3) * lnQF
