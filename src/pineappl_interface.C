@@ -158,9 +158,13 @@ void CheffPanopoulos::fill_grid(int order, LuminosityFunction lumi_function, dou
     }
 }
 
-void CheffPanopoulos::save() {
-    char const *filename = "test.pineappl.lz4";
-    pineappl_grid_write(mother_grid, filename);
+void CheffPanopoulos::save(std::string filename) {
+    const std::string extension(".pineappl.lz4");
+    if (filename.find(extension) == std::string::npos) {
+        filename += extension;
+    }
+    //char const *filename = "test.pineappl.lz4";
+    pineappl_grid_write(mother_grid, &filename[0]);
     pineappl_grid_delete(mother_grid);
 }
 

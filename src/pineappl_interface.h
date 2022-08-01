@@ -41,7 +41,7 @@ class CheffPanopoulos {
     void set_prefactor(const double);
     void enable(const bool state);
     void rebin(const std::vector<std::pair<double, double>>);
-    void save();
+    void save(std::string);
     double vegas_wgt = 1.0;
 
   private:
