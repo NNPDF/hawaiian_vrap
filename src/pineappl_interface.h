@@ -52,4 +52,25 @@ class CheffPanopoulos {
     bool is_enabled = true;
     pineappl_grid *grid, *mother_grid; 
 };
+
+
+template<typename T>
+void unlogger_muFmuR(double x, double y, double z, double factor, double* logterms, T&& fun);
+template<typename T>
+void unlogger_muF(double x, double y, double z, double factor, double* logterms, T&& fun);
+
+typedef double (unlog_f1)(double, double, double, double); // z, nf, muF/Q, muR/Q
+typedef double (unlog_f0)(double, double, double); // nf, muF/Q, muR/Q
+typedef double (unlog_f2)(double, double); // z, mu/Q
+void unlog_muFmuR0(double Nf, unlog_f0 fun, double* logterms);
+void unlog_muFmuR(double, double, unlog_f1, double, double*);
+void unlog_muF(double, unlog_f2, double, double*);
+
+
+typedef double (unlog_r1)(double, double, double, double, double); // ys, z, nf, muF/Q, muR/Q
+typedef double (unlog_nf)(double, double, double, double); // ys, z, Nf, mu/Q
+typedef double (unlog_r2)(double, double, double); // ys, z, mu/Q
+void r_unlog_muFmuR(double, double, double, unlog_r1, double, double*);
+void r_unlog_muF(double, double, double, unlog_nf, double, double*);
+void r_unlog_muF2(double, double, unlog_r2, double, double*);
 } // namespace pinerap

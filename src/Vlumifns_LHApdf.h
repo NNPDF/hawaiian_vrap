@@ -4,6 +4,7 @@
 
 double qqbar_lumi(const pdfArray& X1, const pdfArray& X2, process p, collider c);
 double qqbar_lumi_dy(const pdfArray& X1, const pdfArray& X2, collider c);
+double qqbar_lumi_g(const pdfArray& X1, const pdfArray& X2, collider c);
 
 double qqbar_BC_lumi(const pdfArray& X1, const pdfArray& X2, collider c);
 
