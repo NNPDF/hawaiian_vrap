@@ -56,6 +56,7 @@ VrapOptionsHandler::VrapOptionsHandler(){
 	add(new multipleValueOption<int>("PrintDirection",direction,"Forward",+1,"Reverse",-1,"Sets the order in which output is printed (for td). ") );  
   add(new multipleValueOption<int>("OutputFormat",o_f,"TopDrawStyle",0,"ListValues",1,"Sets the style output is printed (for td or just list dsig/dy). ") );
 	add(new yesOrNoOption("jacobianTau2M",jacobianTau2M,"Sets whether to use the jacobian of (M/sqrt(s))^3."));
+	add(new ValueSettingOption<std::string>("pineapplName",pineapplName,"Sets the output name for the pineappl grid."));
 	//enableDebug();
 }
 
@@ -74,6 +75,7 @@ void defaultSettings(){
     // f_NNLO_only = 0;  alphat = 1./132.1;   setV(gamma_only,Q,alphat,Nf,0);   
 
 	useOtherPDF=false;
+    pineapplName="test";
 	pdfSet=-1;
 	parton_flag=1;
 	nbrYPnts=19;
@@ -271,7 +273,7 @@ int main(int argc,char* argv[]){
     }
 
     piner.rebin(qy_bins);
-    piner.save();
+    piner.save(pineapplName);
 
  return 0;
 }

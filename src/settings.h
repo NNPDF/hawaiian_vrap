@@ -37,6 +37,7 @@ int f_quiet = 0; // Set to 1 to suppress intermediate printing by rap_y()
 
 std::string pdfMode;
 std::string pdfFile;
+std::string pineapplName;
 
 bool useMyAlphaRunning = false;
 bool useOtherPDF;
