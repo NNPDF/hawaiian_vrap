@@ -105,7 +105,7 @@ void printBanner(){
     std::cout << "=                                                      = " << std::endl;
     std::cout << "= This version includes an interface to the grid       = " << std::endl;
     std::cout << "= generation program pineappl                          = " << std::endl;
-    std::cout << "= https://n3pdf.github.io/pineappl/                    = " << std::endl;
+    std::cout << "= https://nnpdf.github.io/pineappl/                    = " << std::endl;
     std::cout << "=                                                      = " << std::endl;
     std::cout << "=  Questions?  juacrumar at lairen dot eu              = " << std::endl;
     std::cout << "======================================================== " << std::endl; 
