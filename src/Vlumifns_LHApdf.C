@@ -103,23 +103,23 @@ double qqbar_lumi(const pdfArray& X1, const pdfArray& X2, process p, collider c)
 //  
   if (c==pp) { return 
      pref_u * ( X1.u * X2.ubar + X1.ubar * X2.u 
-		                + 2. * X1.c * X2.c )
+		                + X1.c * X2.cbar + X1.cbar * X2.c )
    + pref_d * ( X1.d * X2.dbar + X1.dbar * X2.d 
 	                        + X1.s * X2.sbar + X1.sbar * X2.s 
-		                + 2. * X1.b * X2.b )
+		                + X1.b * X2.bbar + X1.bbar * X2.b )
  ; }
   else if (c==ppbar) { return 
      pref_u * ( X1.u * X2.u + X1.ubar * X2.ubar 
-                                + 2. * X1.c * X2.c )
+                                + X1.c * X2.c + X1.cbar * X2.cbar )
    + pref_d * ( X1.d * X2.d + X1.dbar * X2.dbar 
 	                        + X1.s * X2.s + X1.sbar * X2.sbar 
-                                + 2. * X1.b * X2.b ) ; }
+                                + X1.b * X2.b + X1.bbar * X2.bbar ) ; }
   else if (c==piso) { return 
       pref_u * ( X1.u * (X2.ubar+X2.dbar)/2. + X1.ubar * (X2.u+X2.d)/2.
                                 + 2. * X1.c * X2.c )
       + pref_d * ( X1.d * (X2.dbar+X2.ubar)/2. + X1.dbar * (X2.d+X2.u)/2.
 	                        + X1.s * X2.sbar + X1.sbar * X2.s 
-                                + 2. * X1.b * X2.b ) ; }
+                                + X1.b * X2.bbar + X1.bbar * X2.b ) ; }
   else return 0.;
 }
 double qqbar_lumi_dy(const pdfArray& X1, const pdfArray& X2, collider c){
@@ -165,22 +165,22 @@ double qqbar_ax_lumi(const pdfArray& X1, const pdfArray& X2, collider c){
   }
   if (c==pp) { return 
      aaf_u * ( X1.u * X2.ubar + X1.ubar * X2.u 
-                                + 2. * X1.c * X2.c )
+                                + X1.c * X2.cbar + X1.cbar * X2.c )
    + aaf_d * ( X1.d * X2.dbar + X1.dbar * X2.d 
                                 + X1.s * X2.sbar + X1.sbar*X2.s 
-                                + 2. * X1.b * X2.b ) ; }
+                                + X1.b * X2.bbar + X1.bbar*X2.b ) ; }
   else if (c==ppbar) { return 
      aaf_u * ( X1.u * X2.u + X1.ubar * X2.ubar 
-                                + 2. * X1.c * X2.c )
+                                + X1.c * X2.c + X1.cbar * X2.cbar )
    + aaf_d * ( X1.d * X2.d + X1.dbar * X2.dbar 
 	                        + X1.s * X2.s + X1.sbar * X2.sbar
-                                + 2. * X1.b * X2.b ) ; }
+                                + X1.b * X2.b + X1.bbar * X2.bbar ) ; }
   else if (c==piso) { return 
       aaf_u * ( X1.u * (X2.ubar+X2.dbar)/2. + X1.ubar * (X2.u+X2.d)/2. 
-                                + 2. * X1.c * X2.c )
+                                + X1.c * X2.cbar + X1.cbar * X2.c )
       + aaf_d * ( X1.d * (X2.ubar+X2.dbar)/2. + X1.dbar * (X2.u+X2.d)/2.
                                 + X1.s * X2.sbar + X1.sbar*X2.s 
-                                + 2. * X1.b * X2.b ) ; }
+                                + X1.b * X2.bbar + X1.bbar*X2.b ) ; }
   else return 0.;
 }
 
@@ -202,9 +202,9 @@ double qg_lumi(const pdfArray& X1, const pdfArray& X2, collider c){
       * X2.gluon;
   }
   else if ((c==pp) || (c==ppbar) || c==piso) { return 
-     ( vsqasq_u * (X1.u + X1.ubar + 2. * X1.c)
+     ( vsqasq_u * (X1.u + X1.ubar + X1.c + X1.cbar)
      + vsqasq_d * (X1.d + X1.dbar 
-                  + X1.s + X1.sbar + 2. * X1.b) )
+                  + X1.s + X1.sbar + X1.b + X1.bbar) )
       * X2.gluon;
   }
   else return 0.;
@@ -226,15 +226,15 @@ double gq_lumi(const pdfArray& X1, const pdfArray& X2, collider c){
       * X1.gluon;
   }
   else if ((c==pp) || (c==ppbar)) { return 
-     ( vsqasq_u * (X2.u + X2.ubar + 2. * X2.c)
+     ( vsqasq_u * (X2.u + X2.ubar + X2.c + X2.cbar)
      + vsqasq_d * (X2.d + X2.dbar 
                   + X2.s + X2.sbar + 2. * X2.b) )
       * X1.gluon;
   }
   else if (c==piso) { return 
-      ( vsqasq_u * ((X2.u + X2.ubar + X2.d+X2.dbar)/2. + 2. * X2.c)
+      ( vsqasq_u * ((X2.u + X2.ubar + X2.d+X2.dbar)/2. + X2.c + X2.cbar)
 	+ vsqasq_d * ((X2.u + X2.ubar + X2.d+X2.dbar)/2. 
-		      + X2.s + X2.sbar + 2. * X2.b) )
+		      + X2.s + X2.sbar + X2.b + X2.bbar) )
       * X1.gluon;
   }
   else return 0.;
@@ -273,11 +273,12 @@ double qq_11_lumi(const pdfArray& X1, const pdfArray& X2, collider c){
    * ( X2.u + X2.ubar + 2.*X2.c
      + X2.d + X2.dbar + 2.*X2.s + 2.*X2.b ); 
   }
-  else if ((c==pp) || (c==ppbar) || c==piso){ return 
-    ( vsqasq_u * ( X1.u + X1.ubar + 2.*X1.c )
-    + vsqasq_d * ( X1.d + X1.dbar + X1.s + X1.sbar + 2.*X1.b ) )  
-   * ( X2.u + X2.ubar + 2.*X2.c
-     + X2.d + X2.dbar + X2.s + X2.sbar + 2.*X2.b );
+  else if ((c==pp) || (c==ppbar) || c==piso){
+    return
+    ( vsqasq_u * ( X1.u + X1.ubar + X1.c + X1.cbar )
+    + vsqasq_d * ( X1.d + X1.dbar + X1.s + X1.sbar + X1.b + X1.bbar ) )
+   * ( X2.u + X2.ubar + X2.c + X2.cbar
+     + X2.d + X2.dbar + X2.s + X2.sbar + X2.b + X2.bbar );
   }
   else return 0.;
 }
@@ -301,16 +302,16 @@ double qq_22_lumi(const pdfArray& X1, const pdfArray& X2, collider c){
      + X1.d + X1.dbar + 2.*X1.s + 2.*X1.b ); 
   }
   else if ((c==pp) || (c==ppbar)){ return 
-    ( vsqasq_u * ( X2.u + X2.ubar + 2.*X2.c )
-    + vsqasq_d * ( X2.d + X2.dbar + X2.s + X2.sbar + 2.*X2.b ) )  
+    ( vsqasq_u * ( X2.u + X2.ubar + X2.c + X2.cbar )
+    + vsqasq_d * ( X2.d + X2.dbar + X2.s + X2.sbar + X2.b + X2.bbar ) )
    * ( X1.u + X1.ubar + 2.*X1.c
      + X1.d + X1.dbar + X1.s + X1.sbar + 2.*X1.b );
   }
   else if (c==piso){ return 
-      ( vsqasq_u * ( (X2.u + X2.ubar + X2.d + X2.dbar)/2. + 2.*X2.c )
-    + vsqasq_d * ( (X2.u + X2.ubar + X2.d + X2.dbar)/2. + X2.s + X2.sbar + 2.*X2.b ) )  
-   * ( X1.u + X1.ubar + 2.*X1.c
-     + X1.d + X1.dbar + X1.s + X1.sbar + 2.*X1.b );
+      ( vsqasq_u * ( (X2.u + X2.ubar + X2.d + X2.dbar)/2. + X2.c + X2.cbar )
+    + vsqasq_d * ( (X2.u + X2.ubar + X2.d + X2.dbar)/2. + X2.s + X2.sbar + X2.b + X2.bbar ) )
+   * ( X1.u + X1.ubar + X1.c + X1.cbar
+     + X1.d + X1.dbar + X1.s + X1.sbar + X1.b + X1.bbar );
   }
   else return 0.;
 }
@@ -352,24 +353,24 @@ double qq_12_ax_lumi(const pdfArray& X1, const pdfArray& X2, collider c){
      return 0.;
   }
   if ((c==pp) || (c==ppbar)){ return 
-      auau * (X1.u + X1.ubar + 2. * X1.c) 
-           * (X2.u + X2.ubar + 2. * X2.c)
-    + auad * ( (X1.u + X1.ubar + 2. * X1.c)
-             * (X2.d + X2.dbar + X2.s + X2.sbar + 2. * X2.b)
-             + (X1.d + X1.dbar + X1.s + X1.sbar + 2. * X1.b)
-	     * (X2.u + X2.ubar + 2. * X2.c) )
-    + adad * (X1.d + X1.dbar + X1.s +X1.sbar + 2. * X1.b)
-           * (X2.d + X2.dbar + X2.s +X2.sbar + 2. * X2.b) ;
+      auau * (X1.u + X1.ubar + X1.c + X1.cbar)
+           * (X2.u + X2.ubar + X2.c + X2.cbar)
+    + auad * ( (X1.u + X1.ubar + X1.c + X1.cbar)
+             * (X2.d + X2.dbar + X2.s + X2.sbar + X2.b + X2.bbar)
+             + (X1.d + X1.dbar + X1.s + X1.sbar + X1.b + X1.bbar)
+	     * (X2.u + X2.ubar + X2.c + X2.cbar) )
+    + adad * (X1.d + X1.dbar + X1.s +X1.sbar + X1.b + X1.bbar)
+           * (X2.d + X2.dbar + X2.s +X2.sbar + X2.b + X2.bbar) ;
   }
   else if (c==piso){ return 
-      auau * (X1.u + X1.ubar + 2. * X1.c) 
-      * ((X2.u + X2.ubar +X2.d + X2.dbar)/2. + 2. * X2.c)
-      + auad * ( (X1.u + X1.ubar + 2. * X1.c)
-		 * ((X2.u + X2.ubar +X2.d + X2.dbar)/2. + X2.s + X2.sbar + 2. * X2.b)
-		 + (X1.d + X1.dbar + X1.s + X1.sbar + 2. * X1.b)
-		 * ((X2.u + X2.ubar +X2.d + X2.dbar)/2. + 2. * X2.c) )
-      + adad * (X1.d + X1.dbar + X1.s +X1.sbar + 2. * X1.b)
-      * ((X2.u + X2.ubar +X2.d + X2.dbar)/2. + X2.s +X2.sbar + 2. * X2.b) ;
+      auau * (X1.u + X1.ubar + X1.c + X1.cbar)
+      * ((X2.u + X2.ubar +X2.d + X2.dbar)/2. + X2.c + X2.cbar)
+      + auad * ( (X1.u + X1.ubar + X1.c + X1.cbar)
+		 * ((X2.u + X2.ubar +X2.d + X2.dbar)/2. + X2.s + X2.sbar + X2.b + X2.bbar)
+		 + (X1.d + X1.dbar + X1.s + X1.sbar + X1.b + X1.bbar)
+		 * ((X2.u + X2.ubar +X2.d + X2.dbar)/2. + X2.c + X2.cbar) )
+      + adad * (X1.d + X1.dbar + X1.s +X1.sbar + X1.b + X1.bbar)
+      * ((X2.u + X2.ubar +X2.d + X2.dbar)/2. + X2.s +X2.sbar + X2.b + X2.bbar) ;
   }
   else return 0.;
 }
@@ -418,19 +419,19 @@ double qq_CE1_lumi(const pdfArray& X1, const pdfArray& X2, collider c){
   }
   else if (c==pp){ return
      vsqasq_u * ( X1.u * X2.u + X1.ubar * X2.ubar 
-                + 2. * X1.c * X2.c )
+                + X1.c * X2.c + X1.cbar * X2.cbar)
    + vsqasq_d * ( X1.d * X2.d + X1.dbar * X2.dbar 
-        + X1.s * X2.s + X1.sbar * X2.sbar + 2. * X1.b * X2.b ); }
+        + X1.s * X2.s + X1.sbar * X2.sbar + X1.b * X2.b + X1.bbar * X2.bbar); }
   else if (c==ppbar) { return
      vsqasq_u * ( X1.u * X2.ubar + X1.ubar * X2.u 
-               + 2. * X1.c * X2.c )
+               + X1.c * X2.cbar + X1.cbar * X2.c )
    + vsqasq_d * ( X1.d * X2.dbar + X1.dbar * X2.d 
-        + 2. * X1.s * X2.s + 2. * X1.b * X2.b ); }
+        + X1.s * X2.sbar + X1.sbar * X2.s + X1.b * X2.bbar + X1.bbar * X2.b ); }
   else if (c==piso){ return
       vsqasq_u * ( X1.u * (X2.u+X2.d)/2. + X1.ubar * (X2.ubar+X2.dbar)/2.
-		   + 2. * X1.c * X2.c )
+		   + X1.c * X2.cbar + X1.cbar * X2.c )
       + vsqasq_d * ( X1.d * (X2.d+X2.u)/2. + X1.dbar * (X2.dbar+X2.ubar)/2.
-		     + X1.s * X2.s + X1.sbar * X2.sbar + 2. * X1.b * X2.b ); }
+		     + X1.s * X2.s + X1.sbar * X2.sbar + X1.b * X2.b + X1.bbar * X2.bbar ); }
   else return 0.;
 }
 
