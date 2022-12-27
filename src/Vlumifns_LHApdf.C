@@ -335,8 +335,9 @@ double qq_12_lumi(const pdfArray& X1, const pdfArray& X2, collider c){
   if (c==pp){ return temp; }
   else if (c==ppbar) { return - temp; }
   else if(c==piso) {
+    // FIXME: here are strange, charm and bottom (anti-)quark PDFs missing
     return - ( 
-	      vuvu * (X1.u - X1.ubar) 
+	      vuvu * (X1.u - X1.ubar) // FIXME: this line looks wrong, there are no PDFs for the second parton; wrong parentheses?
 	      + vuvd * ( (X1.u - X1.ubar + X1.d - X1.dbar)
 			 + vdvd * (X1.d - X1.dbar))
 	      * (X2.u - X2.ubar + X2.d - X2.dbar)/2. );
