@@ -328,10 +328,10 @@ double qq_12_lumi(const pdfArray& X1, const pdfArray& X2, collider c){
     return 0.;
   }
   double temp = - ( 
-      vuvu * (X1.u - X1.ubar) * (X2.u - X2.ubar)
-    + vuvd * ( (X1.u - X1.ubar) * (X2.d - X2.dbar)
-	     + (X1.d - X1.dbar) * (X2.u - X2.ubar) )
-    + vdvd * (X1.d - X1.dbar) * (X2.d - X2.dbar) ) ;
+      vuvu * (X1.u - X1.ubar + X1.c - X1.cbar) * (X2.u - X2.ubar + X2.c - X2.cbar)
+    + vuvd * ( (X1.u - X1.ubar + X1.c - X1.cbar) * (X2.d - X2.dbar + X2.s - X2.sbar + X2.b - X2.bbar)
+	     + (X1.d - X1.dbar + X1.s - X1.sbar + X1.b - X1.bbar) * (X2.u - X2.ubar + X2.c - X2.cbar) )
+    + vdvd * (X1.d - X1.dbar + X1.s - X1.sbar + X1.b - X1.bbar) * (X2.d - X2.dbar + X2.s - X2.sbar + X2.b - X2.bbar) ) ;
   if (c==pp){ return temp; }
   else if (c==ppbar) { return - temp; }
   else if(c==piso) {
