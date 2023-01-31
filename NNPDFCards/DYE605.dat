@@ -1,0 +1,16 @@
+Collider piso
+E_CM 38.8
+Alphat 0.00757002271
+Q 0
+VectorBoson Zgamma
+muFoverQ 1.0
+muRoverQ 1.0
+Nf 5
+UseOtherPDF yes
+PDFset 0
+AlphasZ 0.118
+Order NNLO
+PrintDirection Forward
+NNLO_only no
+RandomSeed 22334
+PDFfile NNPDF40_nnlo_as_01180.LHgrid
