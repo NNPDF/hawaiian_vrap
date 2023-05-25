@@ -4,6 +4,18 @@ This program is an extension of [Vrap-v0.9](https://www.slac.stanford.edu/~lance
 
 The code in this repository modifies version 0.9 of Vrap and it is redistributed with permission of the authors.
 
+
+## Citation policy
+
+The original implementation of the numerical program "Vrap" is based on the paper
+Phys.Rev.D69:094008,2004 [hep-ph/0312266]
+by C. Anastasiou, L. Dixon, K. Melnikov and F. Petriello.
+
+The extension of "Vrap" with pineappl is described in the paper:
+[hep-ph/2302.12124](https://inspirehep.net/literature/2635876)
+
+Please cite both these papers whenever the "Hawaiian Vrap" program is used.
+
 ## Changes with respect to Vrap
 
 #### Isoscalar targets
@@ -48,10 +60,3 @@ As warned in Lance Dixon's webpage, for fixed-target kinematics the results migh
 
 A cut on $\tau$ is typically enforced on the data to avoid this issue.
 
-## Citations
-
-The numerical program, "Vrap", is based on the paper
-Phys.Rev.D69:094008,2004 [hep-ph/0312266]
-by C. Anastasiou, L. Dixon, K. Melnikov and F. Petriello.
-
-Please cite this paper whenever the "Vrap" program is used.
