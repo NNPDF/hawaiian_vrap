@@ -1,4 +1,4 @@
-# Hawaian Vrap
+# Hawaiian Vrap
 
 This program is an extension of [Vrap-v0.9](https://www.slac.stanford.edu/~lance/Vrap/). Vrap is a program that computes rapidity distributions for production of lepton-pairs via virtual photons, W or Z bosons at hadron colliders at NNLO in QCD. The program was originally developed by Frank Petriello and Lance Dixon. The original version of Vrap can be obtained in [Lance Dixon's website](https://www.slac.stanford.edu/~lance/Vrap/).
 
