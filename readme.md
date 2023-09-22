@@ -11,7 +11,7 @@ The original implementation of the numerical program "Vrap" is based on the pape
 Phys.Rev.D69:094008,2004 [hep-ph/0312266]
 by C. Anastasiou, L. Dixon, K. Melnikov and F. Petriello.
 
-The extension of "Vrap" with pineappl is described in the paper:
+The extension of "Vrap" with PineAPPL is described in the paper:
 [hep-ph/2302.12124](https://inspirehep.net/literature/2635876)
 
 Please cite both these papers whenever the "Hawaiian Vrap" program is used.
@@ -22,9 +22,9 @@ Please cite both these papers whenever the "Hawaiian Vrap" program is used.
 
 The code in this repository adds and option to use isoscalar targets as a hadron type (`piso`) in addition to the original `pp` and `ppbar` options. 
 
-### Pineappl interface
+### PineAPPL interface
 
-It also interfaces the code with [pineappl](https://n3pdf.github.io/pineappl/), a library that produces fast-interpolation grids for fitting parton distribution functions.
+It also interfaces the code with [PineAPPL](https://n3pdf.github.io/pineappl/), a library that produces fast-interpolation grids for fitting parton distribution functions.
 
 
 #### Apfel-jacobian factors
@@ -36,7 +36,7 @@ In addition, the data from DYE886 and DYE605 differ by a factor of $\left(\frac{
 
 See [issue #10](https://github.com/NNPDF/hawaiian_vrap/issues/10) for more information.
 
-:warning: The goal of these modifications is to generate `pineappl` grids for fixed-target Drell-Yan. These grids are used by the NNPDF Collaboration to determine parton distribution functions. As such, this use-case is the only one that has been tested and benchmarked (see [regression tests](https://github.com/NNPDF/hawaiian_vrap/tree/main/regression_test)).
+:warning: The goal of these modifications is to generate PineAPPL grids for fixed-target Drell-Yan. These grids are used by the NNPDF Collaboration to determine parton distribution functions. As such, this use-case is the only one that has been tested and benchmarked (see [regression tests](https://github.com/NNPDF/hawaiian_vrap/tree/main/regression_test)).
 
 ## How to run
 
