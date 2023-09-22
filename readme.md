@@ -24,7 +24,7 @@ The code in this repository adds and option to use isoscalar targets as a hadron
 
 ### PineAPPL interface
 
-It also interfaces the code with [PineAPPL](https://n3pdf.github.io/pineappl/), a library that produces fast-interpolation grids for fitting parton distribution functions.
+It also interfaces the code with [PineAPPL](https://nnpdf.github.io/pineappl/), a library that produces fast-interpolation grids for fitting parton distribution functions.
 
 
 #### Apfel-jacobian factors
