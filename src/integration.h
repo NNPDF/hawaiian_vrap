@@ -258,6 +258,8 @@ double int_NNLO(double y, double ys, double z){
 
     if ((ys < 1.0e-08) || (ys > 1.0-1.0e-08) || (z > 1.0-1.0e-08)){ return 0.; }
     double tau = Q*Q/E_CM/E_CM;
+    if ((tau * exp(2.*y) >= 1.) || (tau * exp(-2.*y) >= 1.)){ return 0.; } 
+
     if ((tau * exp(2.*y) >= 1.) || (tau * exp(-2.*y) >= 1.) 
                                 || (z <= tau)){ return 0.; } 
 
